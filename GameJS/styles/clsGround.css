@@ -1,0 +1,19 @@
+﻿.clsGround.tile
+{
+    font-size:64px;
+    width:1em;
+    height:1em;
+    background-image:url(..\\images\\tiles\\YarsTileset.png);
+    position:absolute;
+    //border: 1px solid green;
+}
+
+.clsGround.tile:hover
+{
+    background-image: linear-gradient(to bottom, rgba(255,255,0,0), rgba(255,255,0,128)), url(..\\images\\tiles\\YarsTileset.png);
+    background-blend-mode: color-dodge;
+    //background-blend-mode: saturation;
+    //background-blend-mode: color;
+    //border: 1px solid yellow;
+}
+
