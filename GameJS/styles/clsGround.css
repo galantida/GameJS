@@ -5,6 +5,7 @@
     height:1em;
     background-image:url(..\\images\\tiles\\YarsTileset.png);
     position:absolute;
+    /* transition:background-position linear 1000ms; // recall in */
     //border: 1px solid green;
 }
 
