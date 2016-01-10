@@ -9,12 +9,11 @@ namespace GameJS
     public class clsTiles
     {
         private clsTileFile _tileFile;
-        private clsElevationFile _elevationFile;
+        
 
         public clsTiles(string path)
         {
             _tileFile = new clsTileFile(path);
-            _elevationFile = new clsElevationFile(path);
         }
 
         // will merge elevation information in later

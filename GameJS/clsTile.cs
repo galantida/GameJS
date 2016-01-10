@@ -12,15 +12,16 @@ namespace GameJS
         private int _x;
         private int _y;
         private int _z;
-        private string _img;
-        // private bool _blocked;
+        private int _tileset;
+        private int _tile;
 
-        public clsTile(int x, int y, int z, int bytes)
+        public clsTile(int x, int y, int z, int tileset, int tile)
         {
             _x = x;
             _y = y;
             _z = z;
-            _img = (bytes.ToString("X") + "-00").PadLeft(9, '0');
+            _tileset = tileset;
+            _tile = tile;
         }
 
         public int x
@@ -47,11 +48,19 @@ namespace GameJS
             }
         }
 
-        public string img
+        public int tileset
         {
             get
             {
-                return _img;
+                return _tileset;
+            }
+        }
+
+        public int tile
+        {
+            get
+            {
+                return _tile;
             }
         }
 
@@ -61,10 +70,11 @@ namespace GameJS
             {
                 string result = "";
                 result += "{";
-                result += "\"x\":\"" + _x + "\"";
-                result += ",\"y\":\"" + _y + "\"";
-                result += ",\"z\":\"" + _z + "\"";
-                result += ",\"img\":\"" + _img + "\"";
+                result += "\"x\":" + _x + "";
+                result += ",\"y\":" + _y + "";
+                result += ",\"z\":" + _z + "";
+                result += ",\"tileset\":" + _tileset + "";
+                result += ",\"tile\":" + _tile + "";
                 result += "}";
                 return result;
             }

@@ -45,7 +45,11 @@ namespace GameJS
             clsTile newTile;
             int imgstart = 1974; // remember firt byte area 0,0,0 for black
             int seek = imgstart + ((this.width * 3) * y) + (x * 3);
-            newTile = new clsTile(x, y, 0, tileFile.read(seek, 3));
+            int rgb = tileFile.read(seek, 3);
+            int z = (rgb >> 16) & 0xFF;
+            int tileset = (rgb >> 8) & 0xFF;
+            int tile = (rgb) & 0xFF;
+            newTile = new clsTile(x, y, z, tileset, tile);
             return newTile;
         }
 
