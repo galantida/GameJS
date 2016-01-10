@@ -47,9 +47,10 @@ namespace GameJS
             int seek = imgstart + ((this.width * 3) * y) + (x * 3);
             int rgb = tileFile.read(seek, 3);
             int z = (rgb >> 16) & 0xFF;
-            int tileset = (rgb >> 8) & 0xFF;
-            int tile = (rgb) & 0xFF;
-            newTile = new clsTile(x, y, z, tileset, tile);
+            string tileset = "yars";
+            int column = (rgb) & 0xFF;
+            int row = (rgb) & 0xFF;
+            newTile = new clsTile(x, y, z, tileset, column, row);
             return newTile;
         }
 

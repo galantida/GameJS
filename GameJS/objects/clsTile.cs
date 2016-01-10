@@ -12,16 +12,18 @@ namespace GameJS
         private int _x;
         private int _y;
         private int _z;
-        private int _tileset;
-        private int _tile;
+        private string _tileset;
+        private int _column;
+        private int _row;
 
-        public clsTile(int x, int y, int z, int tileset, int tile)
+        public clsTile(int x, int y, int z, string tileset, int column, int row)
         {
             _x = x;
             _y = y;
             _z = z;
             _tileset = tileset;
-            _tile = tile;
+            _column = column;
+            _row = row;
         }
 
         public int x
@@ -48,7 +50,7 @@ namespace GameJS
             }
         }
 
-        public int tileset
+        public string tileset
         {
             get
             {
@@ -56,11 +58,18 @@ namespace GameJS
             }
         }
 
-        public int tile
+        public int column
         {
             get
             {
-                return _tile;
+                return _column;
+            }
+        }
+        public int row
+        {
+            get
+            {
+                return _row;
             }
         }
 
@@ -73,8 +82,9 @@ namespace GameJS
                 result += "\"x\":" + _x + "";
                 result += ",\"y\":" + _y + "";
                 result += ",\"z\":" + _z + "";
-                result += ",\"tileset\":" + _tileset + "";
-                result += ",\"tile\":" + _tile + "";
+                result += ",\"tileset\":\"" + _tileset + "\"";
+                result += ",\"column\":" + _column + "";
+                result += ",\"row\":" + _row + "";
                 result += "}";
                 return result;
             }
