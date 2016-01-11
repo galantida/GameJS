@@ -13,11 +13,13 @@ namespace GameJS
     public class clsMap
     {
         // map objects
+        private clsDatabase _db;
         private clsTiles _tiles;
 
-        public clsMap(string path) 
+        public clsMap(clsDatabase db) 
         {
-            _tiles = new clsTiles(path + "tiles.bmp");
+            _db = db;
+            _tiles = new clsTiles(_db);
         }
 
         public clsTiles tiles 

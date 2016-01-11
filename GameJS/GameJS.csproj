@@ -38,6 +38,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="MySql.Data, Version=6.9.8.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL" />
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Core" />
@@ -63,7 +64,7 @@
     <Content Include="client\objects\clsTileset.js" />
     <Content Include="client\objects\clsGround.js" />
     <Content Include="client\styles\clsGround.css" />
-    <Content Include="services\GameServices.aspx" />
+    <Content Include="server\services\GameServices.aspx" />
     <Content Include="client\html\game.html" />
     <Content Include="packages.config" />
     <Content Include="client\objects\clsDisplayPanel.js" />
@@ -77,13 +78,12 @@
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="objects\clsFile.cs" />
-    <Compile Include="objects\clsMap.cs" />
-    <Compile Include="objects\clsTile.cs" />
-    <Compile Include="objects\clsTileFile.cs" />
-    <Compile Include="objects\clsTiles.cs" />
-    <Compile Include="objects\clsWorld.cs" />
-    <Compile Include="services\GameServices.aspx.cs">
+    <Compile Include="server\objects\clsDatabase.cs" />
+    <Compile Include="server\objects\clsMap.cs" />
+    <Compile Include="server\objects\clsTile.cs" />
+    <Compile Include="server\objects\clsTiles.cs" />
+    <Compile Include="server\objects\clsWorld.cs" />
+    <Compile Include="server\services\GameServices.aspx.cs">
       <DependentUpon>GameServices.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
