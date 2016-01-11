@@ -56,6 +56,19 @@ namespace GameJS
             return tiles;
         }
 
+        public static string toJSON(List<clsTile> tiles)
+        {
+            string delimiter = "";
+            string JSON = "[";
+            foreach (clsTile tile in tiles)
+            {
+                JSON += delimiter + tile.toJSON();
+                delimiter = ",";
+            }
+            JSON += "]";
+            return JSON;
+        }
+
         // will merge elevation information in later
         public List<clsTile> getTiles(int x1, int y1, int x2, int y2)
         {
@@ -92,8 +105,5 @@ namespace GameJS
         {
             return this.getTiles(x1, y1, x1, y1);
         }
-
-        // could add functions for getting columns row and single tiles
-
     }
 }

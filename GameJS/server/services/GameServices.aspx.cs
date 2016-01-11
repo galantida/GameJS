@@ -50,16 +50,7 @@ namespace GameJS
                         int y2 = getNumericParameter("y2");
 
                         clsWorld world = new clsWorld();
-                        List<clsTile> tiles = world.map.tiles.getTiles(x1, y1, x2, y2);
-
-                        string delimiter = "";
-                        string JSON = "[";
-                        foreach (clsTile tile in tiles) {
-                            JSON += delimiter + tile.toJSON();
-                            delimiter = ",";
-                        }
-                        JSON += "]";
-
+                        string JSON = clsTiles.toJSON(world.map.tiles.getTiles(x1, y1, x2, y2));
                         sendResponse("getTiles", "{x1:" + x1 + ",y1:" + y1 + ",x2:" + x2 + ",y2:" + y2 + "}", JSON);
                         break;
                     }

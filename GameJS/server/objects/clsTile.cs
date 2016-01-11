@@ -16,7 +16,7 @@ namespace GameJS
         public int y { get; set; }
         public int z { get; set; }
         public string tileset { get; set; }
-        public int column { get; set; }
+        public int col { get; set; }
         public int row { get; set; }
 
         public clsTile()
