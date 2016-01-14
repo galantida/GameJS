@@ -62,5 +62,12 @@ namespace GameJS
             command.CommandText = queryString;
             return command.ExecuteReader();
         }
+
+        public int execute(string queryString)
+        {
+            MySqlCommand command = _conn.CreateCommand();
+            command.CommandText = queryString;
+            return command.ExecuteNonQuery();
+        }
     }
 }

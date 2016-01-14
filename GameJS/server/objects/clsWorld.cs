@@ -10,13 +10,22 @@ namespace GameJS
     public class clsWorld
     {
         // map objects
-        private clsDatabase _db;
+        public clsDatabase db {get; set; }
         private clsMap _map;
 
-        public clsWorld()
+        public clsWorld(string name, string password)
         {
-            _db = new clsDatabase("testdatabase","IBMs3666");
-            _map = new clsMap(_db);
+            this.db = new clsDatabase(name, password);
+        }
+
+        public void start()
+        {
+            this.db.open();
+        }
+
+        public void stop()
+        {
+            this.db.close();
         }
 
         public clsMap map
@@ -27,5 +36,28 @@ namespace GameJS
             }
         }
 
+        // will merge elevation information in later
+        public List<clsTile> getTiles(int x1, int y1, int x2, int y2)
+        {
+            clsTile tile = new clsTile(this.db);
+            return tile.getTiles(x1,y1,x2,y2);
+        }
+
+        public clsTile getTile(int x1, int y1)
+        {
+            List<clsTile> tiles = this.getTiles(x1, y1, x1, y1);
+            if (tiles.Count > 0) return tiles[0];
+            else return null;
+        }
+
+        public List<clsTile> getRow(int x1, int x2, int y1)
+        {
+            return this.getTiles(x1, y1, x2, y1);
+        }
+
+        public List<clsTile> getCol(int x1, int y1, int y2)
+        {
+            return this.getTiles(x1, y1, x1, y1);
+        }
     }
 }

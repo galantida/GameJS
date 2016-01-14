@@ -14,20 +14,10 @@ namespace GameJS
     {
         // map objects
         private clsDatabase _db;
-        private clsTiles _tiles;
 
         public clsMap(clsDatabase db) 
         {
             _db = db;
-            _tiles = new clsTiles(_db);
-        }
-
-        public clsTiles tiles 
-        { 
-            get 
-            { 
-                return _tiles; 
-            } 
         }
     }
 }

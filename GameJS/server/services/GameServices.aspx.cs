@@ -19,6 +19,9 @@ namespace GameJS
             //if (myAccount != null) sessionUserName = myAccount.eMail;
             //else sendResponse("Error", "Logon expired."); 
 
+            string name = "testdatabase";
+            string password = "IBMs3666";
+
 
             /****** web services ******/
             string command = getStringParameter("cmd");
@@ -37,8 +40,39 @@ namespace GameJS
                         int x = getNumericParameter("x");
                         int y = getNumericParameter("y");
 
-                        clsWorld world = new clsWorld();
-                        sendResponse("getTile", "{x:" + x + ",y:" + y + "}", world.map.tiles.getTile(x, y).toJSON());
+                        clsWorld world = new clsWorld(name, password);
+                        world.start();
+                        string JSON = world.getTile(x, y).toJSON();
+                        world.stop();
+                        sendResponse("getTile", "{x:" + x + ",y:" + y + "}", JSON);
+                        break;
+                    }
+                case "SETTILE":
+                    {
+                        // read requested coordinate
+                        int id = getNumericParameter("id");
+                        int x = getNumericParameter("x");
+                        int y = getNumericParameter("y");
+                        int z = getNumericParameter("z");
+                        int tilesetId = getNumericParameter("tilesetId");
+                        int col = getNumericParameter("col");
+                        int row = getNumericParameter("row");
+
+
+                        clsWorld world = new clsWorld(name, password);
+                        world.start();
+                        clsTile tile = new clsTile(world.db);
+                        tile.id = id;
+                        tile.x = x;
+                        tile.y = y;
+                        tile.z = z;
+                        tile.tilesetId = tilesetId;
+                        tile.col = col;
+                        tile.row = row;
+                        tile.save();
+                        string JSON = tile.toJSON();
+                        world.stop();
+                        sendResponse("setTile", "{x:" + x + ",y:" + y + "}", JSON);
                         break;
                     }
                 case "GETTILES":
@@ -49,8 +83,10 @@ namespace GameJS
                         int x2 = getNumericParameter("x2");
                         int y2 = getNumericParameter("y2");
 
-                        clsWorld world = new clsWorld();
-                        string JSON = clsTiles.toJSON(world.map.tiles.getTiles(x1, y1, x2, y2));
+                        clsWorld world = new clsWorld(name,password);
+                        world.start();
+                        string JSON = clsTile.toJSON(world.getTiles(x1, y1, x2, y2));
+                        world.stop();
                         sendResponse("getTiles", "{x1:" + x1 + ",y1:" + y1 + ",x2:" + x2 + ",y2:" + y2 + "}", JSON);
                         break;
                     }
@@ -62,37 +98,15 @@ namespace GameJS
                         int x1 = getNumericParameter("x1");
                         int x2 = getNumericParameter("x2");
                         int y = getNumericParameter("y");
-
-                        // validate input data
-                        if (x1 > x2) 
-                        {
-                            int tmp = x1;
-                            x1 = x2;
-                            x2 = tmp;
-                        }
-
-                        string result = "";
-                        result += "{";
-                        result += "\"tiles\":";
-                        result += "[";
-
-                        clsWorld world = new clsWorld();
-                        List<clsTile> tiles = world.map.tiles.getTiles(y, x1, x2, y);
-
-                        string comma = "";
-                        foreach (clsTile tile in tiles)
-                        {
-                            result += comma + tile.toJSON();
-                            comma = ",";
-                        }
-
-                        result += "]";
-                        result += "}";
-
-                        Response.Write(result);
+                        
+                        clsWorld world = new clsWorld(name, password);
+                        world.start();
+                        string JSON = clsTile.toJSON(world.getRow(x1, x2, y));
+                        world.stop();
+                        sendResponse("getRow", "{x1:" + x1 + ",x2:" + x2 + ",y:" + y + "}", JSON);
                         break;
                     }
-                case "GETTILECOLUMN":
+                case "GETTILECOL":
                     {
                         // return tileno and elevation given world coordinate
 
@@ -101,34 +115,11 @@ namespace GameJS
                         int y1 = getNumericParameter("y1", true);
                         int y2 = getNumericParameter("y2", true);
 
-                        // validate input data
-                        if (y1 > y2)
-                        {
-                            int tmp = y1;
-                            y1 = y2;
-                            y2 = tmp;
-                        }
-
-                        string result = "";
-                        result += "{";
-                        result += "\"tiles\":";
-                        result += "[";
-
-                        clsWorld world = new clsWorld();
-                        List<clsTile> tiles = world.map.tiles.getTiles(y1, x, x, y2);
-
-                        string comma = "";
-                        foreach (clsTile tile in tiles)
-                        {
-                            result += comma + tile.toJSON();
-                            comma = ",";
-                        }
-
-                        result += "]";
-                        result += "}";
-
-                        Response.Write(result);
-                        break;
+                        clsWorld world = new clsWorld(name, password);
+                        world.start();
+                        string JSON = clsTile.toJSON(world.getCol(x, y1, y2));
+                        world.stop();
+                        sendResponse("getCol", "{x:" + x + ",y1:" + y1 + ",y2:" + y2 + "}", JSON); break;
                     }
                 default:
                     {
