@@ -1,4 +1,7 @@
-﻿function clsTileset(name, tileSize, width, height) {
+﻿// report version
+console.log("=== included clsTileset.js ver 0.1 ===");
+
+function clsTileset(name, tileSize, width, height) {
     this.name = name;
     this.tileSize = tileSize;
     this.width = width;

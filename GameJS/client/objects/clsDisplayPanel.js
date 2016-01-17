@@ -1,4 +1,14 @@
-﻿function clsDisplayPanel(id, x, y, width, height) {
+﻿/*******************************************************************
+    Display Panel - The display panel is used as a generic portal container
+    the plan is add functionality here once 
+    so that other portals can benifit
+********************************************************************/
+
+
+// report version
+console.log("=== included clsDisplayPanel.js ver 0.1 ===");
+
+function clsDisplayPanel(id, x, y, width, height) {
     // create display element
     this.element = document.createElement("div");
     this.element.setAttribute("id", id);

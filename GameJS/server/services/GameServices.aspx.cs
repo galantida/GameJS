@@ -24,14 +24,14 @@ namespace GameJS
 
 
             /****** web services ******/
-            string command = getStringParameter("cmd");
-            if (command == null) command = "";
+            string callName = getStringParameter("callName");
+            if (callName == null) callName = "";
 
             // record request
             //clsEventLog.entry(EntryType.Request, command + " - (" + sessionUserName + "@" + Request.UserHostAddress + ")", Request.Url.ToString(), clsUtil.fileNameFromPath(Request.PhysicalPath));
 
             // process command first since that is the only parameter I can be sure of
-            switch (command.ToUpper())
+            switch (callName.ToUpper())
             {
                 // return tile object - image, elevation
                 case "GETTILE":
@@ -40,9 +40,12 @@ namespace GameJS
                         int x = getNumericParameter("x");
                         int y = getNumericParameter("y");
 
+                        
                         clsWorld world = new clsWorld(name, password);
                         world.start();
-                        string JSON = world.getTile(x, y).toJSON();
+                        clsTile tile = world.getTile(x, y);
+                        string JSON = "null";
+                        if (tile != null) JSON = tile.toJSON();
                         world.stop();
                         sendResponse("getTile", "{x:" + x + ",y:" + y + "}", JSON);
                         break;
@@ -124,8 +127,8 @@ namespace GameJS
                 default:
                     {
                         // handling invalid commands
-                        if (command == "") sendResponse("Error", "Command is a required parameter.");
-                        else sendResponse("Error", "'" + command + "' is not a valid command.");
+                        if (callName == "") sendResponse("Error", "callName is a required parameter.");
+                        else sendResponse("Error", "'" + callName + "' is not a valid call.");
                         break;
                     }
             }
@@ -133,12 +136,12 @@ namespace GameJS
         }
 
         // standard place for all responses to be sent from
-        private void sendResponse(string summary, string description, string obj = "null")
+        private void sendResponse(string callName, string details, string obj = "null")
         {
             //clsEventLog.entry(EntryType.Response, summary + " (" + sessionUserName + " @ " + Request.UserHostAddress + ")", description, "session.aspx");
             Response.Write("{");
-            Response.Write("\"summary\":\"" + summary + "\"");
-            Response.Write(",\"details\":\"" + description + "\"");
+            Response.Write("\"callName\":\"" + callName + "\"");
+            Response.Write(",\"details\":\"" + details + "\"");
             Response.Write(",\"compiled\":\"" + DateTime.Now + "\"");
             Response.Write(",\"content\":" + obj);
             Response.Write("}");

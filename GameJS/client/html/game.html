@@ -12,11 +12,13 @@
 </html>
 
 <script src="../scripts/utils.js"></script>
+<script src="../scripts/wsInterface.js"></script>
 <script src="../objects/clsVector2D.js"></script>
-<script src="../objects/clsTileset.js"></script>
+<script src="../objects/clsClient.js"></script>
 <script src="../objects/clsWorldView.js"></script>
 <script src="../objects/clsDisplayPanel.js"></script>
 <script src="../objects/clsGround.js"></script>
+<script src="../objects/clsTileset.js"></script>
 
 <script>
     // http://www.html5rocks.com/en/tutorials/dnd/basics/
@@ -38,31 +40,38 @@
 
 <script type="text/javascript">
 
-    // data objects
-    var world = {}
-    world.player = new clsVector2D(0, 0);
+    /*******************************************************************
+        Game Interface
+        handles user input from the keyboard and mouse
+        handles data input from the game server
+    ********************************************************************/
 
-    // display objects
-    var playerPanel;
-    
-    // globals
-    var heartBeat;
+    // gloabl data objects
+    var client = new clsClient(); // client interface
 
     function setup() {
-
-        playerPanel = new clsWorldView(50, 50, 640, 480);
-        // playerPanel2 = new clsWorldView(250, 250, 320, 200); testing only
-
-        // this will have to do something at some point
-        playerPanel.worldLocation = new clsVector2D(12, 0);
         
         // start game loop
-        heartBeat = setInterval(function () { gameLoop(); }, 1000 / 10);
+        client.heartBeat = setInterval(function () { gameLoop(); }, 1000 / 10);
     }
 
-    function gameLoop() {
-        playerPanel.process();
+    function JSONResponseHandler(response) {
+
+        switch (response.callName) {
+            case "getTiles":
+                {
+                    client.worldView.ground.displayTiles(response.content);
+                    break;
+                }
+            default:
+                {
+                    console.log("ERROR: unidentified response ignored.");
+                    break;
+                }
+        }
     }
+
+    
 
     function keyDownHandler(event) {
 
@@ -73,49 +82,49 @@
             case 36:
                 {
                     // up left
-                    playerPanel.ground.shiftTiles(-1, -1);
+                    client.worldView.ground.shiftTiles(-1, -1);
                     break;
                 }
             case 38:
                 {
                     // up
-                    playerPanel.ground.shiftTiles(0, -1);
+                    client.worldView.ground.shiftTiles(0, -1);
                     break;
                 }
             case 33:
                 {
                     // up right
-                    playerPanel.ground.shiftTiles(+1, -1);
+                    client.worldView.ground.shiftTiles(+1, -1);
                     break;
                 }
             case 37:
                 {
                     // left
-                    playerPanel.ground.shiftTiles(-1, 0);
+                    client.worldView.ground.shiftTiles(-1, 0);
                     break;
                 }
             case 39:
                 {
                     // right
-                    playerPanel.ground.shiftTiles(+1, 0);
+                    client.worldView.ground.shiftTiles(+1, 0);
                     break;
                 }
             case 35:
                 {
                     // down left
-                    playerPanel.ground.shiftTiles(-1, +1);
+                    client.worldView.ground.shiftTiles(-1, +1);
                     break;
                 }
             case 40:
                 {
                     // down
-                    playerPanel.ground.shiftTiles(0, +1);
+                    client.worldView.ground.shiftTiles(0, +1);
                     break;
                 }
             case 34:
                 {
                     // down right
-                    playerPanel.ground.shiftTiles(+1, +1);
+                    client.worldView.ground.shiftTiles(+1, +1);
                     break;
                 }
             default:
@@ -123,6 +132,19 @@
                     //alert("event.keyCode" + event.keyCode);
                 }
         }
+    }
+
+    function tileOnClick(elementID) {
+        console.log("Clicked tile elementID '" + elementID + "'");
+
+        var tmp = elementID.split("-");
+        var screenLocation = new clsVector2D(Number(tmp[0]), Number(tmp[1]));
+        var worldLocation = client.worldView.ground.screenToWorld(screenLocation);
+        client.playerMoveRequest(worldLocation.x, worldLocation.y);
+    }
+
+    function gameLoop() {
+        client.process();
     }
 
     setup();

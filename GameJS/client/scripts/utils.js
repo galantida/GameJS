@@ -1,4 +1,8 @@
-﻿var utils = { // utils namespace
+﻿// report version
+console.log("=== included utils.js ver 0.1 ===");
+
+
+var utils = { // utils namespace
 
     wrap: function (value, min, max) {
         while (value > max) value -= max;

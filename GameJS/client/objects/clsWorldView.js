@@ -1,28 +1,34 @@
-﻿function clsWorldView(x, y, width, height) {
+﻿/*******************************************************************
+    World View - This is a portal view in to the game world
+    the goal is to design it so that you can have more then one running
+********************************************************************/
 
-    // create display panel 
-    this.displayPanel = new clsDisplayPanel("playerPanel", x, y, width, height);
+// report version
+console.log("=== included clsWorldView.js ver 0.1 ===");
 
-    // add the landscape to the bufer
+function clsWorldView(screenx, screeny, width, height) {
+
+    // world view properties
+    this.screenx = screenx;
+    this.screeny = screeny;
+    this.width = width;
+    this.height = height;
+
+
+    // world view display panel
+    this.displayPanel = new clsDisplayPanel("playerPanel", screenx, screeny, width, height);
+
+    // make a new ground object in the panel the display panel
     this.ground = new clsGround(this.displayPanel);
 }
 
-clsWorldView.prototype.screenToWorld = function (screenLocation) {
-    result = new clsVector2D(0, 0);
-    result.x = display.worldLocation.x + screenLocation.x;
-    result.y = display.worldLocation.y + screenLocation.y;
-    return result;
-}
-
-clsWorldView.prototype.worldToScreen = function (worldLocation) {
-    result = new clsVector2D(0, 0);
-    result.x = display.worldLocation.x - screenLocation.x;
-    result.y = display.worldLocation.y - screenLocation.y;
-    return result;
+clsWorldView.prototype.jumpToLocation = function (worldx, worldy) {
+    this.ground.jumpToLocation(worldx, worldy);
 }
 
 clsWorldView.prototype.process = function () {
-    this.displayPanel.process();
-    this.ground.process();
+    
 }
+
+
 
