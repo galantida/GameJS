@@ -7,10 +7,10 @@
     <link href="../styles/clsGround.css" rel="stylesheet" />
 </head>
 <body onkeydown="keyDownHandler(event)" ondrop="drop(event)" ondragover="allowDrop(event)">
-    
 </body>
 </html>
 
+<script src="../scripts/jquery-2.2.0.min.js"></script>
 <script src="../scripts/utils.js"></script>
 <script src="../scripts/wsInterface.js"></script>
 <script src="../objects/clsVector2D.js"></script>
@@ -19,6 +19,7 @@
 <script src="../objects/clsDisplayPanel.js"></script>
 <script src="../objects/clsGround.js"></script>
 <script src="../objects/clsTileset.js"></script>
+
 
 <script>
     // http://www.html5rocks.com/en/tutorials/dnd/basics/
@@ -137,16 +138,44 @@
     function tileOnClick(elementID) {
         console.log("Clicked tile elementID '" + elementID + "'");
 
+        // get info about the click
         var tmp = elementID.split("-");
-        var screenLocation = new clsVector2D(Number(tmp[0]), Number(tmp[1]));
-        var worldLocation = client.worldView.ground.screenToWorld(screenLocation);
-        client.playerMoveRequest(worldLocation.x, worldLocation.y);
+        var screenLocation = new clsVector2D(Number(tmp[0]), Number(tmp[1])); // get screen location clicked
+        var worldLocation = client.worldView.ground.screenToWorld(screenLocation); // get world location clicked
+
+        // which click type was it
+        var rightclick;
+        if (!e) var e = window.event;
+        if (e.which) rightclick = (e.which == 3);
+        else if (e.button) rightclick = (e.button == 2);
+
+
+        if (rightclick == true) {
+            // right click
+            var col = Math.floor(Math.random() * 9);
+            var row = Math.floor(Math.random() * 7);
+            
+            client.setTile(worldLocation.x, worldLocation.y, 0, col, row);
+            alert("changed");
+            client.playerMoveRequest(worldLocation.x, worldLocation.y);
+        }
+        else {
+            // left click
+
+            // reload with new location as center
+            client.playerMoveRequest(worldLocation.x, worldLocation.y);
+        }
+
+        //return false; // don't show default right click menu
     }
+
 
     function gameLoop() {
         client.process();
     }
 
     setup();
+    
 </script>
+
 

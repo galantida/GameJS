@@ -64,6 +64,7 @@
     <Content Include="client\objects\clsTileset.js" />
     <Content Include="client\objects\clsGround.js" />
     <Content Include="client\objects\clsClient.js" />
+    <Content Include="client\scripts\jquery-2.2.0.min.js" />
     <Content Include="client\scripts\wsInterface.js" />
     <Content Include="client\styles\clsGround.css" />
     <Content Include="server\services\GameServices.aspx" />

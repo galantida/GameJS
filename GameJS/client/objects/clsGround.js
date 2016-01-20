@@ -59,7 +59,7 @@ clsGround.prototype.createTiles = function () {
     for (var y = 0; y < this.buffer.size ; y++) {
         for (var x = 0; x < this.buffer.size; x++) {
             // create tile div element
-            var ele = this.createDiv(x + "-" + y, "clsGround tile");
+            var ele = this.createDiv(x + "-" + y, "clsGround tile context-menu-one btn btn-neutral");
             ele.style.left = (((x * .5) - (y * .5)) * this.tileset.displayWidth) + "px";
             ele.style.top = (((x * .5) + (y * .5)) * this.tileset.displayHeight) + "px";
             ele.onmousedown = function () { tileOnClick(this.id); };
@@ -195,6 +195,9 @@ clsGround.prototype.shiftTiles = function (shiftx, shifty) {
         }
         y += yinc;
     }
+
+    // request update
+
 }
 
 clsGround.prototype.ScrollToTileLocation = function (tileID) {

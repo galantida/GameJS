@@ -188,6 +188,13 @@ namespace GameJS
                                 // add unquoted type property to json string
                                 return propertyInfo.GetValue(this, null).ToString();
                             }
+                        case "System.DateTime":
+                            {
+                                // add quoted type property to json string
+                                DateTime dt = Convert.ToDateTime(propertyInfo.GetValue(this, null));
+                                string text = dt.ToString("yyyy-MM-dd HH:mm:ss");
+                                return "'" + text + "'";
+                            }
 
                         default:
                             {

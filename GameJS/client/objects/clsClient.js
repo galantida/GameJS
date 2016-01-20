@@ -29,9 +29,23 @@ clsClient.prototype.playerMoveRequest = function(worldx, worldy) {
     var worldViewx = this.player.x - (this.worldView.ground.buffer.size / 2)
     var worldViewy = this.player.y - (this.worldView.ground.buffer.size / 2)
 
-    console.log("Move Top Left cornor of World View to location (" + worldViewx + ", " + worldViewy + ")");
-
     this.worldView.jumpToLocation(worldViewx, worldViewy);
+}
+
+// sets the ground to a specified location
+clsClient.prototype.setTile = function (worldx, worldy, tilesetId, col, row) {
+
+    console.log("Saving tile...");
+
+    // update/create a tile
+    // {"id ":1,"x":0,"y":0,"z":0,"tilesetId ":0,"col":0,"row ":0}
+    var tile = {"x":worldx, "y":worldy, "tileset": tilesetId, "col": col, "row": row }
+
+    var paramObj = tile;
+    paramObj.callName = "setTile";
+
+    // request tiles
+    wsi.requestJSONInfo(paramObj, JSONResponseHandler);
 }
 
 clsClient.prototype.process = function () {

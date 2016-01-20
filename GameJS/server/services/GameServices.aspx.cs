@@ -5,6 +5,7 @@ using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 using System.IO;
+using System.Reflection;
 
 namespace GameJS
 {
@@ -52,30 +53,29 @@ namespace GameJS
                     }
                 case "SETTILE":
                     {
-                        // read requested coordinate
-                        int id = getNumericParameter("id");
-                        int x = getNumericParameter("x");
-                        int y = getNumericParameter("y");
-                        int z = getNumericParameter("z");
-                        int tilesetId = getNumericParameter("tilesetId");
-                        int col = getNumericParameter("col");
-                        int row = getNumericParameter("row");
-
-
+                        // connect to world db
                         clsWorld world = new clsWorld(name, password);
                         world.start();
                         clsTile tile = new clsTile(world.db);
-                        tile.id = id;
-                        tile.x = x;
-                        tile.y = y;
-                        tile.z = z;
-                        tile.tilesetId = tilesetId;
-                        tile.col = col;
-                        tile.row = row;
+
+                        // populate properties
+                        int t;
+                        foreach (PropertyInfo propertyInfo in tile.GetType().GetProperties())
+                        {
+                            if (parameterExists(propertyInfo.Name))
+                            {
+                                t = getNumericParameter(propertyInfo.Name);
+                                propertyInfo.SetValue(tile, t);
+                            }
+
+                        }
+
                         tile.save();
+                        world.stop(); // close world db
+
+                        // formulate response
                         string JSON = tile.toJSON();
-                        world.stop();
-                        sendResponse("setTile", "{x:" + x + ",y:" + y + "}", JSON);
+                        sendResponse("setTile", "{x:" + tile.x + ",y:" + tile.y + "}", JSON);
                         break;
                     }
                 case "GETTILES":
@@ -146,6 +146,13 @@ namespace GameJS
             Response.Write(",\"content\":" + obj);
             Response.Write("}");
             Response.End();
+        }
+
+        private bool parameterExists(string name)
+        {
+            string value = Request.QueryString[name];
+            if (value == null) return false;
+            else return true;
         }
 
         private string getStringParameter(string name, bool required = false)
