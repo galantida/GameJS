@@ -157,7 +157,7 @@
             
             client.setTile(worldLocation.x, worldLocation.y, 0, col, row);
             alert("changed");
-            client.playerMoveRequest(worldLocation.x, worldLocation.y);
+            client.worldView.refresh();
         }
         else {
             // left click

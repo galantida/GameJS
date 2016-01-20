@@ -26,6 +26,10 @@ clsWorldView.prototype.jumpToLocation = function (worldx, worldy) {
     this.ground.jumpToLocation(worldx, worldy);
 }
 
+clsWorldView.prototype.refresh = function () {
+    this.ground.jumpToLocation(this.ground.world.x, this.ground.world.y);
+}
+
 clsWorldView.prototype.process = function () {
     
 }
