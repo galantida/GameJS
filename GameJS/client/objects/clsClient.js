@@ -12,27 +12,31 @@ function clsClient() {
 
     // settings
     this.player = new clsVector2D(0, 0);
+    this.playerMoveTarget = new clsVector2D(0, 0); // world coordinates to scroll
 
     this.worldView = new clsWorldView(350, 150, 320, 200);
+    //this.worldView = new clsWorldView(350, 150, 640, 480);
+
     // playerPanel2 = new clsWorldView(250, 250, 320, 200); testing only
 
     this.worldView.jumpToLocation(this.player.x, this.player.y);
 }
 
-clsClient.prototype.playerMoveRequest = function(worldx, worldy) {
-    console.log("Player move request to world location (" + worldx + ", " + worldy + ")");
+clsClient.prototype.setPlayerLocation = function (worldx, worldy) {
+    console.log("Setting player to location (" + worldx + ", " + worldy + ")");
 
     this.player.x = worldx;
     this.player.y = worldy;
 
-    // jump view to center this world location
-    var worldViewx = this.player.x - (this.worldView.ground.buffer.size / 2)
-    var worldViewy = this.player.y - (this.worldView.ground.buffer.size / 2)
+    this.playerMoveTarget.x = worldx;
+    this.playerMoveTarget.y = worldy;
 
-    this.worldView.jumpToLocation(worldViewx, worldViewy);
+    // display new player location
+    this.worldView.jumpToLocation(this.player.x, this.player.y);
 }
 
-// sets the ground to a specified location
+
+// sets a tile to a specific graphics
 clsClient.prototype.setTile = function (worldx, worldy, tilesetId, col, row) {
 
     console.log("Saving tile...");
@@ -49,6 +53,32 @@ clsClient.prototype.setTile = function (worldx, worldy, tilesetId, col, row) {
 }
 
 clsClient.prototype.process = function () {
+
+    // process player moving
+    if ((this.player.x != this.playerMoveTarget.x) || (this.player.y != this.playerMoveTarget.y)) {
+
+        console.log("Moving player from (" + this.player.x + "," + this.player.y + ") to (" + this.playerMoveTarget.x + "," + this.playerMoveTarget.y + ")");
+
+        // move player in the right direction
+        var shiftx = this.player.x - this.playerMoveTarget.x;
+        if (shiftx > 0) shiftx = -1;
+        else if (shiftx < 0) shiftx = 1;
+
+        var shifty = this.player.y - this.playerMoveTarget.y;
+        if (shifty > 0) shifty = -1;
+        else if (shifty < 0) shifty = 1;
+
+        this.player.x += shiftx;
+        this.player.y += shifty;
+    }
+    
+
+    // set world view target
+    if ((this.worldView.location.x != this.player.x) || (this.worldView.location.y != this.player.y)) {
+        // move player toward the desired location
+        this.worldView.moveTowardLocation(this.player.x, this.player.y);
+    }
+
     this.worldView.process();
 }
 

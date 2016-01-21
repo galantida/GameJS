@@ -17,7 +17,6 @@ function clsGround(displayPanel) {
     this.tileset = new clsTileset("yarsTileset.png", 64, 10, 12); // load tileset
     this.buffer = this.createBuffer(displayPanel); // create and position buffer element based on screen size and position
     this.createTiles(); // create random map this will be a JSON map load in the future
-    this.desiredShift = new clsVector2D(0, 0); // screen coordinates to scroll to
 }
 
 /**********************************************
@@ -63,7 +62,7 @@ clsGround.prototype.createTiles = function () {
             ele.style.left = (((x * .5) - (y * .5)) * this.tileset.displayWidth) + "px";
             ele.style.top = (((x * .5) + (y * .5)) * this.tileset.displayHeight) + "px";
             ele.onmousedown = function () { tileOnClick(this.id); };
-            //ele.onmouseover = function () { console.log(this.id); };
+            //ele.onmouseover = function () { console.log("(" + this.id + ")"); };
             this.buffer.element.appendChild(ele); // add the tile element to the buffer
 
             // add to array for faster access
@@ -105,25 +104,31 @@ clsGround.prototype.screenToWorld = function (screenLocation) {
     screen usage function
 ***********************************************/
 
-// sets the ground to a specified location
-clsGround.prototype.clearTiles = function () {
-    // create html tile elements
-    for (var y = 0; y < this.buffer.size ; y++) {
-        for (var x = 0; x < this.buffer.size; x++) {
+// sets all ground tiles in a specificed area to tile 0,0
+clsGround.prototype.clearArea = function (x1, y1, x2, y2) {
+    console.log("clearing area (" + x1 + "," + y1 + " - " + x2 + ", " + y2 + ")");
+    for (var y = y1; y <= y2 ; y++) {
+        for (var x = x1; x <= x2; x++) {
             var ele = document.getElementById(x + "-" + y);
             ele.style.backgroundPosition = "0em 0em";
         }
     }
 }
 
+clsGround.prototype.clearAll = function (x1, y1, x2, y2) {
+    this.clearArea(0, 0, this.buffer.size-1, this.buffer.size-1);
+}
 
-// sets the ground to a specified location
+
+// sets the top left of the ground ground to a specified world location
 clsGround.prototype.jumpToLocation = function (worldx, worldy) {
     console.log("Jumping top left of view to world location (" + worldx + ", " + worldy + ")");
 
     // set new world location
     this.world.x = worldx;
     this.world.y = worldy;
+
+    this.clearAll(); // clear all existing tiles
 
     // pre calculate bottom right tiles for speed.
     var worldx2 = this.world.x + this.buffer.size - 1;
@@ -133,6 +138,8 @@ clsGround.prototype.jumpToLocation = function (worldx, worldy) {
     wsi.requestJSONInfo({ "callName": "getTiles", "x1": worldx, "y1": worldy, "x2": worldx2, "y2": worldy2 }, JSONResponseHandler);
 }
 
+
+// this is used to display the tile array received from the server
 clsGround.prototype.displayTiles = function (tiles) {
     console.log("Updating ground tiles with new tile list...");
 
@@ -140,26 +147,25 @@ clsGround.prototype.displayTiles = function (tiles) {
     /* transition:background-position linear 1000ms; // recall in */
 
     // update new ground tiles
-    this.clearTiles(); // clear all ground tiles
     for (var t = 0; t < tiles.length; t++) {
         var screenLocation = this.worldToScreen(new clsVector2D(tiles[t].x, tiles[t].y));
         var ele = document.getElementById(screenLocation.x + "-" + screenLocation.y);
+        // only update tiles that have not yet scrolled off the buffer
         if (ele != null) {
-            //console.log("updating " + screenLocation.x + "-" + screenLocation.y + ".");
             // add support for tile sets later
             ele.style.backgroundPosition = "-" + tiles[t].col + "em -" + tiles[t].row + "em";
-        }
-        else {
-            // skipping tiles that are nolonger visible
-            //console.log("skipping " + screenLocation.x + "-" + screenLocation.y + ".");
         }
     }
 }
 
-
+// scroll the entire landscape one tile in any direction
 clsGround.prototype.shiftTiles = function (shiftx, shifty) {
 
     console.log("Shifting tiles... (" + shiftx + ", " + shifty + ")");
+
+    // set new world location
+    this.world.x += shiftx;
+    this.world.y += shifty;
 
     // determine the best copy direction based on the y shift direction
     var yfrom = 0;
@@ -188,50 +194,50 @@ clsGround.prototype.shiftTiles = function (shiftx, shifty) {
         // loop the the columns(x)
         var x = xfrom;
         while (((x >= xfrom) && (x <= xto)) || ((x <= xfrom) && (x >= xto))) {
-            var xdes = utils.wrap(x + shiftx, 0, this.buffer.size - 1);
-            var ydes = utils.wrap(y + shifty, 0, this.buffer.size - 1);
-            this.tiles[x][y].element.style.backgroundPosition = this.tiles[xdes][ydes].element.style.backgroundPosition;
+            var xsource = utils.wrap(x + shiftx, 0, this.buffer.size - 1);
+            var ysource = utils.wrap(y + shifty, 0, this.buffer.size - 1);
+            this.tiles[x][y].element.style.backgroundPosition = this.tiles[xsource][ysource].element.style.backgroundPosition;
             x += xinc;
         }
         y += yinc;
     }
 
     // request update
+    var last = this.buffer.size - 1; // last row or column. They are the same because its a square.
+
+    if (shiftx == 1) {
+        // request last row
+        var worldRow1 = this.screenToWorld(new clsVector2D(last, 0));
+        var worldRow2 = this.screenToWorld(new clsVector2D(last, last));
+        this.clearArea(last, 0, last, last);
+        wsi.requestJSONInfo({ "callName": "getTiles", "x1": worldRow1.x, "y1": worldRow1.y, "x2": worldRow2.x, "y2": worldRow2.y }, JSONResponseHandler);
+    } else if (shiftx == -1) {
+        // request first row
+        var worldRow1 = this.screenToWorld(new clsVector2D(0, 0));
+        var worldRow2 = this.screenToWorld(new clsVector2D(0, last));
+        this.clearArea(0, 0, 0, last);
+        wsi.requestJSONInfo({ "callName": "getTiles", "x1": worldRow1.x, "y1": worldRow1.y, "x2": worldRow2.x, "y2": worldRow2.y }, JSONResponseHandler);
+    }
+
+    if (shifty == 1) {
+        // request last col
+        var worldCol1 = this.screenToWorld(new clsVector2D(0, last));
+        var worldCol2 = this.screenToWorld(new clsVector2D(last, last));
+        this.clearArea(0, last, last, last);
+        wsi.requestJSONInfo({ "callName": "getTiles", "x1": worldCol1.x, "y1": worldCol1.y, "x2": worldCol2.x, "y2": worldCol2.y }, JSONResponseHandler);
+    } else if (shifty == -1) {
+        // request first col
+        var worldCol1 = this.screenToWorld(new clsVector2D(0, 0));
+        var worldCol2 = this.screenToWorld(new clsVector2D(last, 0));
+        this.clearArea(0, 0, last, 0);
+        wsi.requestJSONInfo({ "callName": "getTiles", "x1": worldCol1.x, "y1": worldCol1.y, "x2": worldCol2.x, "y2": worldCol2.y }, JSONResponseHandler);
+    }
 
 }
-
-clsGround.prototype.ScrollToTileLocation = function (tileID) {
-    var location = tileID.split("-");
-    var bufferCenter = Math.floor(this.buffer.size / 2);
-    this.desiredShift.x = location[0] - bufferCenter;
-    this.desiredShift.y = location[1] - bufferCenter;
-}
-
-
 
 
 clsGround.prototype.process = function () {
 
-    if ((this.desiredShift.x != 0) || (this.desiredShift.y != 0)) {
-        var shiftx = 0;
-        if (this.desiredShift.x > 0) {
-            this.desiredShift.x--;
-            shiftx = 1;
-        } else if (this.desiredShift.x < 0) {
-            this.desiredShift.x++;
-            shiftx = -1;
-        }
-
-        var shifty = 0;
-        if (this.desiredShift.y > 0) {
-            this.desiredShift.y--;
-            shifty = 1;
-        } else if (this.desiredShift.y < 0) {
-            this.desiredShift.y++;
-            shifty = -1;
-        }
-
-        this.shiftTiles(shiftx, shifty);
-    }
+   
 }
 
