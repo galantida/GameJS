@@ -14,8 +14,8 @@ function clsClient() {
     this.player = new clsVector2D(0, 0);
     this.playerMoveTarget = new clsVector2D(0, 0); // world coordinates to scroll
 
-    this.worldView = new clsWorldView(350, 150, 320, 200);
-    //this.worldView = new clsWorldView(350, 150, 640, 480);
+    //this.worldView = new clsWorldView(350, 150, 320, 200);
+    this.worldView = new clsWorldView(350, 150, 640, 480);
 
     // playerPanel2 = new clsWorldView(250, 250, 320, 200); testing only
 
@@ -36,7 +36,7 @@ clsClient.prototype.setPlayerLocation = function (worldx, worldy) {
 }
 
 
-// sets a tile to a specific graphics
+// sets a tile to a specific graphic
 clsClient.prototype.setTile = function (worldx, worldy, tilesetId, col, row) {
 
     console.log("Saving tile...");
@@ -57,7 +57,7 @@ clsClient.prototype.process = function () {
     // process player moving
     if ((this.player.x != this.playerMoveTarget.x) || (this.player.y != this.playerMoveTarget.y)) {
 
-        console.log("Moving player from (" + this.player.x + "," + this.player.y + ") to (" + this.playerMoveTarget.x + "," + this.playerMoveTarget.y + ")");
+        console.log("Moving player from (" + this.player.x + "," + this.player.y + ") toward (" + this.playerMoveTarget.x + "," + this.playerMoveTarget.y + ")");
 
         // move player in the right direction
         var shiftx = this.player.x - this.playerMoveTarget.x;

@@ -11,11 +11,11 @@ function clsWorldView(screenx, screeny, width, height) {
     // world view display panel
     this.displayPanel = new clsDisplayPanel("playerPanel", screenx, screeny, width, height);
 
-    // make a new ground object in the panel the display panel
-    this.ground = new clsGround(this.displayPanel);
-
     // locations
     this.location = new clsVector2D(0, 0); // world coordinate the view is currently centered on
+
+    // make a new ground object in the panel the display panel
+    this.ground = new clsGround(this.displayPanel);
 }
 
 // center view on a specific location
@@ -59,7 +59,8 @@ clsWorldView.prototype.moveTowardLocation = function (worldx, worldy) {
 
 
 clsWorldView.prototype.process = function () {
-   
+    this.displayPanel.process();
+    this.ground.process();
     
 }
 
