@@ -64,7 +64,7 @@ namespace GameJS
 
 
         // will merge elevation information in later
-        public List<clsTile> getTiles(int x1, int y1, int x2, int y2)
+        public List<clsTile> getTiles(int x1, int y1, int x2, int y2, DateTime? modified = null)
         {
             if (x1 > x2)
             {
@@ -80,7 +80,15 @@ namespace GameJS
                 y2 = y;
             }
 
-            return this.getList("SELECT * FROM tiles WHERE x>=" + x1 + " AND y>=" + y1 + " AND x<=" + x2 + " AND y<=" + y2 + " ORDER BY x, y, z;");
+            // date format for mySQL = '1/19/2016 9:14:03 PM'
+            string sql = "SELECT * FROM tiles WHERE x>=" + x1 + " AND y>=" + y1 + " AND x<=" + x2 + " AND y<=" + y2;
+            if (modified != null)
+            {
+                DateTime dt = (DateTime)modified;
+                sql += " AND modified > '" + dt.ToString("yyyy-MM-dd HH:mm:ss") + "'";
+            }
+            sql += " ORDER BY x, y, z;";
+            return this.getList(sql);
         }
     }
 }

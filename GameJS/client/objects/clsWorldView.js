@@ -32,9 +32,9 @@ clsWorldView.prototype.jumpToLocation = function (worldx, worldy) {
 }
 
 // refresh all tiles
-clsWorldView.prototype.refresh = function () {
-    console.log("refresh using jump.");
-    this.ground.jumpToLocation(this.ground.world.x, this.ground.world.y);
+clsWorldView.prototype.update = function () {
+    console.log("update world view.");
+    this.ground.update();
 }
 
 

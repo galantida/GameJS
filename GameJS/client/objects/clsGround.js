@@ -12,11 +12,19 @@ function clsGround(displayPanel) {
 
     // properties
     this.world = new clsVector2D(0, 0);
+    this.worldBottomRight = new clsVector2D(0, 0);
+
+    // inner workings
+    this.lastUpdate = new Date();
 
     // initializations
     this.tileset = new clsTileset("yarsTileset.png", 64, 10, 12); // load tileset
     this.buffer = this.createBuffer(displayPanel); // create and position buffer element based on screen size and position
     this.createTiles(); // create random map this will be a JSON map load in the future
+}
+
+clsGround.prototype.worldBottomRight = function () {
+    
 }
 
 /**********************************************
@@ -125,17 +133,13 @@ clsGround.prototype.jumpToLocation = function (worldx, worldy) {
     console.log("Jumping top left of view to world location (" + worldx + ", " + worldy + ")");
 
     // set new world location
-    this.world.x = worldx;
-    this.world.y = worldy;
+    this.world = new clsVector2D(worldx, worldy);
+    this.worldBottomRight = new clsVector2D(this.world.x + this.buffer.size - 1, this.world.y + this.buffer.size - 1);
 
     this.clearAll(); // clear all existing tiles
 
-    // pre calculate bottom right tiles for speed.
-    var worldx2 = this.world.x + this.buffer.size - 1;
-    var worldy2 = this.world.y + this.buffer.size - 1;
-
     // request tiles
-    wsi.requestJSONInfo({ "callName": "getTiles", "x1": worldx, "y1": worldy, "x2": worldx2, "y2": worldy2 }, JSONResponseHandler);
+    wsi.requestJSONInfo({ "callName": "getTiles", "x1": worldx, "y1": worldy, "x2": this.worldBottomRight.x, "y2": this.worldBottomRight.y }, JSONResponseHandler);
 }
 
 
@@ -164,8 +168,8 @@ clsGround.prototype.shiftTiles = function (shiftx, shifty) {
     console.log("Shifting tiles... (" + shiftx + ", " + shifty + ")");
 
     // set new world location
-    this.world.x += shiftx;
-    this.world.y += shifty;
+    this.world = new clsVector2D(this.world.x += shiftx, this.world.y += shifty);
+    this.worldBottomRight = new clsVector2D(this.world.x + this.buffer.size - 1, this.world.y + this.buffer.size - 1);
 
     // determine the best copy direction based on the y shift direction
     var yfrom = 0;
@@ -235,9 +239,18 @@ clsGround.prototype.shiftTiles = function (shiftx, shifty) {
 
 }
 
+clsGround.prototype.update = function () {
+    console.log("Requesting tiles modified since " + this.lastUpdate + " in (" + this.world.x + "," + this.world.y + " - " + this.worldBottomRight.x + "," + this.worldBottomRight.y + ")");
+    wsi.requestJSONInfo({ "callName": "getTiles", "x1": this.world.x, "y1": this.world.y, "x2": this.worldBottomRight.x, "y2": this.worldBottomRight.y, "modified": utils.wsFriendlyDateTime(this.lastUpdate) }, JSONResponseHandler);
+    this.lastUpdate = new Date();
+}
+
 
 clsGround.prototype.process = function () {
 
-   
+    // refresh modified tiles since last update
+    if ((new Date() - this.lastUpdate) > 5000) {
+        this.update();
+    }
 }
 

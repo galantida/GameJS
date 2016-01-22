@@ -85,44 +85,14 @@ namespace GameJS
                         int y1 = getNumericParameter("y1");
                         int x2 = getNumericParameter("x2");
                         int y2 = getNumericParameter("y2");
+                        DateTime? modified = getDateTimeParameter("modified");
 
                         clsWorld world = new clsWorld(name,password);
                         world.start();
-                        string JSON = clsTile.toJSON(world.getTiles(x1, y1, x2, y2));
+                        string JSON = clsTile.toJSON(world.getTiles(x1, y1, x2, y2, modified));
                         world.stop();
                         sendResponse("getTiles", "{x1:" + x1 + ",y1:" + y1 + ",x2:" + x2 + ",y2:" + y2 + "}", JSON);
                         break;
-                    }
-                case "GETTILEROW":
-                    {
-                        // return tileno and elevation given world coordinate
-
-                        // read requested coordinate
-                        int x1 = getNumericParameter("x1");
-                        int x2 = getNumericParameter("x2");
-                        int y = getNumericParameter("y");
-                        
-                        clsWorld world = new clsWorld(name, password);
-                        world.start();
-                        string JSON = clsTile.toJSON(world.getRow(x1, x2, y));
-                        world.stop();
-                        sendResponse("getRow", "{x1:" + x1 + ",x2:" + x2 + ",y:" + y + "}", JSON);
-                        break;
-                    }
-                case "GETTILECOL":
-                    {
-                        // return tileno and elevation given world coordinate
-
-                        // read requested coordinate
-                        int x = getNumericParameter("x", true);
-                        int y1 = getNumericParameter("y1", true);
-                        int y2 = getNumericParameter("y2", true);
-
-                        clsWorld world = new clsWorld(name, password);
-                        world.start();
-                        string JSON = clsTile.toJSON(world.getCol(x, y1, y2));
-                        world.stop();
-                        sendResponse("getCol", "{x:" + x + ",y1:" + y1 + ",y2:" + y2 + "}", JSON); break;
                     }
                 default:
                     {
@@ -160,6 +130,25 @@ namespace GameJS
             string value = Request.QueryString[name];
             if ((required == true) && (value == null)) sendResponse("Error", "'" + name + "' parameter is required.");
             return value;
+        }
+
+        private DateTime? getDateTimeParameter(string name, bool required = false)
+        {
+            DateTime? result = null;
+            string value = Request.QueryString[name];
+            if ((required == true) && (value == null)) sendResponse("Error", "'" + name + "' parameter is required.");
+            if (value != null)
+            {
+                try
+                {
+                    result = Convert.ToDateTime(value);
+                }
+                catch (InvalidCastException e) 
+                {
+                    sendResponse("Error", "Invalid date format in '" + name + "' parameter.");
+                }
+            }
+            return result;
         }
 
         private int getNumericParameter(string name, bool required = false)

@@ -14,5 +14,9 @@ var utils = { // utils namespace
         var tmp = valueA;
         valueA = valueB;
         valueB = tmp;
+    },
+
+    wsFriendlyDateTime: function (dateTime) {
+        return (dateTime.getMonth() + 1) + '/' + dateTime.getDate() + '/' + dateTime.getFullYear() + " " + dateTime.getHours() + ":" + dateTime.getMinutes() + ":" + dateTime.getSeconds();
     }
 };

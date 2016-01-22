@@ -37,10 +37,10 @@ namespace GameJS
         }
 
         // will merge elevation information in later
-        public List<clsTile> getTiles(int x1, int y1, int x2, int y2)
+        public List<clsTile> getTiles(int x1, int y1, int x2, int y2, DateTime? modified = null)
         {
             clsTile tile = new clsTile(this.db);
-            return tile.getTiles(x1,y1,x2,y2);
+            return tile.getTiles(x1,y1,x2,y2, modified);
         }
 
         public clsTile getTile(int x1, int y1)
@@ -48,16 +48,6 @@ namespace GameJS
             List<clsTile> tiles = this.getTiles(x1, y1, x1, y1);
             if (tiles.Count > 0) return tiles[0];
             else return null;
-        }
-
-        public List<clsTile> getRow(int x1, int x2, int y1)
-        {
-            return this.getTiles(x1, y1, x2, y1);
-        }
-
-        public List<clsTile> getCol(int x1, int y1, int y2)
-        {
-            return this.getTiles(x1, y1, x1, y1);
         }
     }
 }

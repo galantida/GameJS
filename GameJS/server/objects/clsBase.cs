@@ -192,8 +192,7 @@ namespace GameJS
                             {
                                 // add quoted type property to json string
                                 DateTime dt = Convert.ToDateTime(propertyInfo.GetValue(this, null));
-                                string text = dt.ToString("yyyy-MM-dd HH:mm:ss");
-                                return "'" + text + "'";
+                                return "'" + dt.ToString("yyyy-MM-dd HH:mm:ss") + "'";
                             }
 
                         default:
