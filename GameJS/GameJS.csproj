@@ -67,7 +67,7 @@
     <Content Include="client\scripts\jquery-2.2.0.min.js" />
     <Content Include="client\scripts\wsInterface.js" />
     <Content Include="client\styles\clsGround.css" />
-    <Content Include="server\mySQLScripts\mySQL.txt" />
+    <Content Include="server\dbScripts\mySQL.txt" />
     <Content Include="server\services\GameServices.aspx" />
     <Content Include="client\html\game.html" />
     <Content Include="packages.config" />
