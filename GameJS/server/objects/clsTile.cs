@@ -64,8 +64,11 @@ namespace GameJS
 
 
         // will merge elevation information in later
-        public List<clsTile> getTiles(int x1, int y1, int x2, int y2, DateTime? modified = null)
+        public List<clsTile> getTiles(int x1, int y1, int x2 = 0, int y2 = 0, DateTime? modified = null)
         {
+            if (x2 == 0) x2 = x1;
+            if (y2 == 0) y2 = y1;
+
             if (x1 > x2)
             {
                 int x = x1;

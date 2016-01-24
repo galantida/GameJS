@@ -37,7 +37,9 @@ namespace GameJS
 
         protected int execute(string sqlQuery)
         {
+            _db.open();
             int result = _db.execute(sqlQuery);
+            _db.close();
             return result;
         }
 
@@ -52,7 +54,9 @@ namespace GameJS
         // get an object from database based on query
         protected object get(string sqlQuery, Type type)
         {
+            _db.open(); 
             object obj = get(_db.query(sqlQuery), type);
+            _db.close();
             return obj;
         }
 
@@ -60,7 +64,9 @@ namespace GameJS
         protected List<object> getList(string sqlQuery, Type type)
         {
             // get sqlDataReader from dbCon and copy it to generic list so we can close the connection
+            _db.open();
             List<object> results = getList(_db.query(sqlQuery), type);
+            _db.close();
             return results;
         }
 
@@ -86,7 +92,10 @@ namespace GameJS
         // load this object with the first record in the DB that matches the query
         public bool load(string sqlQuery)
         {
-            return this.load(_db.query(sqlQuery));
+            _db.open();
+            bool result = this.load(_db.query(sqlQuery));
+            _db.close();
+            return result;
         }
 
         // load this object with the record in the DB with the same ID
@@ -100,6 +109,8 @@ namespace GameJS
         {
             string sql, names = "", values = "", where = "", delimiter;
             int result = 0;
+
+            _db.open(); // open DB connection
 
             if (this.id == 0)
             {
@@ -133,7 +144,7 @@ namespace GameJS
                 delimiter = "";
                 foreach (var propertyInfo in this.GetType().GetProperties())
                 {
-                    if (propertyInfo.Name != "ID")
+                    if (propertyInfo.Name != "id")
                     {
                         where += delimiter + propertyInfo.Name + "=" + getProperty(propertyInfo.Name);
                         delimiter = " AND ";
@@ -143,6 +154,7 @@ namespace GameJS
                 // build query string for read back statment
                 MySqlDataReader dr = _db.query("SELECT * FROM " + this.tableName + "s WHERE " + where + ";");
                 this.load(dr);
+                dr.Close();
             }
             else
             {
@@ -164,7 +176,15 @@ namespace GameJS
                 sql += " WHERE ID = " + this.id + ";";
 
                 result = _db.execute(sql);
+
+                // build query string for read back statment
+                MySqlDataReader dr = _db.query("SELECT * FROM " + this.tableName + "s WHERE id=" + this.id + ";");
+                this.load(dr);
+                dr.Close();
             }
+
+            _db.close(); // close DB connection
+
             return result;
         }
 
@@ -254,7 +274,6 @@ namespace GameJS
                         }
                 }
             }
-
             return true;
         }
         

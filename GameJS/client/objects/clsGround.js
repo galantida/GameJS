@@ -53,8 +53,8 @@ clsGround.prototype.createBuffer = function (displayPanel) {
 clsGround.prototype.createTiles = function () {
     console.log("Creating ground tiles...");
 
-    // create tile array
-    this.tiles = new Array(this.buffer.size); // create row array
+    // create tile array for faster access
+    this.tiles = new Array(this.buffer.size); // create row array with global scope
     for (var x = 0; x < this.buffer.size; x++) {
         this.tiles[x] = new Array(this.buffer.size); // add column array to each row
         for (var y = 0; y < this.buffer.size; y++) {
@@ -65,15 +65,27 @@ clsGround.prototype.createTiles = function () {
     // create html tile elements
     for (var y = 0; y < this.buffer.size ; y++) {
         for (var x = 0; x < this.buffer.size; x++) {
+
             // create tile div element
-            var ele = this.createDiv(x + "-" + y, "clsGround tile context-menu-one btn btn-neutral");
-            ele.style.left = (((x * .5) - (y * .5)) * this.tileset.displayWidth) + "px";
-            ele.style.top = (((x * .5) + (y * .5)) * this.tileset.displayHeight) + "px";
+            var ele = this.createDiv(x + "-" + y, "clsGround tile");
+
+            // set dataset properties
+            ele.dataset.x = x;
+            ele.dataset.y = y;
+            ele.dataset.defaultLeft = (((x * .5) - (y * .5)) * this.tileset.displayWidth);
+            ele.dataset.defaultTop = (((x * .5) + (y * .5)) * this.tileset.displayHeight);
+
+            // set element properties
+            ele.style.left = ele.dataset.defaultLeft + "px";
+            ele.style.top = ele.dataset.defaultTop + "px";
+
+            // set element events
             ele.onmousedown = function () { tileOnClick(this.id); };
+            ele.addEventListener("contextmenu", function (e) { e.preventDefault(); });
             //ele.onmouseover = function () { console.log("(" + this.id + ")"); };
             this.buffer.element.appendChild(ele); // add the tile element to the buffer
 
-            // add to array for faster access
+            // add element to array for faster access
             this.tiles[x][y].element = ele;
         }
     }
@@ -119,6 +131,9 @@ clsGround.prototype.clearArea = function (x1, y1, x2, y2) {
         for (var x = x1; x <= x2; x++) {
             var ele = document.getElementById(x + "-" + y);
             ele.style.backgroundPosition = "0em 0em";
+            ele.style.top = ele.dataset.defaultTop;
+            ele.style.left = ele.dataset.defaultLeft;
+            ele.dataset.z = 0;
         }
     }
 }
@@ -143,7 +158,8 @@ clsGround.prototype.jumpToLocation = function (worldx, worldy) {
 }
 
 
-// this is used to display the tile array received from the server
+// given a list of world tiles this will refresh their counter parts on the screen if they are still visible
+// this is run for all responses from the server that return updated tile information
 clsGround.prototype.displayTiles = function (tiles) {
     console.log("Updating ground tiles with new tile list...");
 
@@ -156,8 +172,10 @@ clsGround.prototype.displayTiles = function (tiles) {
         var ele = document.getElementById(screenLocation.x + "-" + screenLocation.y);
         // only update tiles that have not yet scrolled off the buffer
         if (ele != null) {
+            ele.dataset.z = tiles[t].z; // the the elevation to the element dataset
+            ele.style.backgroundPosition = "-" + tiles[t].col + "em -" + tiles[t].row + "em"; // display proper tile
+            ele.style.top = (Number(ele.dataset.defaultTop) + Number(ele.dataset.z) * 32) + "px";
             // add support for tile sets later
-            ele.style.backgroundPosition = "-" + tiles[t].col + "em -" + tiles[t].row + "em";
         }
     }
 }
@@ -200,7 +218,15 @@ clsGround.prototype.shiftTiles = function (shiftx, shifty) {
         while (((x >= xfrom) && (x <= xto)) || ((x <= xfrom) && (x >= xto))) {
             var xsource = utils.wrap(x + shiftx, 0, this.buffer.size - 1);
             var ysource = utils.wrap(y + shifty, 0, this.buffer.size - 1);
-            this.tiles[x][y].element.style.backgroundPosition = this.tiles[xsource][ysource].element.style.backgroundPosition;
+
+            // copy data set infromation
+            this.tiles[x][y].element.dataset.z = this.tiles[xsource][ysource].element.dataset.z;
+
+            // copy tile information
+            this.tiles[x][y].element.style.backgroundPosition = this.tiles[xsource][ysource].element.style.backgroundPosition; // set background
+
+            // set new top value based on this screen tiles default location and its new world elevation
+            this.tiles[x][y].element.style.top = (Number(this.tiles[x][y].element.dataset.defaultTop) + Number(this.tiles[x][y].element.dataset.z) * 32) + "px";
             x += xinc;
         }
         y += yinc;
@@ -249,8 +275,8 @@ clsGround.prototype.update = function () {
 clsGround.prototype.process = function () {
 
     // refresh modified tiles since last update
-    if ((new Date() - this.lastUpdate) > 5000) {
-        this.update();
+    if ((new Date() - this.lastUpdate) > 3000) {
+        this.update(); // remember tile deletion is not an update since it will not have a modified record.
     }
 }
 

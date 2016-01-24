@@ -34,29 +34,17 @@ namespace GameJS
             // process command first since that is the only parameter I can be sure of
             switch (callName.ToUpper())
             {
-                // return tile object - image, elevation
-                case "GETTILE":
-                    {
-                        // read requested coordinate
-                        int x = getNumericParameter("x");
-                        int y = getNumericParameter("y");
-
-                        
-                        clsWorld world = new clsWorld(name, password);
-                        world.start();
-                        clsTile tile = world.getTile(x, y);
-                        string JSON = "null";
-                        if (tile != null) JSON = tile.toJSON();
-                        world.stop();
-                        sendResponse("getTile", "{x:" + x + ",y:" + y + "}", JSON);
-                        break;
-                    }
                 case "SETTILE":
                     {
+                        int x = getNumericParameter("x");
+                        int y = getNumericParameter("y");
+                        
                         // connect to world db
                         clsWorld world = new clsWorld(name, password);
-                        world.start();
-                        clsTile tile = new clsTile(world.db);
+
+                        // locate existing can't find tile then create new one
+                        clsTile tile = world.getTile(x, y);
+                        if (tile == null) tile = new clsTile(world.db);
 
                         // populate properties
                         int t;
@@ -69,29 +57,74 @@ namespace GameJS
                             }
 
                         }
-
-                        tile.save();
-                        world.stop(); // close world db
+                        tile.save(); // this will save a new or update and exisitng tile
 
                         // formulate response
                         string JSON = tile.toJSON();
-                        sendResponse("setTile", "{x:" + tile.x + ",y:" + tile.y + "}", JSON);
+                        sendResponse("setTile", "{x:" + tile.x + ",y:" + tile.y + "}","[" + JSON + "]");
                         break;
                     }
                 case "GETTILES":
                     {
                         // read requested coordinate
-                        int x1 = getNumericParameter("x1");
-                        int y1 = getNumericParameter("y1");
+                        int x1 = getNumericParameter("x1", true);
+                        int y1 = getNumericParameter("y1", true);
                         int x2 = getNumericParameter("x2");
                         int y2 = getNumericParameter("y2");
                         DateTime? modified = getDateTimeParameter("modified");
 
                         clsWorld world = new clsWorld(name,password);
-                        world.start();
                         string JSON = clsTile.toJSON(world.getTiles(x1, y1, x2, y2, modified));
-                        world.stop();
                         sendResponse("getTiles", "{x1:" + x1 + ",y1:" + y1 + ",x2:" + x2 + ",y2:" + y2 + "}", JSON);
+                        break;
+                    }
+                case "SETTILES":
+                    {
+                        // read requested coordinate
+                        int x1 = getNumericParameter("x1",true);
+                        int y1 = getNumericParameter("y1", true);
+                        int x2 = getNumericParameter("x2", true);
+                        int y2 = getNumericParameter("y2", true);
+                        int z = getNumericParameter("z");
+                        int tilesetId = getNumericParameter("tilesetId", true);
+                        int col = getNumericParameter("col", true);
+                        int row = getNumericParameter("row", true);
+
+                        // connect to world db
+                        clsWorld world = new clsWorld(name, password);
+
+                        clsTile tile;
+                        List<clsTile> tiles = new List<clsTile>();
+                        string JSON = "[";
+                        string delimiter = "";
+                        //Random random = new Random();
+                        for (int y = y1; y <= y2; y++)
+                        {
+                            for (int x = x1; x <= x2; x++)
+                            {
+                                // locate existing can't find tile then create new one
+                                tile = world.getTile(x, y);
+                                if (tile == null) tile = new clsTile(world.db);
+                                    
+                                tile.x = x;
+                                tile.y = y;
+                                tile.z = x % 3;
+
+                                tile.tilesetId = tilesetId;
+                                tile.col = col;
+                                tile.row = row;
+                                
+                                tile.save();
+                                tiles.Add(tile);
+                                JSON += delimiter + tile.toJSON();
+                                delimiter = ",";
+                            }
+                        }
+
+                        JSON += "]";
+
+                        // formulate response
+                        sendResponse("setTiles", "{x1:" + x1 + ",y1:" + y1 + ",x2:" + x2 + ",y2:" + y2 + "}", JSON);
                         break;
                     }
                 default:

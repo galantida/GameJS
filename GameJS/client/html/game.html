@@ -60,6 +60,7 @@
 
         switch (response.callName) {
             case "getTiles":
+            case "setTile":
                 {
                     client.worldView.ground.displayTiles(response.content);
                     break;
@@ -152,12 +153,12 @@
 
         if (rightclick == true) {
             // right click
-            var col = Math.floor(Math.random() * 9);
+            var col = Math.floor(Math.random() * 10);
             var row = Math.floor(Math.random() * 7);
+            row = 1;
             
             client.setTile(worldLocation.x, worldLocation.y, 0, col, row);
-            alert("changed");
-            client.worldView.update();
+            //alert("changed");
         }
         else {
             // left click
@@ -167,6 +168,7 @@
         }
 
         //return false; // don't show default right click menu
+        e.preventDefault();
     }
 
 

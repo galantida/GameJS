@@ -18,16 +18,6 @@ namespace GameJS
             this.db = new clsDatabase(name, password);
         }
 
-        public void start()
-        {
-            this.db.open();
-        }
-
-        public void stop()
-        {
-            this.db.close();
-        }
-
         public clsMap map
         {
             get

@@ -14,10 +14,9 @@ function clsClient() {
     this.player = new clsVector2D(0, 0);
     this.playerMoveTarget = new clsVector2D(0, 0); // world coordinates to scroll
 
-    //this.worldView = new clsWorldView(350, 150, 320, 200);
     this.worldView = new clsWorldView(350, 150, 640, 480);
 
-    // playerPanel2 = new clsWorldView(250, 250, 320, 200); testing only
+    
 
     this.worldView.jumpToLocation(this.player.x, this.player.y);
 }
