@@ -19,11 +19,8 @@ namespace GameJS
         public int tilesetId { get; set; }
         public int col { get; set; }
         public int row { get; set; }
-        //protected clsDatabase db {get; set; }
 
-        public clsTile(clsDatabase db) : base(db) {
-           // this.db = db;
-        }
+        public clsTile(clsDatabase db) : base(db) { }
         public clsTile(clsDatabase db, MySqlDataReader dr) : base(db, dr) { }
 
         public static string toJSON(List<clsTile> tiles)

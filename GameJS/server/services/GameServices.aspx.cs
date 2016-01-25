@@ -97,7 +97,7 @@ namespace GameJS
                         List<clsTile> tiles = new List<clsTile>();
                         string JSON = "[";
                         string delimiter = "";
-                        //Random random = new Random();
+                        Random random = new Random();
                         for (int y = y1; y <= y2; y++)
                         {
                             for (int x = x1; x <= x2; x++)
@@ -108,10 +108,10 @@ namespace GameJS
                                     
                                 tile.x = x;
                                 tile.y = y;
-                                tile.z = x % 3;
+                                tile.z = random.Next(1, 4);
 
                                 tile.tilesetId = tilesetId;
-                                tile.col = col;
+                                tile.col = random.Next(1, 4);
                                 tile.row = row;
                                 
                                 tile.save();

@@ -18,7 +18,7 @@ function clsGround(displayPanel) {
     this.lastUpdate = new Date();
 
     // initializations
-    this.tileset = new clsTileset("yarsTileset.png", 64, 10, 12); // load tileset
+    this.tileset = new clsTileset("cubes.png", 64, 10, 12); // load tileset
     this.buffer = this.createBuffer(displayPanel); // create and position buffer element based on screen size and position
     this.createTiles(); // create random map this will be a JSON map load in the future
 }
@@ -173,7 +173,7 @@ clsGround.prototype.displayTiles = function (tiles) {
         // only update tiles that have not yet scrolled off the buffer
         if (ele != null) {
             ele.dataset.z = tiles[t].z; // the the elevation to the element dataset
-            ele.style.backgroundPosition = "-" + tiles[t].col + "em -" + tiles[t].row + "em"; // display proper tile
+            ele.style.backgroundPosition = "-2em 0em,"  + "-" + tiles[t].col + "em -" + tiles[t].row + "em"; // display proper tile
             ele.style.top = (Number(ele.dataset.defaultTop) + Number(ele.dataset.z) * 32) + "px";
             // add support for tile sets later
         }
