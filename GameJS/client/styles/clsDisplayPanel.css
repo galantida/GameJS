@@ -2,6 +2,7 @@
 {
     font-size:64px;
     border:1px solid blue;
-    //position:absolute;
+    display:inline-block;
     overflow:hidden;
+    margin:5px;
 }

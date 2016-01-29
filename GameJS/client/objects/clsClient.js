@@ -15,6 +15,7 @@ function clsClient() {
     this.playerMoveTarget = new clsVector2D(0, 0); // world coordinates to scroll
 
     this.worldView = new clsWorldView(350, 150, 640, 480);
+    this.packView = new clsContainerView(350, 150, 240, 480);
 
     
 
@@ -36,18 +37,18 @@ clsClient.prototype.setPlayerLocation = function (worldx, worldy) {
 
 
 // sets a tile to a specific graphic
-clsClient.prototype.setTile = function (worldx, worldy, tilesetId, col, row) {
+clsClient.prototype.setCube = function (worldx, worldy, csId, csCol, csRow, tsId, tsCol, tsRow) {
 
-    console.log("Saving tile...");
+    console.log("Saving cube...");
 
     // update/create a tile
     // {"id ":1,"x":0,"y":0,"z":0,"tilesetId ":0,"col":0,"row ":0}
-    var tile = {"x":worldx, "y":worldy, "tileset": tilesetId, "col": col, "row": row }
+    var tile = { "x": worldx, "y": worldy, "csId": csId, "csCol": csCol, "csRow": csRow, "tsId": tsId, "tsCol": tsRow, "tsRow": tsCol }
 
     var paramObj = tile;
-    paramObj.callName = "setTile";
+    paramObj.callName = "setCube";
 
-    // request tiles
+    // request cube
     wsi.requestJSONInfo(paramObj, JSONResponseHandler);
 }
 

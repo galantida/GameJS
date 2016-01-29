@@ -27,16 +27,16 @@ namespace GameJS
         }
 
         // will merge elevation information in later
-        public List<clsTile> getTiles(int x1, int y1, int x2, int y2, DateTime? modified = null)
+        public List<clsCube> getCubes(int x1, int y1, int x2, int y2, DateTime? modified = null)
         {
-            clsTile tile = new clsTile(this.db);
-            return tile.getTiles(x1,y1,x2,y2, modified);
+            clsCube cube = new clsCube(this.db);
+            return cube.getCubes(x1,y1,x2,y2, modified);
         }
 
-        public clsTile getTile(int x1, int y1)
+        public clsCube getCube(int x1, int y1)
         {
-            List<clsTile> tiles = this.getTiles(x1, y1, x1, y1);
-            if (tiles.Count > 0) return tiles[0];
+            List<clsCube> cubes = this.getCubes(x1, y1, x1, y1);
+            if (cubes.Count > 0) return cubes[0];
             else return null;
         }
     }

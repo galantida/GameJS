@@ -5,8 +5,10 @@
     <title>JS Game</title>
     <link href="../styles/clsDisplayPanel.css" rel="stylesheet" />
     <link href="../styles/clsGround.css" rel="stylesheet" />
+    <link href="../styles/clsContainer.css" rel="stylesheet" />
 </head>
 <body onkeydown="keyDownHandler(event)" ondrop="drop(event)" ondragover="allowDrop(event)">
+    
 </body>
 </html>
 
@@ -16,9 +18,10 @@
 <script src="../objects/clsVector2D.js"></script>
 <script src="../objects/clsClient.js"></script>
 <script src="../objects/clsWorldView.js"></script>
+<script src="../objects/clsContainerView.js"></script>
 <script src="../objects/clsDisplayPanel.js"></script>
 <script src="../objects/clsGround.js"></script>
-<script src="../objects/clsTileset.js"></script>
+<script src="../objects/clsImageset.js"></script>
 
 
 <script>
@@ -59,10 +62,11 @@
     function JSONResponseHandler(response) {
 
         switch (response.callName) {
-            case "getTiles":
-            case "setTile":
+            case "getCube":
+            case "setCube":
+            case "getCubes":
                 {
-                    client.worldView.ground.displayTiles(response.content);
+                    client.worldView.ground.displayCubes(response.content);
                     break;
                 }
             default:
@@ -136,12 +140,11 @@
         }
     }
 
-    function tileOnClick(elementID) {
-        console.log("Clicked tile elementID '" + elementID + "'");
+    function cubeOnClick(element) {
+        console.log("Clicked tile.");
 
         // get info about the click
-        var tmp = elementID.split("-");
-        var screenLocation = new clsVector2D(Number(tmp[0]), Number(tmp[1])); // get screen location clicked
+        var screenLocation = new clsVector2D(Number(element.dataset.x), Number(element.dataset.y)); // get screen location clicked
         var worldLocation = client.worldView.ground.screenToWorld(screenLocation); // get world location clicked
 
         // which click type was it
@@ -153,11 +156,11 @@
 
         if (rightclick == true) {
             // right click
-            var col = Math.floor(Math.random() * 10);
-            var row = Math.floor(Math.random() * 7);
+            var csCol = Math.floor(Math.random() * 9);
+            var csRow = Math.floor(Math.random() * 2);
             row = 1;
             
-            client.setTile(worldLocation.x, worldLocation.y, 0, col, row);
+            client.setCube(worldLocation.x, worldLocation.y, 0, csCol, csRow);
             //alert("changed");
         }
         else {

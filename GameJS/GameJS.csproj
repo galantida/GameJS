@@ -61,12 +61,14 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="client\objects\clsTileset.js" />
+    <Content Include="client\objects\clsImageset.js" />
     <Content Include="client\objects\clsGround.js" />
     <Content Include="client\objects\clsClient.js" />
+    <Content Include="client\objects\clsContainerView.js" />
     <Content Include="client\scripts\jquery-2.2.0.min.js" />
     <Content Include="client\scripts\wsInterface.js" />
     <Content Include="client\styles\clsGround.css" />
+    <Content Include="client\styles\clsContainer.css" />
     <Content Include="server\dbScripts\mySQL.txt" />
     <Content Include="server\services\GameServices.aspx" />
     <Content Include="client\html\game.html" />
@@ -85,8 +87,8 @@
     <Compile Include="server\objects\clsBase.cs" />
     <Compile Include="server\objects\clsDatabase.cs" />
     <Compile Include="server\objects\clsMap.cs" />
-    <Compile Include="server\objects\clsTile.cs" />
     <Compile Include="server\objects\clsWorld.cs" />
+    <Compile Include="server\objects\clsCube.cs" />
     <Compile Include="server\objects\intBase.cs" />
     <Compile Include="server\services\GameServices.aspx.cs">
       <DependentUpon>GameServices.aspx</DependentUpon>

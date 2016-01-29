@@ -7,6 +7,7 @@
 console.log("=== included clsWorldView.js ver 0.1 ===");
 
 function clsWorldView(screenx, screeny, width, height) {
+    console.log("Creating world view...");
 
     // world view display panel
     this.displayPanel = new clsDisplayPanel("playerPanel", screenx, screeny, width, height);
@@ -16,6 +17,18 @@ function clsWorldView(screenx, screeny, width, height) {
 
     // make a new ground object in the panel the display panel
     this.ground = new clsGround(this.displayPanel);
+}
+
+// refresh all tiles
+clsWorldView.prototype.update = function () {
+    console.log("update world view.");
+    this.ground.update();
+}
+
+clsWorldView.prototype.process = function () {
+    this.displayPanel.process();
+    this.ground.process();
+
 }
 
 // center view on a specific location
@@ -30,13 +43,6 @@ clsWorldView.prototype.jumpToLocation = function (worldx, worldy) {
     var tmpy = worldy - (this.ground.buffer.size / 2);
     this.ground.jumpToLocation(tmpx, tmpy);
 }
-
-// refresh all tiles
-clsWorldView.prototype.update = function () {
-    console.log("update world view.");
-    this.ground.update();
-}
-
 
 // scroll center view on a specific location
 clsWorldView.prototype.moveTowardLocation = function (worldx, worldy) {
@@ -54,15 +60,10 @@ clsWorldView.prototype.moveTowardLocation = function (worldx, worldy) {
     this.location.x += shiftx;
     this.location.y += shifty;
 
-    this.ground.shiftTiles(shiftx, shifty);
+    this.ground.shiftCubes(shiftx, shifty);
 }
 
 
-clsWorldView.prototype.process = function () {
-    this.displayPanel.process();
-    this.ground.process();
-    
-}
 
 
 

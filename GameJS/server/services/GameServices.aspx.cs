@@ -34,7 +34,7 @@ namespace GameJS
             // process command first since that is the only parameter I can be sure of
             switch (callName.ToUpper())
             {
-                case "SETTILE":
+                case "SETCUBE":
                     {
                         int x = getNumericParameter("x");
                         int y = getNumericParameter("y");
@@ -43,28 +43,28 @@ namespace GameJS
                         clsWorld world = new clsWorld(name, password);
 
                         // locate existing can't find tile then create new one
-                        clsTile tile = world.getTile(x, y);
-                        if (tile == null) tile = new clsTile(world.db);
+                        clsCube cube = world.getCube(x, y);
+                        if (cube == null) cube = new clsCube(world.db);
 
                         // populate properties
                         int t;
-                        foreach (PropertyInfo propertyInfo in tile.GetType().GetProperties())
+                        foreach (PropertyInfo propertyInfo in cube.GetType().GetProperties())
                         {
                             if (parameterExists(propertyInfo.Name))
                             {
                                 t = getNumericParameter(propertyInfo.Name);
-                                propertyInfo.SetValue(tile, t);
+                                propertyInfo.SetValue(cube, t);
                             }
 
                         }
-                        tile.save(); // this will save a new or update and exisitng tile
+                        cube.save(); // this will save a new or update and exisitng tile
 
                         // formulate response
-                        string JSON = tile.toJSON();
-                        sendResponse("setTile", "{x:" + tile.x + ",y:" + tile.y + "}","[" + JSON + "]");
+                        string JSON = cube.toJSON();
+                        sendResponse("setCube", "{x:" + cube.x + ",y:" + cube.y + "}","[" + JSON + "]");
                         break;
                     }
-                case "GETTILES":
+                case "GETCUBES":
                     {
                         // read requested coordinate
                         int x1 = getNumericParameter("x1", true);
@@ -74,11 +74,11 @@ namespace GameJS
                         DateTime? modified = getDateTimeParameter("modified");
 
                         clsWorld world = new clsWorld(name,password);
-                        string JSON = clsTile.toJSON(world.getTiles(x1, y1, x2, y2, modified));
-                        sendResponse("getTiles", "{x1:" + x1 + ",y1:" + y1 + ",x2:" + x2 + ",y2:" + y2 + "}", JSON);
+                        string JSON = clsCube.toJSON(world.getCubes(x1, y1, x2, y2, modified));
+                        sendResponse("getCubes", "{x1:" + x1 + ",y1:" + y1 + ",x2:" + x2 + ",y2:" + y2 + "}", JSON);
                         break;
                     }
-                case "SETTILES":
+                case "SETCUBES":
                     {
                         // read requested coordinate
                         int x1 = getNumericParameter("x1",true);
@@ -86,15 +86,19 @@ namespace GameJS
                         int x2 = getNumericParameter("x2", true);
                         int y2 = getNumericParameter("y2", true);
                         int z = getNumericParameter("z");
-                        int tilesetId = getNumericParameter("tilesetId", true);
-                        int col = getNumericParameter("col", true);
-                        int row = getNumericParameter("row", true);
+                        int csId = getNumericParameter("csId", true);
+                        int csCol = getNumericParameter("csCol", true);
+                        int csRow = getNumericParameter("csRow", true);
+                        int tsId = getNumericParameter("tsId", true);
+                        int tsCol = getNumericParameter("tsCol", true);
+                        int tsRow = getNumericParameter("tsRow", true);
+
 
                         // connect to world db
                         clsWorld world = new clsWorld(name, password);
 
-                        clsTile tile;
-                        List<clsTile> tiles = new List<clsTile>();
+                        clsCube cube;
+                        List<clsCube> tiles = new List<clsCube>();
                         string JSON = "[";
                         string delimiter = "";
                         Random random = new Random();
@@ -103,20 +107,24 @@ namespace GameJS
                             for (int x = x1; x <= x2; x++)
                             {
                                 // locate existing can't find tile then create new one
-                                tile = world.getTile(x, y);
-                                if (tile == null) tile = new clsTile(world.db);
+                                cube = world.getCube(x, y);
+                                if (cube == null) cube = new clsCube(world.db);
                                     
-                                tile.x = x;
-                                tile.y = y;
-                                tile.z = random.Next(1, 4);
+                                cube.x = x;
+                                cube.y = y;
+                                cube.z = random.Next(1, 1);
 
-                                tile.tilesetId = tilesetId;
-                                tile.col = random.Next(1, 4);
-                                tile.row = row;
-                                
-                                tile.save();
-                                tiles.Add(tile);
-                                JSON += delimiter + tile.toJSON();
+                                cube.csId = tsId;
+                                cube.csCol = random.Next(0, 9);
+                                cube.csRow = random.Next(0, 1);
+
+                                cube.tsId = tsId;
+                                cube.tsCol = random.Next(0, 4);
+                                cube.tsRow = random.Next(0, 1);
+
+                                cube.save();
+                                tiles.Add(cube);
+                                JSON += delimiter + cube.toJSON();
                                 delimiter = ",";
                             }
                         }
@@ -124,7 +132,7 @@ namespace GameJS
                         JSON += "]";
 
                         // formulate response
-                        sendResponse("setTiles", "{x1:" + x1 + ",y1:" + y1 + ",x2:" + x2 + ",y2:" + y2 + "}", JSON);
+                        sendResponse("setCubes", "{x1:" + x1 + ",y1:" + y1 + ",x2:" + x2 + ",y2:" + y2 + "}", JSON);
                         break;
                     }
                 default:

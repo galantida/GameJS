@@ -14,8 +14,8 @@ function clsDisplayPanel(id, x, y, width, height) {
     this.element.setAttribute("id", id);
     //this.element.setAttribute("draggable", true);
     //this.element.ondragstart = "drag(event)";
-    this.element.style.left = x + "px";
-    this.element.style.top = y + "px";
+    //this.element.style.left = x + "px";
+    //this.element.style.top = y + "px";
     this.element.style.width = width + "px";
     this.element.style.height = height + "px";
     this.element.className = "clsDisplayPanel_panel";

@@ -1,7 +1,7 @@
 ﻿// report version
-console.log("=== included clsTileset.js ver 0.1 ===");
+console.log("=== included clsImageset.js ver 0.1 ===");
 
-function clsTileset(name, tileSize, width, height) {
+function clsImageset(name, tileSize, width, height) {
     this.name = name;
     this.tileSize = tileSize;
     this.width = width;
@@ -11,7 +11,7 @@ function clsTileset(name, tileSize, width, height) {
 }
 
 // example of a function added to the prototype (this.value works)
-clsTileset.prototype.example = function () {
+clsImageset.prototype.example = function () {
     return this.x;
 };
 
