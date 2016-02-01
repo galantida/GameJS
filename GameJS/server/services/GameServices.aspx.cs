@@ -34,37 +34,61 @@ namespace GameJS
             // process command first since that is the only parameter I can be sure of
             switch (callName.ToUpper())
             {
-                case "SETCUBE":
+                case "SETOBJECT":
                     {
                         int x = getNumericParameter("x");
                         int y = getNumericParameter("y");
-                        
+
                         // connect to world db
                         clsWorld world = new clsWorld(name, password);
 
                         // locate existing can't find tile then create new one
-                        clsCube cube = world.getCube(x, y);
-                        if (cube == null) cube = new clsCube(world.db);
+                        clsObject obj = world.getObject(x, y);
+                        if (obj == null) obj = new clsObject(world.db);
 
                         // populate properties
-                        int t;
-                        foreach (PropertyInfo propertyInfo in cube.GetType().GetProperties())
+                        foreach (PropertyInfo propertyInfo in obj.GetType().GetProperties())
                         {
                             if (parameterExists(propertyInfo.Name))
                             {
-                                t = getNumericParameter(propertyInfo.Name);
-                                propertyInfo.SetValue(cube, t);
-                            }
+                                switch (propertyInfo.PropertyType.ToString())
+                                {
+                                    case "System.Boolean":
+                                        {
+                                            // add unquoted bool type property to json string
+                                            //if ((bool)propertyInfo.GetValue(this, null) == true) return "1";
+                                            //else return "0";
+                                            break;
+                                        }
+                                    case "System.Int16":
+                                    case "System.Int32":
+                                        {
+                                            int v = getNumericParameter(propertyInfo.Name);
+                                            propertyInfo.SetValue(obj, v);
+                                            break;
+                                        }
+                                    case "System.DateTime":
+                                        {
+                                            break;
+                                        }
 
+                                    default:
+                                        {
+                                            string v = getStringParameter(propertyInfo.Name);
+                                            propertyInfo.SetValue(obj, v);
+                                            break;
+                                        }
+                                }
+                            }
                         }
-                        cube.save(); // this will save a new or update and exisitng tile
+                        obj.save(); // this will save a new or update and exisitng tile
 
                         // formulate response
-                        string JSON = cube.toJSON();
-                        sendResponse("setCube", "{x:" + cube.x + ",y:" + cube.y + "}","[" + JSON + "]");
+                        string JSON = obj.toJSON();
+                        sendResponse("setObject", "{x:" + obj.x + ",y:" + obj.y + "}", "[" + JSON + "]");
                         break;
                     }
-                case "GETCUBES":
+                case "GETOBJECTS":
                     {
                         // read requested coordinate
                         int x1 = getNumericParameter("x1", true);
@@ -73,32 +97,27 @@ namespace GameJS
                         int y2 = getNumericParameter("y2");
                         DateTime? modified = getDateTimeParameter("modified");
 
-                        clsWorld world = new clsWorld(name,password);
-                        string JSON = clsCube.toJSON(world.getCubes(x1, y1, x2, y2, modified));
-                        sendResponse("getCubes", "{x1:" + x1 + ",y1:" + y1 + ",x2:" + x2 + ",y2:" + y2 + "}", JSON);
+                        clsWorld world = new clsWorld(name, password);
+                        string JSON = clsObject.toJSON(world.getObjects(x1, y1, x2, y2, modified), true);
+                        sendResponse("getObjects", "{x1:" + x1 + ",y1:" + y1 + ",x2:" + x2 + ",y2:" + y2 + "}", JSON);
                         break;
                     }
-                case "SETCUBES":
+                case "SETOBJECTS":
                     {
                         // read requested coordinate
-                        int x1 = getNumericParameter("x1",true);
+                        int x1 = getNumericParameter("x1", true);
                         int y1 = getNumericParameter("y1", true);
                         int x2 = getNumericParameter("x2", true);
                         int y2 = getNumericParameter("y2", true);
                         int z = getNumericParameter("z");
-                        int csId = getNumericParameter("csId", true);
-                        int csCol = getNumericParameter("csCol", true);
-                        int csRow = getNumericParameter("csRow", true);
-                        int tsId = getNumericParameter("tsId", true);
-                        int tsCol = getNumericParameter("tsCol", true);
-                        int tsRow = getNumericParameter("tsRow", true);
-
+                        string pack = getStringParameter("pack", true);
+                        string item = getStringParameter("item", true);
 
                         // connect to world db
                         clsWorld world = new clsWorld(name, password);
 
-                        clsCube cube;
-                        List<clsCube> tiles = new List<clsCube>();
+                        clsObject obj;
+                        List<clsObject> objects = new List<clsObject>();
                         string JSON = "[";
                         string delimiter = "";
                         Random random = new Random();
@@ -107,25 +126,55 @@ namespace GameJS
                             for (int x = x1; x <= x2; x++)
                             {
                                 // locate existing can't find tile then create new one
-                                cube = world.getCube(x, y);
-                                if (cube == null) cube = new clsCube(world.db);
-                                    
-                                cube.x = x;
-                                cube.y = y;
-                                cube.z = random.Next(1, 1);
+                                obj = new clsObject(world.db);
 
-                                cube.csId = tsId;
-                                cube.csCol = random.Next(0, 9);
-                                cube.csRow = random.Next(0, 1);
+                                obj.x = x;
+                                obj.y = y;
+                                obj.z = random.Next(0, 2);
+                                obj.pack = "stone";
+                                switch (random.Next(0, 2))
+                                {
+                                    case 0:
+                                        {
+                                            obj.item = "bedrock1";
+                                            break;
+                                        }
+                                    case 1:
+                                        {
+                                            obj.item = "bedrock2";
+                                            break;
+                                        }
+                                }
 
-                                cube.tsId = tsId;
-                                cube.tsCol = random.Next(0, 4);
-                                cube.tsRow = random.Next(0, 1);
-
-                                cube.save();
-                                tiles.Add(cube);
-                                JSON += delimiter + cube.toJSON();
+                                obj.save();
+                                objects.Add(obj);
+                                JSON += delimiter + obj.toJSON(true);
                                 delimiter = ",";
+
+                                if (obj.z == 0)
+                                {
+                                    // put some dirt on top
+                                    obj = new clsObject(world.db);
+                                    obj.x = x;
+                                    obj.y = y;
+                                    obj.z = 1;
+                                    obj.pack = "stone";
+                                    obj.item = "wetrock1";
+                                    obj.save();
+                                    objects.Add(obj);
+                                    JSON += delimiter + obj.toJSON(true);
+                                }
+
+                                // put some dirt on top
+                                obj = new clsObject(world.db);
+                                obj.x = x;
+                                obj.y = y;
+                                obj.z = 2;
+                                obj.pack = "stone";
+                                obj.item = "bedrockl";
+                                obj.save();
+                                objects.Add(obj);
+                                JSON += delimiter + obj.toJSON(true);
                             }
                         }
 

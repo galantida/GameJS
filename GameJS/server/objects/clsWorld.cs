@@ -39,5 +39,18 @@ namespace GameJS
             if (cubes.Count > 0) return cubes[0];
             else return null;
         }
+
+        public List<clsObject> getObjects(int x1, int y1, int x2, int y2, DateTime? modified = null)
+        {
+            clsObject obj = new clsObject(this.db);
+            return obj.getObjects(x1, y1, x2, y2, modified);
+        }
+
+        public clsObject getObject(int x1, int y1)
+        {
+            List<clsObject> objects = this.getObjects(x1, y1, x1, y1);
+            if (objects.Count > 0) return objects[0];
+            else return null;
+        }
     }
 }

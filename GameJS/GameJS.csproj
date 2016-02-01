@@ -61,6 +61,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="client\packs\stone\stone.css" />
+    <Content Include="client\packs\stone\stone.js" />
+    <Content Include="client\packs\trees\trees.css" />
+    <Content Include="client\packs\trees\trees.js" />
     <Content Include="client\objects\clsImageset.js" />
     <Content Include="client\objects\clsGround.js" />
     <Content Include="client\objects\clsClient.js" />
@@ -89,6 +93,7 @@
     <Compile Include="server\objects\clsMap.cs" />
     <Compile Include="server\objects\clsWorld.cs" />
     <Compile Include="server\objects\clsCube.cs" />
+    <Compile Include="server\objects\clsObject.cs" />
     <Compile Include="server\objects\intBase.cs" />
     <Compile Include="server\services\GameServices.aspx.cs">
       <DependentUpon>GameServices.aspx</DependentUpon>

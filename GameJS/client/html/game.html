@@ -23,6 +23,11 @@
 <script src="../objects/clsGround.js"></script>
 <script src="../objects/clsImageset.js"></script>
 
+<!-- world objects -->
+<script src="../packs/trees/trees.js"></script>
+<script src="../packs/stone/stone.js"></script>
+
+
 
 <script>
     // http://www.html5rocks.com/en/tutorials/dnd/basics/
@@ -54,19 +59,24 @@
     var client = new clsClient(); // client interface
 
     function setup() {
+
+        // import world objects
+        tree.import();
+        stone.import();
         
         // start game loop
-        client.heartBeat = setInterval(function () { gameLoop(); }, 1500 / 10);
+        //client.heartBeat = setInterval(function () { gameLoop(); }, 1500 / 10);
+        client.heartBeat = setInterval(function () { gameLoop(); }, 100);
     }
 
     function JSONResponseHandler(response) {
 
         switch (response.callName) {
-            case "getCube":
-            case "setCube":
-            case "getCubes":
+            case "getObject":
+            case "setObject":
+            case "getObjects":
                 {
-                    client.worldView.ground.displayCubes(response.content);
+                    client.worldView.ground.updateObjects(response.content);
                     break;
                 }
             default:
@@ -140,7 +150,7 @@
         }
     }
 
-    function cubeOnClick(element) {
+    function tileOnClick(element) {
         console.log("Clicked tile.");
 
         // get info about the click
@@ -156,12 +166,8 @@
 
         if (rightclick == true) {
             // right click
-            var csCol = Math.floor(Math.random() * 9);
-            var csRow = Math.floor(Math.random() * 2);
-            row = 1;
-            
-            client.setCube(worldLocation.x, worldLocation.y, 0, csCol, csRow);
-            //alert("changed");
+            var br = Math.floor(Math.random() * 2);
+            client.setObject(worldLocation.x, worldLocation.y,"cubes", "bedrock" + br);
         }
         else {
             // left click

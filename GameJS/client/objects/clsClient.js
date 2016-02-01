@@ -14,7 +14,8 @@ function clsClient() {
     this.player = new clsVector2D(0, 0);
     this.playerMoveTarget = new clsVector2D(0, 0); // world coordinates to scroll
 
-    this.worldView = new clsWorldView(350, 150, 640, 480);
+    //this.worldView = new clsWorldView(350, 150, 640, 480);
+    this.worldView = new clsWorldView(350, 150, 320, 200);
     this.packView = new clsContainerView(350, 150, 240, 480);
 
     
@@ -47,6 +48,22 @@ clsClient.prototype.setCube = function (worldx, worldy, csId, csCol, csRow, tsId
 
     var paramObj = tile;
     paramObj.callName = "setCube";
+
+    // request cube
+    wsi.requestJSONInfo(paramObj, JSONResponseHandler);
+}
+
+// sets a tile to a specific graphic
+clsClient.prototype.setObject = function (worldx, worldy, pack, item) {
+
+    console.log("Saving object...");
+
+    // update/create a tile
+    // {"id ":1,"x":0,"y":0,"z":0,"tilesetId ":0,"col":0,"row ":0}
+    var obj = { "x": worldx, "y": worldy, "pack": pack, "item": item }
+
+    var paramObj = obj;
+    paramObj.callName = "setObject";
 
     // request cube
     wsi.requestJSONInfo(paramObj, JSONResponseHandler);

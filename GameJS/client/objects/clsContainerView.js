@@ -19,8 +19,8 @@ function clsContainerView(screenx, screeny, width, height) {
 clsContainerView.prototype.setup = function () {
     console.log("update pack view.");
 
-    for (var y = 0; y <= 9; y++) {
-        for (var x = 0; x <= 9; x++) {
+    for (var y = 0; y <= 4; y++) {
+        for (var x = 0; x <= 4; x++) {
 
             // create cube div element
             var ele = document.createElement('div');

@@ -20,7 +20,7 @@ function clsGround(displayPanel) {
     // initializations
     this.cs = new clsImageset("cubes.png", 64, 10, 12); // load cs (not really used)
     this.buffer = this.createBuffer(displayPanel); // create and position buffer element based on screen size and position
-    this.createCubes(); // create random map this will be a JSON map load in the future
+    this.createTiles(); // create random map this will be a JSON map load in the future
 }
 
 clsGround.prototype.worldBottomRight = function () {
@@ -51,26 +51,25 @@ clsGround.prototype.createBuffer = function (displayPanel) {
     return buffer;
 }
 
-clsGround.prototype.createCubes = function () {
-    console.log("Creating ground cubes...");
+clsGround.prototype.createTiles = function () {
+    console.log("Creating tiles...");
 
     // create cube array for faster access
-    this.cubes = new Array(this.buffer.size); // create row array with global scope
+    this.tiles = new Array(this.buffer.size); // create row array with global scope
     for (var x = 0; x < this.buffer.size; x++) {
-        this.cubes[x] = new Array(this.buffer.size); // add column array to each row
+        this.tiles[x] = new Array(this.buffer.size); // add column array to each row
         for (var y = 0; y < this.buffer.size; y++) {
-            this.cubes[x][y] = {}; // could add other properties to the object array here.
+            this.tiles[x][y] = {}; // could add other properties to the object array here.
         }
     }
 
-    // create html cube elements
+    // create html tile elements
     for (var y = 0; y < this.buffer.size ; y++) {
         for (var x = 0; x < this.buffer.size; x++) {
 
             // create cube div element
-            //var ele = this.createDiv(x + "-" + y, "clsGround cube");
             var ele = document.createElement('div');
-            ele.className = "clsGround cube";
+            ele.className = "clsGround tile";
 
             // set dataset properties
             ele.dataset.x = x;
@@ -83,28 +82,14 @@ clsGround.prototype.createCubes = function () {
             ele.style.top = ele.dataset.defaultTop + "px";
 
             // set element events
-            ele.onmousedown = function () { cubeOnClick(this); };
+            ele.onmousedown = function () { tileOnClick(this); };
             ele.addEventListener("contextmenu", function (e) { e.preventDefault(); });
-            //ele.onmouseover = function () { console.log("(" + this.id + ")"); };
             this.buffer.element.appendChild(ele); // add the cube element to the buffer
 
             // add element to array for faster access
-            this.cubes[x][y].element = ele;
+            this.tiles[x][y].element = ele;
         }
     }
-}
-
-// feature is a floating div inside a cube div that displays an object
-clsGround.prototype.createFeature = function () {
-    
-    var div = document.createElement('div');
-    div.className = "clsGround feature";
-
-    var img = document.createElement('img');
-    img.src = "..\\images\\tiles\\tree.png";
-    
-    div.appendChild(img);
-    return div;
 }
 
 
@@ -136,15 +121,17 @@ clsGround.prototype.screenToWorld = function (screenLocation) {
 
 // sets all ground cubes in a specificed area to cube 0,0
 clsGround.prototype.clearArea = function (x1, y1, x2, y2) {
-    console.log("clearing area (" + x1 + "," + y1 + " - " + x2 + ", " + y2 + ")");
+    console.log("Clearing tiles (" + x1 + "," + y1 + " - " + x2 + ", " + y2 + ")");
     for (var y = y1; y <= y2 ; y++) {
         for (var x = x1; x <= x2; x++) {
-            var ele = this.cubes[x][y].element;
+            var ele = this.tiles[x][y].element;
             ele.innerHTML = "";
-            ele.style.backgroundPosition = "0em 0em, 0em 0em";
-            ele.style.top = ele.dataset.defaultTop;
-            ele.style.left = ele.dataset.defaultLeft;
-            ele.dataset.z = 0;
+            ele.style.top = ele.dataset.defaultTop; // may not need this now that we don't move tiles around
+            ele.style.left = ele.dataset.defaultLeft; // may not need this now that we don't move tiles around
+            ele.dataset.z = 0; // my not need this now that we don't move tiles around
+
+            // set empty images to noTile
+            ele.style.background = "url('../images/tiles/noTile.png')";
         }
     }
 }
@@ -165,43 +152,48 @@ clsGround.prototype.jumpToLocation = function (worldx, worldy) {
     this.clearAll(); // clear all existing cubes
 
     // request cubes
-    wsi.requestJSONInfo({ "callName": "getcubes", "x1": worldx, "y1": worldy, "x2": this.worldBottomRight.x, "y2": this.worldBottomRight.y }, JSONResponseHandler);
+    wsi.requestJSONInfo({ "callName": "getObjects", "x1": worldx, "y1": worldy, "x2": this.worldBottomRight.x, "y2": this.worldBottomRight.y }, JSONResponseHandler);
 }
 
 
 // given a list of world cubes this will refresh their counter parts on the screen if they are still visible
 // this is run for all responses from the server that return updated cube information
-clsGround.prototype.displayCubes = function (cubes) {
-    console.log("Updating ground cubes with new cube list...");
+clsGround.prototype.updateObjects = function (objects) {
+    console.log("Updating tiles with new object list...");
 
     console.log(JSON.stringify(document.styleSheets)); // ask Kevin about this one
     /* transition:background-position linear 1000ms; // recall in */
 
-    // update new ground cubes
-    for (var t = 0; t < cubes.length; t++) {
-        var screenLocation = this.worldToScreen(new clsVector2D(cubes[t].x, cubes[t].y));
-        //var ele = document.getElementById(screenLocation.x + "-" + screenLocation.y);
-        var ele = this.cubes[screenLocation.x][screenLocation.y].element;
+    // update new objects
+    for (var t = 0; t < objects.length; t++) {
+
+        // get object
+        var obj = objects[t];
+
+        // get objects screen tile location
+        var screenLocation = this.worldToScreen(new clsVector2D(obj.x, obj.y));
+        var tile = this.tiles[screenLocation.x][screenLocation.y].element;
+        
         // only update cubes that have not yet scrolled off the buffer
-        if (ele != null) {
+        if (tile != null) {
 
-            // random features
-            if ((cubes[t].x == 0) && (cubes[t].y == 0)) {
-                var f = this.createFeature();
-                ele.appendChild(f);
-            }
-            
+            // clear default background
+            tile.style.backgroundImage = "";
 
-            ele.dataset.z = cubes[t].z; // the the elevation to the element dataset
-            ele.style.backgroundPosition = "-" + cubes[t].tsCol + "em " + cubes[t].tsRow + "em, -" + cubes[t].csCol + "em -" + cubes[t].csRow + "em"; // display proper cube
-            ele.style.top = (Number(ele.dataset.defaultTop) + Number(ele.dataset.z) * 32) + "px";
-            // add support for cube sets later
+            // clear deleted elements - careful modified only returned new or updates ones
+
+            // place new elements
+            var ele = window[obj.pack]["create"](obj);
+            tile.appendChild(ele);
+
+            // add support for elevations
         }
     }
 }
 
+
 // scroll the entire landscape one cube in any direction
-clsGround.prototype.shiftCubes = function (shiftx, shifty) {
+clsGround.prototype.shiftCubes = function(shiftx, shifty) {
 
     console.log("Shifting cubes... (" + shiftx + ", " + shifty + ")");
 
@@ -236,20 +228,25 @@ clsGround.prototype.shiftCubes = function (shiftx, shifty) {
         // loop the the columns(x)
         var x = xfrom;
         while (((x >= xfrom) && (x <= xto)) || ((x <= xfrom) && (x >= xto))) {
-            var xsource = utils.wrap(x + shiftx, 0, this.buffer.size - 1);
-            var ysource = utils.wrap(y + shifty, 0, this.buffer.size - 1);
 
-            // copy data set information
-            this.cubes[x][y].element.dataset.z = this.cubes[xsource][ysource].element.dataset.z; // default screen elevation of cube
+            // tile to edit
+            var tile = this.tiles[x][y].element;
+            tile.innerHTML = ""; // clear destination tile
 
-            // copy contents
-            this.cubes[x][y].element.innerHTML = this.cubes[xsource][ysource].element.innerHTML; // default screen elevation of cube
+            // calculate the source location for each tiles information
+            var sourcex = utils.wrap(x + shiftx, 0, this.buffer.size - 1);
+            var sourcey = utils.wrap(y + shifty, 0, this.buffer.size - 1);
+            var source = this.tiles[sourcex][sourcey].element;
+            
 
-            // copy land information
-            this.cubes[x][y].element.style.backgroundPosition = this.cubes[xsource][ysource].element.style.backgroundPosition; // copy cube and tile info
+            // move elements from source tile
+            while (source.hasChildNodes()) {
+                var ele = source.removeChild(source.childNodes[0]);
+                tile.appendChild(ele);
+            }
 
-            // set new top value based on this screen cubes default location and its new world elevation
-            this.cubes[x][y].element.style.top = (Number(this.cubes[x][y].element.dataset.defaultTop) + Number(this.cubes[x][y].element.dataset.z) * 32) + "px"; // set adjusted elevation
+            // copy tile guides
+            tile.style.background = source.style.background; // copy cube image and and tile info
             x += xinc;
         }
         y += yinc;
@@ -263,13 +260,15 @@ clsGround.prototype.shiftCubes = function (shiftx, shifty) {
         var worldRow1 = this.screenToWorld(new clsVector2D(last, 0));
         var worldRow2 = this.screenToWorld(new clsVector2D(last, last));
         this.clearArea(last, 0, last, last);
-        wsi.requestJSONInfo({ "callName": "getCubes", "x1": worldRow1.x, "y1": worldRow1.y, "x2": worldRow2.x, "y2": worldRow2.y }, JSONResponseHandler);
+        wsi.requestJSONInfo({ "callName": "getObjects", "x1": worldRow1.x, "y1": worldRow1.y, "x2": worldRow2.x, "y2": worldRow2.y }, JSONResponseHandler);
+        //wsi.requestJSONInfo({ "callName": "getObjects", "x1": worldRow1.x, "y1": worldRow1.y, "x2": worldRow2.x-3, "y2": worldRow2.y }, JSONResponseHandler);
     } else if (shiftx == -1) {
         // request first row
         var worldRow1 = this.screenToWorld(new clsVector2D(0, 0));
         var worldRow2 = this.screenToWorld(new clsVector2D(0, last));
         this.clearArea(0, 0, 0, last);
-        wsi.requestJSONInfo({ "callName": "getCubes", "x1": worldRow1.x, "y1": worldRow1.y, "x2": worldRow2.x, "y2": worldRow2.y }, JSONResponseHandler);
+        wsi.requestJSONInfo({ "callName": "getObjects", "x1": worldRow1.x, "y1": worldRow1.y, "x2": worldRow2.x, "y2": worldRow2.y }, JSONResponseHandler);
+        //wsi.requestJSONInfo({ "callName": "getObjects", "x1": worldRow1.x, "y1": worldRow1.y, "x2": worldRow2.x + 3, "y2": worldRow2.y }, JSONResponseHandler);
     }
 
     if (shifty == 1) {
@@ -277,21 +276,28 @@ clsGround.prototype.shiftCubes = function (shiftx, shifty) {
         var worldCol1 = this.screenToWorld(new clsVector2D(0, last));
         var worldCol2 = this.screenToWorld(new clsVector2D(last, last));
         this.clearArea(0, last, last, last);
-        wsi.requestJSONInfo({ "callName": "getCubes", "x1": worldCol1.x, "y1": worldCol1.y, "x2": worldCol2.x, "y2": worldCol2.y }, JSONResponseHandler);
+        wsi.requestJSONInfo({ "callName": "getObjects", "x1": worldCol1.x, "y1": worldCol1.y, "x2": worldCol2.x, "y2": worldCol2.y }, JSONResponseHandler);
+        //wsi.requestJSONInfo({ "callName": "getObjects", "x1": worldCol1.x, "y1": worldCol1.y, "x2": worldCol2.x, "y2": worldCol2.y - 3 }, JSONResponseHandler);
     } else if (shifty == -1) {
         // request first col
         var worldCol1 = this.screenToWorld(new clsVector2D(0, 0));
         var worldCol2 = this.screenToWorld(new clsVector2D(last, 0));
         this.clearArea(0, 0, last, 0);
-        wsi.requestJSONInfo({ "callName": "getCubes", "x1": worldCol1.x, "y1": worldCol1.y, "x2": worldCol2.x, "y2": worldCol2.y }, JSONResponseHandler);
+        wsi.requestJSONInfo({ "callName": "getObjects", "x1": worldCol1.x, "y1": worldCol1.y, "x2": worldCol2.x, "y2": worldCol2.y }, JSONResponseHandler);
+        //wsi.requestJSONInfo({ "callName": "getObjects", "x1": worldCol1.x, "y1": worldCol1.y, "x2": worldCol2.x, "y2": worldCol2.y + 3 }, JSONResponseHandler);
     }
 
 }
 
 clsGround.prototype.update = function () {
-    console.log("Requesting cubes modified since " + this.lastUpdate + " in (" + this.world.x + "," + this.world.y + " - " + this.worldBottomRight.x + "," + this.worldBottomRight.y + ")");
-    wsi.requestJSONInfo({ "callName": "getCubes", "x1": this.world.x, "y1": this.world.y, "x2": this.worldBottomRight.x, "y2": this.worldBottomRight.y, "modified": utils.wsFriendlyDateTime(this.lastUpdate) }, JSONResponseHandler);
+    console.log("Requesting objects modified since " + this.lastUpdate + " in (" + this.world.x + "," + this.world.y + " - " + this.worldBottomRight.x + "," + this.worldBottomRight.y + ")");
+    // update example
+    wsi.requestJSONInfo({ "callName": "getObjects", "x1": this.world.x, "y1": this.world.y, "x2": this.worldBottomRight.x, "y2": this.worldBottomRight.y, "modified": utils.wsFriendlyDateTime(this.lastUpdate) }, JSONResponseHandler);
+    // key frame example
+    //wsi.requestJSONInfo({ "callName": "getObjects", "x1": this.world.x, "y1": this.world.y, "x2": this.worldBottomRight.x, "y2": this.worldBottomRight.y}, JSONResponseHandler);
     this.lastUpdate = new Date();
+
+    // you may want keyframes to avoid anomolies
 }
 
 

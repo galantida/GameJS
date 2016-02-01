@@ -1,0 +1,30 @@
+﻿/*
+    to calculate default locations
+
+*/
+.stone.divDefault
+{
+    position:absolute;
+    left: 0px;
+    top: 0px;
+}
+.stone.divDefault:hover
+{
+    position:absolute;
+    left: 0px;
+    top: 0px;
+    transform: scale(1.3);
+}
+.stone.imgDefault
+{
+    position:absolute;
+    left: 0px; /* img 64 / 2 - 32   */
+    top: 0px; /* img 64 - 32  */
+}
+.stone.imgDefault:hover
+{
+    position:absolute;
+    left: 0px; /* img 64 / 2 - 32   */
+    top: 0px; /* img 64 - 32  */
+}
+

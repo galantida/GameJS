@@ -300,7 +300,7 @@ namespace GameJS
             }
         }
 
-        public string toJSON()
+        public string toJSON(bool abbreviated = false)
         {
             string delimiter = "";
             string result = "{";
@@ -318,6 +318,8 @@ namespace GameJS
                         }
                     default:
                         {
+                            if ((abbreviated == true) && ((propertyInfo.Name == "created") || (propertyInfo.Name == "modified"))) break;
+                            
                             // strings
                             result += delimiter + "\"" + propertyInfo.Name + "\":\"" + propertyInfo.GetValue(this, null).ToString() + "\"";
                             break;
