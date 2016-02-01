@@ -5,8 +5,9 @@ console.log("=== included utils.js ver 0.1 ===");
 var utils = { // utils namespace
 
     wrap: function (value, min, max) {
-        while (value > max) value -= max;
-        while (value < min) value += max;
+        var dif = (max - min) + 1;
+        while (value > max) value -= dif;
+        while (value < min) value += dif;
         return value;
     },
 

@@ -237,6 +237,8 @@ clsGround.prototype.shiftCubes = function(shiftx, shifty) {
             var sourcex = utils.wrap(x + shiftx, 0, this.buffer.size - 1);
             var sourcey = utils.wrap(y + shifty, 0, this.buffer.size - 1);
             var source = this.tiles[sourcex][sourcey].element;
+
+            console.log("copy from (" + sourcex + "," + sourcey + ") to (" + x + "," + y + ")");
             
 
             // move elements from source tile
