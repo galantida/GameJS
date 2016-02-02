@@ -105,6 +105,7 @@ clsGround.prototype.worldToScreen = function (worldLocation) {
     return result;
 }
 
+// it may be a fluke but this function did not work last time I used to. (probably should never never need it);
 clsGround.prototype.screenToWorld = function (screenLocation) {
     return new clsVector2D(this.world.x + screenLocation.x, this.world.y + screenLocation.y);
 
@@ -121,17 +122,12 @@ clsGround.prototype.screenToWorld = function (screenLocation) {
 
 // sets all ground cubes in a specificed area to cube 0,0
 clsGround.prototype.clearArea = function (x1, y1, x2, y2) {
-    console.log("Clearing tiles (" + x1 + "," + y1 + " - " + x2 + ", " + y2 + ")");
+    console.log("Clearing tiles (" + x1 + "," + y1 + " - " + x2 + "," + y2 + ")");
     for (var y = y1; y <= y2 ; y++) {
         for (var x = x1; x <= x2; x++) {
             var ele = this.tiles[x][y].element;
             ele.innerHTML = "";
-            ele.style.top = ele.dataset.defaultTop; // may not need this now that we don't move tiles around
-            ele.style.left = ele.dataset.defaultLeft; // may not need this now that we don't move tiles around
-            ele.dataset.z = 0; // my not need this now that we don't move tiles around
-
-            // set empty images to noTile
-            ele.style.background = "url('../images/tiles/noTile.png')";
+            ele.style.background = "url('../images/tiles/noTile.png')"; // set empty images to noTile background
         }
     }
 }
@@ -160,9 +156,6 @@ clsGround.prototype.jumpToLocation = function (worldx, worldy) {
 // this is run for all responses from the server that return updated cube information
 clsGround.prototype.updateObjects = function (objects) {
     console.log("Updating tiles with new object list...");
-
-    console.log(JSON.stringify(document.styleSheets)); // ask Kevin about this one
-    /* transition:background-position linear 1000ms; // recall in */
 
     // update new objects
     for (var t = 0; t < objects.length; t++) {

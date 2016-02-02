@@ -38,32 +38,48 @@ clsClient.prototype.setPlayerLocation = function (worldx, worldy) {
 
 
 // sets a tile to a specific graphic
-clsClient.prototype.setCube = function (worldx, worldy, csId, csCol, csRow, tsId, tsCol, tsRow) {
+clsClient.prototype.createObject = function (worldx, worldy, worldz, pack, item) {
 
-    console.log("Saving cube...");
+    console.log("Creating object...");
 
     // update/create a tile
     // {"id ":1,"x":0,"y":0,"z":0,"tilesetId ":0,"col":0,"row ":0}
-    var tile = { "x": worldx, "y": worldy, "csId": csId, "csCol": csCol, "csRow": csRow, "tsId": tsId, "tsCol": tsRow, "tsRow": tsCol }
+    var obj = { "x": worldx, "y": worldy, "z": worldz, "pack": pack, "item": item }
 
-    var paramObj = tile;
-    paramObj.callName = "setCube";
+    var paramObj = obj;
+    paramObj.callName = "createObject";
 
     // request cube
     wsi.requestJSONInfo(paramObj, JSONResponseHandler);
 }
 
 // sets a tile to a specific graphic
-clsClient.prototype.setObject = function (worldx, worldy, pack, item) {
+clsClient.prototype.deleteObject = function (id) {
 
-    console.log("Saving object...");
+    console.log("Deleting object...");
 
     // update/create a tile
     // {"id ":1,"x":0,"y":0,"z":0,"tilesetId ":0,"col":0,"row ":0}
-    var obj = { "x": worldx, "y": worldy, "pack": pack, "item": item }
+    var obj = { "id": id }
 
     var paramObj = obj;
-    paramObj.callName = "setObject";
+    paramObj.callName = "deleteObject";
+
+    // request cube
+    wsi.requestJSONInfo(paramObj, JSONResponseHandler);
+}
+
+// sets a tile to a specific graphic
+clsClient.prototype.updateObject = function (id, worldx, worldy, worldz, pack, item) {
+
+    console.log("Updating object...");
+
+    // update/create a tile
+    // {"id ":1,"x":0,"y":0,"z":0,"tilesetId ":0,"col":0,"row ":0}
+    var obj = { "id": id, "x": worldx, "y": worldy, "z": worldz, "pack": pack, "item": item }
+
+    var paramObj = obj;
+    paramObj.callName = "updateObject";
 
     // request cube
     wsi.requestJSONInfo(paramObj, JSONResponseHandler);

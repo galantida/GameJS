@@ -72,8 +72,9 @@
     function JSONResponseHandler(response) {
 
         switch (response.callName) {
-            case "getObject":
-            case "setObject":
+            case "createObject":
+            case "updateObject":
+            case "deleteObject":
             case "getObjects":
                 {
                     client.worldView.ground.updateObjects(response.content);
@@ -166,8 +167,8 @@
 
         if (rightclick == true) {
             // right click
-            var br = Math.floor(Math.random() * 2);
-            client.setObject(worldLocation.x, worldLocation.y,"cubes", "bedrock" + br);
+            //var br = Math.floor(Math.random() * 2);
+            //client.setObject(worldLocation.x, worldLocation.y,"cubes", "bedrock" + br);
         }
         else {
             // left click

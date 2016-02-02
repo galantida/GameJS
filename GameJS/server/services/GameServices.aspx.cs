@@ -34,17 +34,30 @@ namespace GameJS
             // process command first since that is the only parameter I can be sure of
             switch (callName.ToUpper())
             {
-                case "SETOBJECT":
+                case "CREATEOBJECT":
+                case "UPDATEOBJECT":
                     {
-                        int x = getNumericParameter("x");
-                        int y = getNumericParameter("y");
-
                         // connect to world db
-                        clsWorld world = new clsWorld(name, password);
+                        clsWorld world;
+                        clsObject obj;
+                        if (callName.ToUpper() == "CREATEOBJECT") {
 
-                        // locate existing can't find tile then create new one
-                        clsObject obj = world.getObject(x, y);
-                        if (obj == null) obj = new clsObject(world.db);
+                            int x = getNumericParameter("x", true);
+                            int y = getNumericParameter("y", true);
+                            int z = getNumericParameter("z", true);
+
+                            // create new object
+                            world = new clsWorld(name, password);
+                            obj = world.createObject(x, y, z);
+                        }
+                        else {
+                            int id = getNumericParameter("id", true);
+
+                            // locate an existing object
+                            world = new clsWorld(name, password);
+                            obj = world.getObject(id);
+                            if (obj == null) sendResponse("Error", "Could not locate object 'id=" + id + "' to update.");
+                        }
 
                         // populate properties
                         foreach (PropertyInfo propertyInfo in obj.GetType().GetProperties())
@@ -85,7 +98,25 @@ namespace GameJS
 
                         // formulate response
                         string JSON = obj.toJSON();
-                        sendResponse("setObject", "{x:" + obj.x + ",y:" + obj.y + "}", "[" + JSON + "]");
+                        sendResponse(callName, "{id:" + obj.id + ",x:" + obj.x + ",y:" + obj.y + ",z:" + obj.z + "}", "[" + JSON + "]");
+                        break;
+                    }
+                case "DELETEOBJECT":
+                    {
+                        int id = getNumericParameter("id", true);
+
+                        // connect to world db
+                        clsWorld world = new clsWorld(name, password);
+
+                        // locate an existing object
+                        clsObject obj = world.getObject(id);
+                        if (obj == null) sendResponse("Error", "'Could not locate object 'id=" + id + "' to delete.");
+                        obj.delete();
+
+                        // return the objects that are still at that location
+                        string JSON = clsObject.toJSON(world.getObjects(obj.x, obj.y, obj.x, obj.y), true);
+
+                        sendResponse("deleteObject", "{id:" + id + "}", JSON);
                         break;
                     }
                 case "GETOBJECTS":
@@ -102,7 +133,7 @@ namespace GameJS
                         sendResponse("getObjects", "{x1:" + x1 + ",y1:" + y1 + ",x2:" + x2 + ",y2:" + y2 + "}", JSON);
                         break;
                     }
-                case "SETOBJECTS":
+                case "CREATEOBJECTS":
                     {
                         // read requested coordinate
                         int x1 = getNumericParameter("x1", true);
@@ -125,9 +156,8 @@ namespace GameJS
                         {
                             for (int x = x1; x <= x2; x++)
                             {
-                                // locate existing can't find tile then create new one
+                                // new object
                                 obj = new clsObject(world.db);
-
                                 obj.x = x;
                                 obj.y = y;
                                 obj.z = random.Next(0, 2);
@@ -153,7 +183,7 @@ namespace GameJS
 
                                 if (obj.z == 0)
                                 {
-                                    // put some dirt on top
+                                    // put some warter on top
                                     obj = new clsObject(world.db);
                                     obj.x = x;
                                     obj.y = y;
@@ -165,6 +195,7 @@ namespace GameJS
                                     JSON += delimiter + obj.toJSON(true);
                                 }
 
+                                /*
                                 // put some dirt on top
                                 obj = new clsObject(world.db);
                                 obj.x = x;
@@ -175,6 +206,7 @@ namespace GameJS
                                 obj.save();
                                 objects.Add(obj);
                                 JSON += delimiter + obj.toJSON(true);
+                                 */
                             }
                         }
 

@@ -69,13 +69,11 @@ var stone = {
     },
 
     onClick: function (element) {
-        console.log("stone click");
-
         var obj = JSON.parse(element.getAttribute("data"));
 
         // get info about the click
-        var screenLocation = new clsVector2D(Number(obj.x), Number(obj.y)); // get screen location clicked
-        var worldLocation = client.worldView.ground.screenToWorld(screenLocation); // get world location clicked
+        var worldLocation = new clsVector2D(Number(obj.x), Number(obj.y)); // get screen location clicked
+        var screenLocation = client.worldView.ground.worldToScreen(worldLocation); // get world location clicked
 
         // which click type was it
         var rightclick;
@@ -86,13 +84,24 @@ var stone = {
 
         if (rightclick == true) {
             // right click
-            console.log("right clicked a stone");
-            //var br = Math.floor(Math.random() * 2);
-            //client.setObject(worldLocation.x, worldLocation.y, "cubes", "bedrock" + br);
+            console.log("Right click stone @world(" + obj.x + "," + obj.y + ") and @screen(" + screenLocation.x + "," + screenLocation.y + ")");
+            
+
+            // insert and redraw everyting in tile
+            var br = Math.floor(Math.random() * 2);
+            //client.createObject(obj.x, obj.y, obj.z + 1, "stone", "bedrocktr");
+
+            // delete and redraw everything in tile            
+            client.deleteObject(obj.id);
+            client.worldView.ground.clearArea(screenLocation.x, screenLocation.y, screenLocation.x, screenLocation.y);
+
+
+
+            
         }
         else {
             // left click
-            console.log("left clicked a stone");
+            //console.log("Left click stone @world(" + obj.x + "," + obj.y + ") and @screen(" + screenLocation.x + "," + screenLocation.y + ")");
         }
 
         //return false; // don't show default right click menu

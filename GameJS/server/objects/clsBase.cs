@@ -83,6 +83,16 @@ namespace GameJS
             return objects;
         }
 
+        public bool delete()
+        {
+            bool result = false;
+            if (this.execute("delete from " + this.tableName + "s where id = " + this.id + ";") > 0) {
+                this.id = 0;
+                result = true;
+            }
+            return result;
+        }
+
         // load this object with the record in the DB with the same ID
         public bool load(MySqlDataReader dr)
         {
