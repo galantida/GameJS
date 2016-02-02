@@ -197,27 +197,42 @@ clsGround.prototype.shiftCubes = function(shiftx, shifty) {
 
     console.log("Shifting cubes... (" + shiftx + ", " + shifty + ")");
 
+    // pre calc last element id
+    var last = this.buffer.size - 1; // last row or column. They are the same because its a square.
+
     // set new world location
     this.world = new clsVector2D(this.world.x += shiftx, this.world.y += shifty);
-    this.worldBottomRight = new clsVector2D(this.world.x + this.buffer.size - 1, this.world.y + this.buffer.size - 1);
+    this.worldBottomRight = new clsVector2D(this.world.x + this.buffer.size - 1, this.world.y + last);
 
     // determine the best copy direction based on the y shift direction
-    var yfrom = 0;
-    var yto = this.buffer.size - 1;
-    var yinc = 1;
-    if (shifty == -1) {
-        yfrom = this.buffer.size - 1;
-        yto = 0;
+    var yfrom, yto, yinc;
+    if (shifty == 0) {
+        yfrom = 0;
+        yto = last;
+        yinc = 1;
+    } else if (shifty == 1) {
+        yfrom = 0;
+        yto = last - 1; 
+        yinc = 1;
+    } else {
+        yfrom = last;
+        yto = 1;
         yinc = -1;
     }
 
     // determine the best copy direction based on the x shift direction
-    var xfrom = 0;
-    var xto = this.buffer.size - 1;
-    var xinc = 1;
-    if (shiftx == -1) {
-        xfrom = this.buffer.size - 1;
-        xto = 0;
+    var xfrom, xto, xinc;
+    if (shiftx == 0) {
+        xfrom = 0;
+        xto = last;
+        xinc = 1;
+    } else if (shiftx == 1) {
+        xfrom = 0;
+        xto = last - 1;
+        xinc = 1;
+    } else {
+        xfrom = last;
+        xto = 1;
         xinc = -1;
     }
 
@@ -229,66 +244,54 @@ clsGround.prototype.shiftCubes = function(shiftx, shifty) {
         var x = xfrom;
         while (((x >= xfrom) && (x <= xto)) || ((x <= xfrom) && (x >= xto))) {
 
-            // tile to edit
-            var tile = this.tiles[x][y].element;
-            tile.innerHTML = ""; // clear destination tile
-
             // calculate the source location for each tiles information
-            var sourcex = utils.wrap(x + shiftx, 0, this.buffer.size - 1);
-            var sourcey = utils.wrap(y + shifty, 0, this.buffer.size - 1);
-            var source = this.tiles[sourcex][sourcey].element;
-
-            console.log("copy from (" + sourcex + "," + sourcey + ") to (" + x + "," + y + ")");
-            
-
-            // move elements from source tile
-            while (source.hasChildNodes()) {
-                var ele = source.removeChild(source.childNodes[0]);
-                tile.appendChild(ele);
-            }
-
-            // copy tile guides
-            tile.style.background = source.style.background; // copy cube image and and tile info
+            var sourcex = utils.wrap(x + shiftx, 0, last);
+            var sourcey = utils.wrap(y + shifty, 0, last);
+            this.copyTile(this.tiles[sourcex][sourcey].element, this.tiles[x][y].element); // copy most tiles
+           
             x += xinc;
         }
         y += yinc;
     }
 
-    // request update
-    var last = this.buffer.size - 1; // last row or column. They are the same because its a square.
-
     if (shiftx == 1) {
         // request last row
         var worldRow1 = this.screenToWorld(new clsVector2D(last, 0));
         var worldRow2 = this.screenToWorld(new clsVector2D(last, last));
-        this.clearArea(last, 0, last, last);
         wsi.requestJSONInfo({ "callName": "getObjects", "x1": worldRow1.x, "y1": worldRow1.y, "x2": worldRow2.x, "y2": worldRow2.y }, JSONResponseHandler);
-        //wsi.requestJSONInfo({ "callName": "getObjects", "x1": worldRow1.x, "y1": worldRow1.y, "x2": worldRow2.x-3, "y2": worldRow2.y }, JSONResponseHandler);
     } else if (shiftx == -1) {
         // request first row
         var worldRow1 = this.screenToWorld(new clsVector2D(0, 0));
         var worldRow2 = this.screenToWorld(new clsVector2D(0, last));
-        this.clearArea(0, 0, 0, last);
         wsi.requestJSONInfo({ "callName": "getObjects", "x1": worldRow1.x, "y1": worldRow1.y, "x2": worldRow2.x, "y2": worldRow2.y }, JSONResponseHandler);
-        //wsi.requestJSONInfo({ "callName": "getObjects", "x1": worldRow1.x, "y1": worldRow1.y, "x2": worldRow2.x + 3, "y2": worldRow2.y }, JSONResponseHandler);
     }
 
     if (shifty == 1) {
         // request last col
         var worldCol1 = this.screenToWorld(new clsVector2D(0, last));
         var worldCol2 = this.screenToWorld(new clsVector2D(last, last));
-        this.clearArea(0, last, last, last);
         wsi.requestJSONInfo({ "callName": "getObjects", "x1": worldCol1.x, "y1": worldCol1.y, "x2": worldCol2.x, "y2": worldCol2.y }, JSONResponseHandler);
-        //wsi.requestJSONInfo({ "callName": "getObjects", "x1": worldCol1.x, "y1": worldCol1.y, "x2": worldCol2.x, "y2": worldCol2.y - 3 }, JSONResponseHandler);
     } else if (shifty == -1) {
         // request first col
         var worldCol1 = this.screenToWorld(new clsVector2D(0, 0));
         var worldCol2 = this.screenToWorld(new clsVector2D(last, 0));
-        this.clearArea(0, 0, last, 0);
         wsi.requestJSONInfo({ "callName": "getObjects", "x1": worldCol1.x, "y1": worldCol1.y, "x2": worldCol2.x, "y2": worldCol2.y }, JSONResponseHandler);
-        //wsi.requestJSONInfo({ "callName": "getObjects", "x1": worldCol1.x, "y1": worldCol1.y, "x2": worldCol2.x, "y2": worldCol2.y + 3 }, JSONResponseHandler);
     }
 
+}
+
+clsGround.prototype.copyTile = function (source, destination) {
+
+    destination.innerHTML = ""; // clear destination tile
+
+    // move elements from source tile
+    while (source.hasChildNodes()) {
+        var ele = source.removeChild(source.childNodes[0]);
+        destination.appendChild(ele);
+    }
+
+    // copy tile guides
+    destination.style.background = source.style.background; // copy cube image and and tile info
 }
 
 clsGround.prototype.update = function () {

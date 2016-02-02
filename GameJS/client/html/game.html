@@ -98,7 +98,7 @@
             case 36:
                 {
                     // up left
-                    client.playerMoveTarget = new clsVector2D(client.player.x + 1, client.player.y);
+                    client.playerMoveTarget = new clsVector2D(client.player.x - 1, client.player.y);
                     break;
                 }
             case 38:
@@ -110,7 +110,7 @@
             case 33:
                 {
                     // up right
-                    client.playerMoveTarget = new clsVector2D(client.player.x, client.player.y + 1);
+                    client.playerMoveTarget = new clsVector2D(client.player.x, client.player.y - 1);
                     break;
                 }
             case 37:
@@ -128,7 +128,7 @@
             case 35:
                 {
                     // down left
-                    client.playerMoveTarget = new clsVector2D(client.player.x, client.player.y - 1);
+                    client.playerMoveTarget = new clsVector2D(client.player.x, client.player.y + 1);
                     break;
                 }
             case 40:
@@ -140,7 +140,7 @@
             case 34:
                 {
                     // down right
-                    client.playerMoveTarget = new clsVector2D(client.player.x - 1, client.player.y);
+                    client.playerMoveTarget = new clsVector2D(client.player.x + 1, client.player.y);
                     break;
                 }
             default:
