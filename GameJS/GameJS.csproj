@@ -92,7 +92,6 @@
     <Compile Include="server\objects\clsDatabase.cs" />
     <Compile Include="server\objects\clsMap.cs" />
     <Compile Include="server\objects\clsWorld.cs" />
-    <Compile Include="server\objects\clsCube.cs" />
     <Compile Include="server\objects\clsObject.cs" />
     <Compile Include="server\objects\intBase.cs" />
     <Compile Include="server\services\GameServices.aspx.cs">

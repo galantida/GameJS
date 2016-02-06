@@ -12,7 +12,7 @@ namespace GameJS
         public int id { get; set; }
         public DateTime created { get; set; }
         public DateTime modified { get; set; }
-        private clsDatabase _db;
+        protected clsDatabase _db;
 
         protected string tableName
         {
@@ -29,6 +29,12 @@ namespace GameJS
         public clsBase(clsDatabase db)
         {
             _db = db;
+        }
+
+        public clsBase(clsDatabase db, int id)
+        {
+            _db = db;
+            this.load(id);
         }
 
         public clsBase(clsDatabase db, MySqlDataReader dr) {
@@ -86,7 +92,7 @@ namespace GameJS
         public bool delete()
         {
             bool result = false;
-            if (this.execute("delete from " + this.tableName + "s where id = " + this.id + ";") > 0) {
+            if (this.execute("DELETE FROM " + this.tableName + "s WHERE id = " + this.id + ";") > 0) {
                 this.id = 0;
                 result = true;
             }
@@ -274,6 +280,8 @@ namespace GameJS
                     case "System.Boolean":
                         {
                             propertyInfo.SetValue(this, Convert.ToBoolean(dr[propertyInfo.Name]));
+                            //if (Convert.ToInt16(dr[propertyInfo.Name]) == 0) propertyInfo.SetValue(this, false);
+                            //else propertyInfo.SetValue(this, true);
                             break;
                         }
                     default:
@@ -310,7 +318,7 @@ namespace GameJS
             }
         }
 
-        public string toJSON(bool abbreviated = false)
+        public string toJSON()
         {
             string delimiter = "";
             string result = "{";
@@ -321,15 +329,14 @@ namespace GameJS
                 {
                     case "System.Int16":
                     case "System.Int32":
+                    case "System.Boolean":
                         {
                             // numbers
-                            result += delimiter + "\"" + propertyInfo.Name + "\":" + propertyInfo.GetValue(this, null) + "";
+                            result += delimiter + "\"" + propertyInfo.Name + "\":" + propertyInfo.GetValue(this, null).ToString().ToLower() + "";
                             break;
                         }
                     default:
                         {
-                            if ((abbreviated == true) && ((propertyInfo.Name == "created") || (propertyInfo.Name == "modified"))) break;
-                            
                             // strings
                             result += delimiter + "\"" + propertyInfo.Name + "\":\"" + propertyInfo.GetValue(this, null).ToString() + "\"";
                             break;

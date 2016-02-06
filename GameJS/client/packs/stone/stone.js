@@ -88,16 +88,12 @@ var stone = {
             
 
             // insert and redraw everyting in tile
-            var br = Math.floor(Math.random() * 2);
+            //var br = Math.floor(Math.random() * 2);
             //client.createObject(obj.x, obj.y, obj.z + 1, "stone", "bedrocktr");
 
             // delete and redraw everything in tile            
             client.deleteObject(obj.id);
-            client.worldView.ground.clearArea(screenLocation.x, screenLocation.y, screenLocation.x, screenLocation.y);
-
-
-
-            
+            //client.worldView.ground.clearArea(screenLocation.x, screenLocation.y, screenLocation.x, screenLocation.y);
         }
         else {
             // left click

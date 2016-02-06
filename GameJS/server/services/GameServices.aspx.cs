@@ -48,14 +48,14 @@ namespace GameJS
 
                             // create new object
                             world = new clsWorld(name, password);
-                            obj = world.createObject(x, y, z);
+                            obj = world.map.createObject(x, y, z);
                         }
                         else {
                             int id = getNumericParameter("id", true);
 
                             // locate an existing object
                             world = new clsWorld(name, password);
-                            obj = world.getObject(id);
+                            obj = world.map.getObject(id);
                             if (obj == null) sendResponse("Error", "Could not locate object 'id=" + id + "' to update.");
                         }
 
@@ -97,8 +97,7 @@ namespace GameJS
                         obj.save(); // this will save a new or update and exisitng tile
 
                         // formulate response
-                        string JSON = obj.toJSON();
-                        sendResponse(callName, "{id:" + obj.id + ",x:" + obj.x + ",y:" + obj.y + ",z:" + obj.z + "}", "[" + JSON + "]");
+                        sendResponse(callName, "{id:" + obj.id + ",x:" + obj.x + ",y:" + obj.y + ",z:" + obj.z + "}", "[" + obj.toJSON() + "]");
                         break;
                     }
                 case "DELETEOBJECT":
@@ -109,14 +108,11 @@ namespace GameJS
                         clsWorld world = new clsWorld(name, password);
 
                         // locate an existing object
-                        clsObject obj = world.getObject(id);
+                        clsObject obj = world.map.getObject(id);
                         if (obj == null) sendResponse("Error", "'Could not locate object 'id=" + id + "' to delete.");
-                        obj.delete();
+                        obj.delete(); // this only flag the object as deleted
 
-                        // return the objects that are still at that location
-                        string JSON = clsObject.toJSON(world.getObjects(obj.x, obj.y, obj.x, obj.y), true);
-
-                        sendResponse("deleteObject", "{id:" + id + "}", JSON);
+                        sendResponse("deleteObject", "{id:" + id + "}", "[" + obj.toJSON() + "]");
                         break;
                     }
                 case "GETOBJECTS":
@@ -129,7 +125,7 @@ namespace GameJS
                         DateTime? modified = getDateTimeParameter("modified");
 
                         clsWorld world = new clsWorld(name, password);
-                        string JSON = clsObject.toJSON(world.getObjects(x1, y1, x2, y2, modified), true);
+                        string JSON = clsObject.toJSON(world.map.getArea(x1, y1, x2, y2, modified));
                         sendResponse("getObjects", "{x1:" + x1 + ",y1:" + y1 + ",x2:" + x2 + ",y2:" + y2 + "}", JSON);
                         break;
                     }
@@ -146,6 +142,9 @@ namespace GameJS
 
                         // connect to world db
                         clsWorld world = new clsWorld(name, password);
+
+                        // clear area
+
 
                         clsObject obj;
                         List<clsObject> objects = new List<clsObject>();
@@ -178,7 +177,7 @@ namespace GameJS
 
                                 obj.save();
                                 objects.Add(obj);
-                                JSON += delimiter + obj.toJSON(true);
+                                JSON += delimiter + obj.toJSON();
                                 delimiter = ",";
 
                                 if (obj.z == 0)
@@ -192,7 +191,7 @@ namespace GameJS
                                     obj.item = "wetrock1";
                                     obj.save();
                                     objects.Add(obj);
-                                    JSON += delimiter + obj.toJSON(true);
+                                    JSON += delimiter + obj.toJSON();
                                 }
 
                                 /*

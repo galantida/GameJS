@@ -13,11 +13,62 @@ namespace GameJS
     public class clsMap
     {
         // map objects
-        private clsDatabase _db;
+        public clsDatabase db { get; set; }
 
         public clsMap(clsDatabase db) 
         {
-            _db = db;
+            this.db = db;
+        }
+
+        public clsObject createObject(int x, int y, int z)
+        {
+            clsObject obj = new clsObject(this.db);
+            obj.x = x;
+            obj.y = y;
+            obj.z = z;
+            return obj;
+        }
+
+        public clsObject getObject(int id)
+        {
+            clsObject obj = new clsObject(this.db);
+            if (obj.load(id) == true) return obj;
+            else return null;
+        }
+
+        public bool deleteObject(int id)
+        {
+            clsObject obj = new clsObject(this.db, id);
+            return obj.delete();
+        }
+
+        public bool destroyObject(int id)
+        {
+            clsObject obj = new clsObject(this.db);
+            return obj.destroy();
+        }
+
+        public List<clsObject> getArea(int x1, int y1, int x2, int y2, DateTime? modified = null)
+        {
+            clsObject obj = new clsObject(this.db);
+            return obj.getObjects(x1, y1, x2, y2, 0, modified);
+        }
+
+        public int destroyArea(int x1, int y1, int x2, int y2)
+        {
+            clsObject obj = new clsObject(this.db);
+            return obj.destroyObjects(x1, y1, x2, y2, 0);
+        }
+
+        public int createArea(int x1, int y1, int x2, int y2)
+        {
+            clsObject obj = new clsObject(this.db);
+            return obj.destroyObjects(x1, y1, x2, y2, 0);
+
+            // map generator
+
+
+
         }
     }
 }

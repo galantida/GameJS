@@ -71,7 +71,7 @@ clsGround.prototype.createTiles = function () {
             var ele = document.createElement('div');
             ele.className = "clsGround tile";
 
-            // set dataset properties
+            // set dataset properties (not sure I even need these any more)
             ele.dataset.x = x;
             ele.dataset.y = y;
             ele.dataset.defaultLeft = (((x * .5) - (y * .5)) * this.cs.displayWidth);
@@ -170,16 +170,35 @@ clsGround.prototype.updateObjects = function (objects) {
         // only update cubes that have not yet scrolled off the buffer
         if (tile != null) {
 
-            // clear default background
-            tile.style.backgroundImage = "";
+            if (obj.deleted == true) {
+                // delete object
 
-            // clear deleted elements - careful modified only returned new or updates ones
+                // loop through the existing elements in this tile.
+                for (t = 0; t < tile.children.length; t++) {
+                    if (obj.id == tile.children[t].id) {
+                        tile.removeChild(tile.children[t]);
+                        break; // either way break out of the for loop when done
+                    }
+                }
+            }
+            else {
 
-            // place new elements
-            var ele = window[obj.pack]["create"](obj);
-            tile.appendChild(ele);
+                if (obj.created != obj.modified) {
+                    // loop through the existing elements in this tile.
+                    for (t = 0; t < tile.children.length; t++) {
+                        if (obj.id == tile.children[t].id) {
+                            tile.removeChild(tile.children[t]); // remove it 
+                            break; // either way break out of the for loop when done
+                        }
+                    }
+                }
 
-            // add support for elevations
+                // create new object
+                var ele = window[obj.pack]["create"](obj);
+                ele.id = obj.id;
+                tile.appendChild(ele);
+                tile.style.backgroundImage = ""; // clear default background
+            }
         }
     }
 }
