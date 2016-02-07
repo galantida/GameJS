@@ -65,27 +65,6 @@
         client.heartBeat = setInterval(function () { gameLoop(); }, 100);
     }
 
-    function JSONResponseHandler(response) {
-
-        switch (response.callName) {
-            case "createObject":
-            case "updateObject":
-            case "deleteObject":
-            case "getArea":
-                {
-                    client.worldView.ground.updateObjects(response.content);
-                    break;
-                }
-            default:
-                {
-                    console.log("ERROR: unidentified response ignored.");
-                    break;
-                }
-        }
-    }
-
-    
-
     function keyDownHandler(event) {
 
         //alert("event.keyCode" + event.keyCode);
@@ -146,74 +125,6 @@
                 }
         }
     }
-
-    function onClickTile(element) {
-        console.log("Clicked tile.");
-
-        // get info about the click
-        var screenLocation = new clsVector2D(Number(element.dataset.x), Number(element.dataset.y)); // get screen location clicked
-        var worldLocation = client.worldView.ground.screenToWorld(screenLocation); // get world location clicked
-
-        // which click type was it
-        var rightclick;
-        if (!e) var e = window.event;
-        if (e.which) rightclick = (e.which == 3);
-        else if (e.button) rightclick = (e.button == 2);
-
-
-        if (rightclick == true) {
-            // right click
-            //var br = Math.floor(Math.random() * 2);
-            //client.setObject(worldLocation.x, worldLocation.y,"cubes", "bedrock" + br);
-        }
-        else {
-            // left click
-
-            // reload with new location as center
-            client.playerMoveTarget = new clsVector2D(worldLocation.x, worldLocation.y);
-        }
-
-        //return false; // don't show default right click menu
-        e.preventDefault();
-    }
-
-    function onClickObject(element) {
-        console.log("Clicked object.");
-
-        // get info about the click
-        var screenLocation = new clsVector2D(Number(element.dataset.x), Number(element.dataset.y)); // get screen location clicked
-        var worldLocation = client.worldView.ground.screenToWorld(screenLocation); // get world location clicked
-        var obj = JSON.parse(element.getAttribute("data")); // get object information
-
-        // identify click type (left right middle)
-        var rightclick;
-        if (!e) var e = window.event;
-        if (e.which) rightclick = (e.which == 3);
-        else if (e.button) rightclick = (e.button == 2);
-
-
-        if (rightclick == true) {
-            // right click
-            console.log("Right click stone @world(" + obj.x + "," + obj.y + ") and @screen(" + screenLocation.x + "," + screenLocation.y + ")");
-
-
-            // insert and redraw everyting in tile
-            //var br = Math.floor(Math.random() * 2);
-            //client.createObject(obj.x, obj.y, obj.z + 1, "stone", "bedrocktr");
-
-            // delete and redraw everything in tile            
-            client.deleteObject(obj.id);
-            //client.worldView.ground.clearArea(screenLocation.x, screenLocation.y, screenLocation.x, screenLocation.y);
-        }
-        else {
-            // left click
-            //console.log("Left click stone @world(" + obj.x + "," + obj.y + ") and @screen(" + screenLocation.x + "," + screenLocation.y + ")");
-        }
-
-        //return false; // don't show default right click menu
-        e.preventDefault();
-    }
-
 
     function gameLoop() {
         client.process();

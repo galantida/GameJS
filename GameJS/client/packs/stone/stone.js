@@ -31,7 +31,7 @@ var stone = {
         div.style.top = (-(obj.z * 32)) + "px";
 
         // add events
-        div.onmousedown = function () { onClickObject(this); };
+        div.onmousedown = function () { client.worldView.ground.onClickObject(this); };
         div.addEventListener("contextmenu", function (e) { e.preventDefault(); });
 
         // put image in container

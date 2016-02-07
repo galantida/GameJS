@@ -14,20 +14,14 @@ function clsGround(displayPanel) {
     this.world = new clsVector2D(0, 0);
     this.worldBottomRight = new clsVector2D(0, 0);
 
-    // inner workings
-    this.lastUpdate = new Date();
-
     // initializations
     this.cs = { "width":64, "height":64, "displayWidth":64, "displayHeight":32 };
     this.buffer = this.createBuffer(displayPanel); // create and position buffer element based on screen size and position
     this.createTiles(); // create random map this will be a JSON map load in the future
 
     // request regular updates without user interaction
+    this.lastUpdate = new Date("3/19/69");
     this.heartBeat = setInterval(function() { client.worldView.ground.update(); }, 1000);
-}
-
-clsGround.prototype.worldBottomRight = function () {
-    
 }
 
 /**********************************************
@@ -85,7 +79,7 @@ clsGround.prototype.createTiles = function () {
             ele.style.top = ele.dataset.defaultTop + "px";
 
             // set element events
-            ele.onmousedown = function () { onClickTile(this); };
+            ele.onmousedown = function () { client.worldView.ground.onClickTile(this); };
             ele.addEventListener("contextmenu", function (e) { e.preventDefault(); });
             this.buffer.element.appendChild(ele); // add the cube element to the buffer
 
@@ -101,21 +95,17 @@ clsGround.prototype.createTiles = function () {
 ***********************************************/
 clsGround.prototype.worldToScreen = function (worldLocation) {
     return new clsVector2D(worldLocation.x - this.world.x, worldLocation.y - this.world.y);
-
-    // old code
-    var result = new clsVector2D(worldLocation.x - this.world.x, worldLocation.y - this.world.y);
-    console.log("world (" + JSON.stringify(worldLocation) + ") to screen (" + JSON.stringify(result) + ")");
-    return result;
 }
 
 // it may be a fluke but this function did not work last time I used to. (probably should never never need it);
 clsGround.prototype.screenToWorld = function (screenLocation) {
     return new clsVector2D(this.world.x + screenLocation.x, this.world.y + screenLocation.y);
+}
 
-    // old code
-    var result = new clsVector2D(this.world.x + screenLocation.x, this.world.y + screenLocation.y);
-    console.log("screen (" + JSON.stringify(screenLocation) + ") to world (" + JSON.stringify(result) + ")");
-    return result;
+clsGround.prototype.setWorldLocation = function (worldLocation) {
+    // set new world location
+    this.world = worldLocation
+    this.worldBottomRight = new clsVector2D(this.world.x + this.buffer.size - 1, this.world.y + this.buffer.size - 1);
 }
 
 
@@ -145,13 +135,15 @@ clsGround.prototype.jumpToLocation = function (worldx, worldy) {
     console.log("Jumping top left of view to world location (" + worldx + ", " + worldy + ")");
 
     // set new world location
-    this.world = new clsVector2D(worldx, worldy);
-    this.worldBottomRight = new clsVector2D(this.world.x + this.buffer.size - 1, this.world.y + this.buffer.size - 1);
-
+    this.setWorldLocation(new clsVector2D(worldx, worldy));
     this.clearAll(); // clear all existing cubes
 
     // request cubes
-    wsi.requestJSONInfo({ "callName": "getArea", "x1": worldx, "y1": worldy, "x2": this.worldBottomRight.x, "y2": this.worldBottomRight.y }, JSONResponseHandler);
+    wsi.requestJSONInfo({ "callName": "getArea", "x1": worldx, "y1": worldy, "x2": this.worldBottomRight.x, "y2": this.worldBottomRight.y }, client.worldView.ground.objectsResponse);
+}
+
+clsGround.prototype.objectsResponse = function (response) {
+    client.worldView.ground.updateObjects(response.content);
 }
 
 
@@ -177,9 +169,9 @@ clsGround.prototype.updateObjects = function (objects) {
                 // delete object
 
                 // loop through the existing elements in this tile.
-                for (t = 0; t < tile.children.length; t++) {
-                    if (obj.id == tile.children[t].id) {
-                        tile.removeChild(tile.children[t]);
+                for (i = 0; i < tile.children.length; i++) {
+                    if (obj.id == tile.children[i].id) {
+                        tile.removeChild(tile.children[i]);
                         break; // either way break out of the for loop when done
                     }
                 }
@@ -188,9 +180,9 @@ clsGround.prototype.updateObjects = function (objects) {
 
                 if (obj.created != obj.modified) {
                     // loop through the existing elements in this tile.
-                    for (t = 0; t < tile.children.length; t++) {
-                        if (obj.id == tile.children[t].id) {
-                            tile.removeChild(tile.children[t]); // remove it 
+                    for (i = 0; i < tile.children.length; i++) {
+                        if (obj.id == tile.children[i].id) {
+                            tile.removeChild(tile.children[i]); // remove it 
                             break; // either way break out of the for loop when done
                         }
                     }
@@ -273,24 +265,24 @@ clsGround.prototype.shiftCubes = function(shiftx, shifty) {
         // request last row
         var worldRow1 = this.screenToWorld(new clsVector2D(last, 0));
         var worldRow2 = this.screenToWorld(new clsVector2D(last, last));
-        wsi.requestJSONInfo({ "callName": "getArea", "x1": worldRow1.x, "y1": worldRow1.y, "x2": worldRow2.x, "y2": worldRow2.y }, JSONResponseHandler);
+        wsi.requestJSONInfo({ "callName": "getArea", "x1": worldRow1.x, "y1": worldRow1.y, "x2": worldRow2.x, "y2": worldRow2.y }, client.worldView.ground.objectsResponse);
     } else if (shiftx == -1) {
         // request first row
         var worldRow1 = this.screenToWorld(new clsVector2D(0, 0));
         var worldRow2 = this.screenToWorld(new clsVector2D(0, last));
-        wsi.requestJSONInfo({ "callName": "getArea", "x1": worldRow1.x, "y1": worldRow1.y, "x2": worldRow2.x, "y2": worldRow2.y }, JSONResponseHandler);
+        wsi.requestJSONInfo({ "callName": "getArea", "x1": worldRow1.x, "y1": worldRow1.y, "x2": worldRow2.x, "y2": worldRow2.y }, client.worldView.ground.objectsResponse);
     }
 
     if (shifty == 1) {
         // request last col
         var worldCol1 = this.screenToWorld(new clsVector2D(0, last));
         var worldCol2 = this.screenToWorld(new clsVector2D(last, last));
-        wsi.requestJSONInfo({ "callName": "getArea", "x1": worldCol1.x, "y1": worldCol1.y, "x2": worldCol2.x, "y2": worldCol2.y }, JSONResponseHandler);
+        wsi.requestJSONInfo({ "callName": "getArea", "x1": worldCol1.x, "y1": worldCol1.y, "x2": worldCol2.x, "y2": worldCol2.y }, client.worldView.ground.objectsResponse);
     } else if (shifty == -1) {
         // request first col
         var worldCol1 = this.screenToWorld(new clsVector2D(0, 0));
         var worldCol2 = this.screenToWorld(new clsVector2D(last, 0));
-        wsi.requestJSONInfo({ "callName": "getArea", "x1": worldCol1.x, "y1": worldCol1.y, "x2": worldCol2.x, "y2": worldCol2.y }, JSONResponseHandler);
+        wsi.requestJSONInfo({ "callName": "getArea", "x1": worldCol1.x, "y1": worldCol1.y, "x2": worldCol2.x, "y2": worldCol2.y }, client.worldView.ground.objectsResponse);
     }
 
 }
@@ -309,8 +301,77 @@ clsGround.prototype.copyTile = function (source, destination) {
     destination.style.background = source.style.background; // copy cube image and and tile info
 }
 
+clsGround.prototype.onClickTile = function(element) {
+    console.log("Clicked tile.");
+
+    // get info about the click
+    var screenLocation = new clsVector2D(Number(element.dataset.x), Number(element.dataset.y)); // get screen location clicked
+    var worldLocation = client.worldView.ground.screenToWorld(screenLocation); // get world location clicked
+
+    // which click type was it
+    var rightclick;
+    if (!e) var e = window.event;
+    if (e.which) rightclick = (e.which == 3);
+    else if (e.button) rightclick = (e.button == 2);
+
+
+    if (rightclick == true) {
+        // right click
+        //var br = Math.floor(Math.random() * 2);
+        //client.setObject(worldLocation.x, worldLocation.y,"cubes", "bedrock" + br);
+    }
+    else {
+        // left click
+
+        // reload with new location as center
+        client.playerMoveTarget = new clsVector2D(worldLocation.x, worldLocation.y);
+    }
+
+    //return false; // don't show default right click menu
+    e.preventDefault();
+}
+
+clsGround.prototype.onClickObject = function(element) {
+    console.log("Clicked object.");
+
+    // get info about the click
+    var screenLocation = new clsVector2D(Number(element.dataset.x), Number(element.dataset.y)); // get screen location clicked
+    var worldLocation = client.worldView.ground.screenToWorld(screenLocation); // get world location clicked
+    var obj = JSON.parse(element.getAttribute("data")); // get object information
+
+    // identify click type (left right middle)
+    var rightclick;
+    if (!e) var e = window.event;
+    if (e.which) rightclick = (e.which == 3);
+    else if (e.button) rightclick = (e.button == 2);
+
+
+    if (rightclick == true) {
+        // right click
+        console.log("Right click stone @world(" + obj.x + "," + obj.y + ") and @screen(" + screenLocation.x + "," + screenLocation.y + ")");
+
+
+        // insert and redraw everyting in tile
+        //var br = Math.floor(Math.random() * 2);
+        //client.createObject(obj.x, obj.y, obj.z + 1, "stone", "bedrocktr");
+
+        // delete and redraw everything in tile            
+        client.deleteObject(obj.id);
+        //client.worldView.ground.clearArea(screenLocation.x, screenLocation.y, screenLocation.x, screenLocation.y);
+    }
+    else {
+        // left click
+        //console.log("Left click stone @world(" + obj.x + "," + obj.y + ") and @screen(" + screenLocation.x + "," + screenLocation.y + ")");
+    }
+
+    //return false; // don't show default right click menu
+    e.preventDefault();
+}
+
 clsGround.prototype.update = function () {
+
     console.log("Requesting objects modified since " + this.lastUpdate + " in (" + this.world.x + "," + this.world.y + " - " + this.worldBottomRight.x + "," + this.worldBottomRight.y + ")");
-    wsi.requestJSONInfo({ "callName": "getArea", "x1": this.world.x, "y1": this.world.y, "x2": this.worldBottomRight.x, "y2": this.worldBottomRight.y, "modified": utils.wsFriendlyDateTime(this.lastUpdate) }, JSONResponseHandler);
+    //wsi.requestJSONInfo({ "callName": "getArea", "x1": this.world.x, "y1": this.world.y, "x2": this.worldBottomRight.x, "y2": this.worldBottomRight.y, "modified": utils.wsFriendlyDateTime(this.lastUpdate) }, JSONResponseHandler);
+    wsi.requestJSONInfo({ "callName": "getArea", "x1": this.world.x, "y1": this.world.y, "x2": this.worldBottomRight.x, "y2": this.worldBottomRight.y, "modified": utils.wsFriendlyDateTime(this.lastUpdate) }, client.worldView.ground.objectsResponse);
     this.lastUpdate = new Date();
 }

@@ -33,9 +33,8 @@ clsWorldView.prototype.jumpToLocation = function (worldx, worldy) {
     this.location.y = worldy;
 
     // calculate top, left corner in world since ground does not accept center location
-    var tmpx = worldx - (this.ground.buffer.size / 2);
-    var tmpy = worldy - (this.ground.buffer.size / 2);
-    this.ground.jumpToLocation(tmpx, tmpy);
+    var worldViewTopLeft = new clsVector2D(worldx - (this.ground.buffer.size / 2), worldy - (this.ground.buffer.size / 2));
+    this.ground.setWorldLocation(worldViewTopLeft);
 }
 
 // scroll center view on a specific location
