@@ -36,10 +36,11 @@ namespace GameJS
             else return null;
         }
 
-        public bool deleteObject(int id)
+        public clsObject deleteObject(int id)
         {
             clsObject obj = new clsObject(this.db, id);
-            return obj.delete();
+            obj.delete();
+            return obj;
         }
 
         public bool destroyObject(int id)
@@ -52,6 +53,12 @@ namespace GameJS
         {
             clsObject obj = new clsObject(this.db);
             return obj.getObjects(x1, y1, x2, y2, 0, modified);
+        }
+
+        public int deleteArea(int x1, int y1, int x2, int y2)
+        {
+            clsObject obj = new clsObject(this.db);
+            return obj.deleteObjects(x1, y1, x2, y2, 0);
         }
 
         public int destroyArea(int x1, int y1, int x2, int y2)

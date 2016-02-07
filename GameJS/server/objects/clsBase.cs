@@ -131,7 +131,6 @@ namespace GameJS
             if (this.id == 0)
             {
                 // insert - INSERT INTO table (column1, column2, ... ) VALUES (expression1, expression2, ... );
-                // select - SELECT * FROM table WHERE column1 = expression1 and column2 = expression2 and .....
 
                 // set defaults
                 this.created = DateTime.Now;
@@ -183,10 +182,14 @@ namespace GameJS
                 delimiter = "";
                 foreach (var propertyInfo in this.GetType().GetProperties())
                 {
-                    if (propertyInfo.Name != "ID")
+                    if (propertyInfo.Name != "ID") // ignore unsavable properties
                     {
-                        sql += delimiter + propertyInfo.Name + " = " + getProperty(propertyInfo.Name);
-                        delimiter = ", ";
+                        string prop = getProperty(propertyInfo.Name);
+                        if (prop != null) // ignore unsavable property types
+                        {
+                            sql += delimiter + propertyInfo.Name + " = " + prop;
+                            delimiter = ", ";
+                        }
                     }
                 }
                 sql += " WHERE ID = " + this.id + ";";
@@ -230,13 +233,17 @@ namespace GameJS
                                 DateTime dt = Convert.ToDateTime(propertyInfo.GetValue(this, null));
                                 return "'" + dt.ToString("yyyy-MM-dd HH:mm:ss") + "'";
                             }
-
-                        default:
+                        case "System.String":
                             {
                                 // add quoted type property to json string
                                 string text = propertyInfo.GetValue(this, null).ToString();
                                 text = text.Replace("'", "''"); // db friendly
                                 return "'" + text + "'";
+                            }
+                        default:
+                            {
+                                // add quoted type property to json string
+                                return null;
                             }
                     }
                 }
@@ -284,10 +291,15 @@ namespace GameJS
                             //else propertyInfo.SetValue(this, true);
                             break;
                         }
-                    default:
+                    case "System.String":
                         {
                             // strings
                             propertyInfo.SetValue(this, Convert.ToString(dr[propertyInfo.Name]));
+                            break;
+                        }
+                    default:
+                        {
+                            // unknowns are not populated
                             break;
                         }
                 }
@@ -335,10 +347,15 @@ namespace GameJS
                             result += delimiter + "\"" + propertyInfo.Name + "\":" + propertyInfo.GetValue(this, null).ToString().ToLower() + "";
                             break;
                         }
-                    default:
+                    case "System.String":
                         {
                             // strings
                             result += delimiter + "\"" + propertyInfo.Name + "\":\"" + propertyInfo.GetValue(this, null).ToString() + "\"";
+                            break;
+                        }
+                    default:
+                        {
+                            // skip unknown property types
                             break;
                         }
                 }

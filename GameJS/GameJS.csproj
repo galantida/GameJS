@@ -94,6 +94,7 @@
     <Compile Include="server\objects\clsWorld.cs" />
     <Compile Include="server\objects\clsObject.cs" />
     <Compile Include="server\objects\intBase.cs" />
+    <Compile Include="server\objects\util.cs" />
     <Compile Include="server\services\GameServices.aspx.cs">
       <DependentUpon>GameServices.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>

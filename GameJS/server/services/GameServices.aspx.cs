@@ -28,9 +28,6 @@ namespace GameJS
             string callName = getStringParameter("callName");
             if (callName == null) callName = "";
 
-            // record request
-            //clsEventLog.entry(EntryType.Request, command + " - (" + sessionUserName + "@" + Request.UserHostAddress + ")", Request.Url.ToString(), clsUtil.fileNameFromPath(Request.PhysicalPath));
-
             // process command first since that is the only parameter I can be sure of
             switch (callName.ToUpper())
             {
@@ -42,6 +39,7 @@ namespace GameJS
                         clsObject obj;
                         if (callName.ToUpper() == "CREATEOBJECT") {
 
+                            // required properties
                             int x = getNumericParameter("x", true);
                             int y = getNumericParameter("y", true);
                             int z = getNumericParameter("z", true);
@@ -104,18 +102,13 @@ namespace GameJS
                     {
                         int id = getNumericParameter("id", true);
 
-                        // connect to world db
                         clsWorld world = new clsWorld(name, password);
-
-                        // locate an existing object
-                        clsObject obj = world.map.getObject(id);
+                        clsObject obj = world.map.deleteObject(id);
                         if (obj == null) sendResponse("Error", "'Could not locate object 'id=" + id + "' to delete.");
-                        obj.delete(); // this only flag the object as deleted
-
-                        sendResponse("deleteObject", "{id:" + id + "}", "[" + obj.toJSON() + "]");
+                        else sendResponse("deleteObject", "{id:" + obj.id + "}", "[" + obj.toJSON() + "]");
                         break;
                     }
-                case "GETOBJECTS":
+                case "GETAREA":
                     {
                         // read requested coordinate
                         int x1 = getNumericParameter("x1", true);
@@ -126,10 +119,10 @@ namespace GameJS
 
                         clsWorld world = new clsWorld(name, password);
                         string JSON = clsObject.toJSON(world.map.getArea(x1, y1, x2, y2, modified));
-                        sendResponse("getObjects", "{x1:" + x1 + ",y1:" + y1 + ",x2:" + x2 + ",y2:" + y2 + "}", JSON);
+                        sendResponse("getArea", "{x1:" + x1 + ",y1:" + y1 + ",x2:" + x2 + ",y2:" + y2 + "}", JSON);
                         break;
                     }
-                case "CREATEOBJECTS":
+                case "CREATEAREA":
                     {
                         // read requested coordinate
                         int x1 = getNumericParameter("x1", true);
@@ -213,6 +206,20 @@ namespace GameJS
 
                         // formulate response
                         sendResponse("setCubes", "{x1:" + x1 + ",y1:" + y1 + ",x2:" + x2 + ",y2:" + y2 + "}", JSON);
+                        break;
+                    }
+                case "GETOBJECTS":
+                    {
+                        // read requested coordinate
+                        int x1 = getNumericParameter("x1", true);
+                        int y1 = getNumericParameter("y1", true);
+                        int x2 = getNumericParameter("x2");
+                        int y2 = getNumericParameter("y2");
+                        DateTime? modified = getDateTimeParameter("modified");
+
+                        clsWorld world = new clsWorld(name, password);
+                        string JSON = clsObject.toJSON(world.map.getArea(x1, y1, x2, y2, modified));
+                        sendResponse("getObjects", "{x1:" + x1 + ",y1:" + y1 + ",x2:" + x2 + ",y2:" + y2 + "}", JSON);
                         break;
                     }
                 default:

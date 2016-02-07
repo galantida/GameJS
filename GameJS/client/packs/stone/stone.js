@@ -7,31 +7,6 @@
 // report version
 console.log("=== included stone.js ver 0.1 ===");
 
-function clsStone() {
-    
-
-    // properties
-    // amount of resources
-    
-
-}
-
-// methods - what to do when a tree is clicked moused over etc....
-clsStone.prototype.onClick = function() {
-
-}
-
-clsStone.prototype.onMouseOver = function () {
-
-
-}
-
-clsStone.prototype.process = function() {
-    // trees day by day code when visible
-
-}
-
-
 // functions available without an instace via the items namespace
 // access these using nsTree.function()
 var stone = {
@@ -53,7 +28,7 @@ var stone = {
         img.src = "../packs/stone/images/" + obj.item + ".png";
         img.className = "stone imgDefault";
         
-        // create container
+        // create div 
         var div = document.createElement('div');
         div.className = "stone divDefault";
         div.setAttribute("data", JSON.stringify(obj));
@@ -104,7 +79,15 @@ var stone = {
         e.preventDefault();
     },
 
-    process: function () {
+    editMenu: function() {
+        // bed rock
+        // moss rock
+        // wet rock
+        // stone pile
+
+    },
+
+    process: function() {
 
     }
 };

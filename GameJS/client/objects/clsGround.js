@@ -148,7 +148,7 @@ clsGround.prototype.jumpToLocation = function (worldx, worldy) {
     this.clearAll(); // clear all existing cubes
 
     // request cubes
-    wsi.requestJSONInfo({ "callName": "getObjects", "x1": worldx, "y1": worldy, "x2": this.worldBottomRight.x, "y2": this.worldBottomRight.y }, JSONResponseHandler);
+    wsi.requestJSONInfo({ "callName": "getArea", "x1": worldx, "y1": worldy, "x2": this.worldBottomRight.x, "y2": this.worldBottomRight.y }, JSONResponseHandler);
 }
 
 
@@ -270,24 +270,24 @@ clsGround.prototype.shiftCubes = function(shiftx, shifty) {
         // request last row
         var worldRow1 = this.screenToWorld(new clsVector2D(last, 0));
         var worldRow2 = this.screenToWorld(new clsVector2D(last, last));
-        wsi.requestJSONInfo({ "callName": "getObjects", "x1": worldRow1.x, "y1": worldRow1.y, "x2": worldRow2.x, "y2": worldRow2.y }, JSONResponseHandler);
+        wsi.requestJSONInfo({ "callName": "getArea", "x1": worldRow1.x, "y1": worldRow1.y, "x2": worldRow2.x, "y2": worldRow2.y }, JSONResponseHandler);
     } else if (shiftx == -1) {
         // request first row
         var worldRow1 = this.screenToWorld(new clsVector2D(0, 0));
         var worldRow2 = this.screenToWorld(new clsVector2D(0, last));
-        wsi.requestJSONInfo({ "callName": "getObjects", "x1": worldRow1.x, "y1": worldRow1.y, "x2": worldRow2.x, "y2": worldRow2.y }, JSONResponseHandler);
+        wsi.requestJSONInfo({ "callName": "getArea", "x1": worldRow1.x, "y1": worldRow1.y, "x2": worldRow2.x, "y2": worldRow2.y }, JSONResponseHandler);
     }
 
     if (shifty == 1) {
         // request last col
         var worldCol1 = this.screenToWorld(new clsVector2D(0, last));
         var worldCol2 = this.screenToWorld(new clsVector2D(last, last));
-        wsi.requestJSONInfo({ "callName": "getObjects", "x1": worldCol1.x, "y1": worldCol1.y, "x2": worldCol2.x, "y2": worldCol2.y }, JSONResponseHandler);
+        wsi.requestJSONInfo({ "callName": "getArea", "x1": worldCol1.x, "y1": worldCol1.y, "x2": worldCol2.x, "y2": worldCol2.y }, JSONResponseHandler);
     } else if (shifty == -1) {
         // request first col
         var worldCol1 = this.screenToWorld(new clsVector2D(0, 0));
         var worldCol2 = this.screenToWorld(new clsVector2D(last, 0));
-        wsi.requestJSONInfo({ "callName": "getObjects", "x1": worldCol1.x, "y1": worldCol1.y, "x2": worldCol2.x, "y2": worldCol2.y }, JSONResponseHandler);
+        wsi.requestJSONInfo({ "callName": "getArea", "x1": worldCol1.x, "y1": worldCol1.y, "x2": worldCol2.x, "y2": worldCol2.y }, JSONResponseHandler);
     }
 
 }
