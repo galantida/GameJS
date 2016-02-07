@@ -93,6 +93,9 @@
     <Compile Include="server\objects\clsMap.cs" />
     <Compile Include="server\objects\clsWorld.cs" />
     <Compile Include="server\objects\clsObject.cs" />
+    <Compile Include="server\objects\clsAttribute.cs" />
+    <Compile Include="server\objects\clsTemplateAttribute.cs" />
+    <Compile Include="server\objects\clsTemplate.cs" />
     <Compile Include="server\objects\intBase.cs" />
     <Compile Include="server\objects\util.cs" />
     <Compile Include="server\services\GameServices.aspx.cs">

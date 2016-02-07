@@ -52,25 +52,25 @@ namespace GameJS
         public List<clsObject> getArea(int x1, int y1, int x2, int y2, DateTime? modified = null)
         {
             clsObject obj = new clsObject(this.db);
-            return obj.getObjects(x1, y1, x2, y2, 0, modified);
+            return obj.getArea(x1, y1, x2, y2, 0, modified);
         }
 
         public int deleteArea(int x1, int y1, int x2, int y2)
         {
             clsObject obj = new clsObject(this.db);
-            return obj.deleteObjects(x1, y1, x2, y2, 0);
+            return obj.deleteArea(x1, y1, x2, y2, 0);
         }
 
         public int destroyArea(int x1, int y1, int x2, int y2)
         {
             clsObject obj = new clsObject(this.db);
-            return obj.destroyObjects(x1, y1, x2, y2, 0);
+            return obj.destroyArea(x1, y1, x2, y2, 0);
         }
 
         public int createArea(int x1, int y1, int x2, int y2)
         {
             clsObject obj = new clsObject(this.db);
-            return obj.destroyObjects(x1, y1, x2, y2, 0);
+            return obj.destroyArea(x1, y1, x2, y2, 0);
 
             // map generator
 

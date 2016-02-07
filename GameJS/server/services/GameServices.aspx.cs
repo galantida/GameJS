@@ -208,18 +208,11 @@ namespace GameJS
                         sendResponse("setCubes", "{x1:" + x1 + ",y1:" + y1 + ",x2:" + x2 + ",y2:" + y2 + "}", JSON);
                         break;
                     }
-                case "GETOBJECTS":
+                case "GETTEMPLATES":
                     {
-                        // read requested coordinate
-                        int x1 = getNumericParameter("x1", true);
-                        int y1 = getNumericParameter("y1", true);
-                        int x2 = getNumericParameter("x2");
-                        int y2 = getNumericParameter("y2");
-                        DateTime? modified = getDateTimeParameter("modified");
-
                         clsWorld world = new clsWorld(name, password);
-                        string JSON = clsObject.toJSON(world.map.getArea(x1, y1, x2, y2, modified));
-                        sendResponse("getObjects", "{x1:" + x1 + ",y1:" + y1 + ",x2:" + x2 + ",y2:" + y2 + "}", JSON);
+                        string JSON = clsTemplate.toJSON(world.getTemplates());
+                        sendResponse("getTemplates", "{}", JSON);
                         break;
                     }
                 default:

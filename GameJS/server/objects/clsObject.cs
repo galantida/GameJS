@@ -54,6 +54,16 @@ namespace GameJS
             }
         }
 
+        public List<clsAttribute> attributes
+        {
+            get
+            {
+                clsAttribute attribute = new clsAttribute(_db);
+                return attribute.getObjectAttributes(this.id);
+                // remember to delete these in the destroy function
+            }
+        }
+
         // returns the contents of this object. passing a modified date will return deleted as well.
         public List<clsObject> referenced(DateTime? modified = null)
         {
@@ -127,12 +137,12 @@ namespace GameJS
         }
 
         // destroy all objects in a particular area
-        public int destroyObjects(int x1, int y1, int x2, int y2, int containerId = 0)
+        public int destroyArea(int x1, int y1, int x2, int y2, int containerId = 0)
         {
             int result = 0;
 
             // initiate destruction method for each object
-            List<clsObject> objs = getObjects(x1, y1, x2, y2, containerId);
+            List<clsObject> objs = getArea(x1, y1, x2, y2, containerId);
             foreach (clsObject obj in this.contents)
             {
                 if (obj.destroy() == true) result++;
@@ -141,12 +151,12 @@ namespace GameJS
         }
 
         // delete all objects in a particular area
-        public int deleteObjects(int x1, int y1, int x2, int y2, int containerId = 0)
+        public int deleteArea(int x1, int y1, int x2, int y2, int containerId = 0)
         {
             int result = 0;
 
             // initiate destruction method for each object
-            List<clsObject> objs = getObjects(x1, y1, x2, y2, containerId);
+            List<clsObject> objs = getArea(x1, y1, x2, y2, containerId);
             foreach (clsObject obj in this.contents)
             {
                 if (obj.delete() == true) result++;
@@ -155,7 +165,7 @@ namespace GameJS
         }
 
         // returns all objects in a particular area and cotnainer. modifed will return deleted objects as well.
-        public List<clsObject> getObjects(int x1, int y1, int x2, int y2, int containerId =0, DateTime? modified = null)
+        public List<clsObject> getArea(int x1, int y1, int x2, int y2, int containerId =0, DateTime? modified = null)
         {
             util.sort(ref x1, ref x2);
             util.sort(ref y1, ref y2);

@@ -19,6 +19,27 @@ namespace GameJS
             this.map = new clsMap(this.db);
         }
 
+        public List<clsTemplate> getTemplates()
+        {
+            clsTemplate template = new clsTemplate(this.db);
+            return template.getTemplates();
+        }
+
+        public void BedRock()
+        {
+            // pack = stone
+            // img = bedrock1
+            // stackable = true
+            // passthrough = false
+            // container = false
+            // ai = none
+            // weight = 100;
+
+
+            // ingredients 2 piles of stone
+
+        }
+
         
     }
 }
