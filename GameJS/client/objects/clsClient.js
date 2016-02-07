@@ -111,8 +111,6 @@ clsClient.prototype.process = function () {
         // move player toward the desired location
         this.worldView.moveTowardLocation(this.player.x, this.player.y);
     }
-
-    this.worldView.process();
 }
 
 

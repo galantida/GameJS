@@ -25,12 +25,6 @@ clsWorldView.prototype.update = function () {
     this.ground.update();
 }
 
-clsWorldView.prototype.process = function () {
-    this.displayPanel.process();
-    this.ground.process();
-
-}
-
 // center view on a specific location
 clsWorldView.prototype.jumpToLocation = function (worldx, worldy) {
     console.log("Jump from (" + this.location.x + "," + this.location.y + ") to (" + worldx + "," + worldy + ")");

@@ -45,11 +45,3 @@ clsContainerView.prototype.setup = function () {
     }
 }
 
-
-clsContainerView.prototype.process = function () {
-    this.displayPanel.process();
-
-}
-
-
-

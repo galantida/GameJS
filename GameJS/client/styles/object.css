@@ -1,0 +1,30 @@
+﻿/*
+    to calculate default locations
+
+*/
+.object.divDefault
+{
+    position:absolute;
+    left: 0px;
+    top: 0px;
+}
+.object.divDefault:hover
+{
+    position:absolute;
+    left: 0px;
+    top: 0px;
+}
+.object.imgDefault
+{
+    position:absolute;
+    left: 0px; /* img 64 / 2 - 32   */
+    top: 0px; /* img 64 - 32  */
+}
+.object.imgDefault:hover
+{
+    position:absolute;
+    left: 0px; /* img 64 / 2 - 32   */
+    top: 0px; /* img 64 - 32  */
+    opacity: .50;
+}
+

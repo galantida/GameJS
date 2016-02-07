@@ -65,7 +65,6 @@
     <Content Include="client\packs\stone\stone.js" />
     <Content Include="client\packs\trees\trees.css" />
     <Content Include="client\packs\trees\trees.js" />
-    <Content Include="client\objects\clsImageset.js" />
     <Content Include="client\objects\clsGround.js" />
     <Content Include="client\objects\clsClient.js" />
     <Content Include="client\objects\clsContainerView.js" />
@@ -73,9 +72,10 @@
     <Content Include="client\scripts\wsInterface.js" />
     <Content Include="client\styles\clsGround.css" />
     <Content Include="client\styles\clsContainer.css" />
+    <Content Include="client\styles\object.css" />
     <Content Include="server\dbScripts\mySQL.txt" />
     <Content Include="server\services\GameServices.aspx" />
-    <Content Include="client\html\game.html" />
+    <Content Include="client\html\interface.html" />
     <Content Include="packages.config" />
     <Content Include="client\objects\clsDisplayPanel.js" />
     <Content Include="client\objects\clsVector2D.js" />

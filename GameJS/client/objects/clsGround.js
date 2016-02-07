@@ -18,9 +18,12 @@ function clsGround(displayPanel) {
     this.lastUpdate = new Date();
 
     // initializations
-    this.cs = new clsImageset("cubes.png", 64, 10, 12); // load cs (not really used)
+    this.cs = { "width":64, "height":64, "displayWidth":64, "displayHeight":32 };
     this.buffer = this.createBuffer(displayPanel); // create and position buffer element based on screen size and position
     this.createTiles(); // create random map this will be a JSON map load in the future
+
+    // request regular updates without user interaction
+    this.heartBeat = setInterval(function() { client.worldView.ground.update(); }, 1000);
 }
 
 clsGround.prototype.worldBottomRight = function () {
@@ -82,7 +85,7 @@ clsGround.prototype.createTiles = function () {
             ele.style.top = ele.dataset.defaultTop + "px";
 
             // set element events
-            ele.onmousedown = function () { tileOnClick(this); };
+            ele.onmousedown = function () { onClickTile(this); };
             ele.addEventListener("contextmenu", function (e) { e.preventDefault(); });
             this.buffer.element.appendChild(ele); // add the cube element to the buffer
 
@@ -308,21 +311,6 @@ clsGround.prototype.copyTile = function (source, destination) {
 
 clsGround.prototype.update = function () {
     console.log("Requesting objects modified since " + this.lastUpdate + " in (" + this.world.x + "," + this.world.y + " - " + this.worldBottomRight.x + "," + this.worldBottomRight.y + ")");
-    // update example
-    wsi.requestJSONInfo({ "callName": "getObjects", "x1": this.world.x, "y1": this.world.y, "x2": this.worldBottomRight.x, "y2": this.worldBottomRight.y, "modified": utils.wsFriendlyDateTime(this.lastUpdate) }, JSONResponseHandler);
-    // key frame example
-    //wsi.requestJSONInfo({ "callName": "getObjects", "x1": this.world.x, "y1": this.world.y, "x2": this.worldBottomRight.x, "y2": this.worldBottomRight.y}, JSONResponseHandler);
+    wsi.requestJSONInfo({ "callName": "getArea", "x1": this.world.x, "y1": this.world.y, "x2": this.worldBottomRight.x, "y2": this.worldBottomRight.y, "modified": utils.wsFriendlyDateTime(this.lastUpdate) }, JSONResponseHandler);
     this.lastUpdate = new Date();
-
-    // you may want keyframes to avoid anomolies
 }
-
-
-clsGround.prototype.process = function () {
-
-    // refresh modified cubes since last update
-    if ((new Date() - this.lastUpdate) > 3000) {
-        this.update(); // remember cube deletion is not an update since it will not have a modified record.
-    }
-}
-
