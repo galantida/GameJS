@@ -12,7 +12,8 @@
 }
 .clsContainer.imgDefault
 {
-
+    width:32px;
+    height:32px;
 }
 .clsContainer.imgDefault:hover
 {

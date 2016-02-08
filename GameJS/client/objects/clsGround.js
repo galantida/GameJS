@@ -17,7 +17,9 @@ function clsGround(displayPanel) {
     // initializations
     this.cs = { "width":64, "height":64, "displayWidth":64, "displayHeight":32 };
     this.buffer = this.createBuffer(displayPanel); // create and position buffer element based on screen size and position
-    this.createTiles(); // create random map this will be a JSON map load in the future
+
+    // rename to grid!!!!
+    this.createTiles(); // create the tile that we will fill with objects
 
     // request regular updates without user interaction
     this.lastUpdate = new Date("3/19/69");
@@ -216,7 +218,7 @@ function drawObject(obj) {
 
     // create image
     var img = document.createElement('img');
-    img.src = "../packs/stone/images/" + obj.item + ".png";
+    img.src = "../images/world/" + obj.item + ".png";
     img.className = "object imgDefault";
     div.appendChild(img); // put image in container
 

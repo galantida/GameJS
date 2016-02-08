@@ -1,8 +1,0 @@
-﻿.trees.oak
-{
-    content:url("..\\trees\\tree.png");
-    position:absolute;
-    left: -62px; /* img 189 / 2 - 32   */
-    top: -141px; /* img 173 - 32  */
-    overflow:visible;
-}

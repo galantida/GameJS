@@ -54,7 +54,7 @@ namespace GameJS
         public List<clsTemplate> getTemplates()
         {
             // get every object in a particular area and container. (0 is not in a container)
-            string sql = "SELECT * FROM " + this.tableName + "s";
+            string sql = "SELECT * FROM " + this.tableName + "s order by name desc";
             return this.getList(sql);
         }
 

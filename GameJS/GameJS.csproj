@@ -61,10 +61,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="client\packs\stone\stone.css" />
-    <Content Include="client\packs\stone\stone.js" />
-    <Content Include="client\packs\trees\trees.css" />
-    <Content Include="client\packs\trees\trees.js" />
     <Content Include="client\objects\clsGround.js" />
     <Content Include="client\objects\clsClient.js" />
     <Content Include="client\objects\clsContainerView.js" />

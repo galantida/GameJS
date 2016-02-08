@@ -50,7 +50,7 @@ clsContainerView.prototype.createTemplate = function (template) {
 
     // create image
     var img = document.createElement('img');
-    img.src = "../packs/stone/images/" + template.image + ".png";
+    img.src = "../images/world/" + template.image + ".png";
     img.className = "clsContainer imgDefault";
     div.appendChild(img);
 
