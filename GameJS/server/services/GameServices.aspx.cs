@@ -32,30 +32,39 @@ namespace GameJS
             switch (callName.ToUpper())
             {
                 case "CREATEOBJECT":
+                    {
+                        // required properties
+                        int x = getNumericParameter("x", true);
+                        int y = getNumericParameter("y", true);
+                        int z = getNumericParameter("z", true);
+                        int templateId = getNumericParameter("templateId", true);
+
+                        // connect to worl
+                        clsWorld world = new clsWorld(name, password);
+
+                        // load template
+                        clsTemplate template = world.getTemplate(templateId);
+                        if (template == null) sendResponse("Error", "Could not locate template 'templateId=" + templateId + "' to create new object.");
+
+                        // create object based on template
+                        clsObject obj = world.map.createObject(x, y, z);
+                        obj.item = template.image;
+                        obj.pack = "stone";
+                        obj.save(); 
+
+                        // formulate response
+                        sendResponse("createObject", "{id:" + obj.id + ",x:" + obj.x + ",y:" + obj.y + ",z:" + obj.z + "}", "[" + obj.toJSON() + "]");
+                        break;
+                    }
                 case "UPDATEOBJECT":
                     {
-                        // connect to world db
-                        clsWorld world;
-                        clsObject obj;
-                        if (callName.ToUpper() == "CREATEOBJECT") {
+                        int id = getNumericParameter("id", true);
 
-                            // required properties
-                            int x = getNumericParameter("x", true);
-                            int y = getNumericParameter("y", true);
-                            int z = getNumericParameter("z", true);
+                        // locate an existing object
+                        clsWorld world = new clsWorld(name, password);
+                        clsObject obj = world.map.getObject(id);
+                        if (obj == null) sendResponse("Error", "Could not locate object 'id=" + id + "' to update.");
 
-                            // create new object
-                            world = new clsWorld(name, password);
-                            obj = world.map.createObject(x, y, z);
-                        }
-                        else {
-                            int id = getNumericParameter("id", true);
-
-                            // locate an existing object
-                            world = new clsWorld(name, password);
-                            obj = world.map.getObject(id);
-                            if (obj == null) sendResponse("Error", "Could not locate object 'id=" + id + "' to update.");
-                        }
 
                         // populate properties
                         foreach (PropertyInfo propertyInfo in obj.GetType().GetProperties())
@@ -92,10 +101,10 @@ namespace GameJS
                                 }
                             }
                         }
-                        obj.save(); // this will save a new or update and exisitng tile
+                        obj.save(); 
 
                         // formulate response
-                        sendResponse(callName, "{id:" + obj.id + ",x:" + obj.x + ",y:" + obj.y + ",z:" + obj.z + "}", "[" + obj.toJSON() + "]");
+                        sendResponse("updateObject", "{id:" + obj.id + ",x:" + obj.x + ",y:" + obj.y + ",z:" + obj.z + "}", "[" + obj.toJSON() + "]");
                         break;
                     }
                 case "DELETEOBJECT":

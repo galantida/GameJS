@@ -138,10 +138,11 @@ clsGround.prototype.jumpToLocation = function (worldx, worldy) {
     this.setWorldLocation(new clsVector2D(worldx, worldy));
     this.clearAll(); // clear all existing cubes
 
-    // request cubes
+    // request objects
     wsi.requestJSONInfo({ "callName": "getArea", "x1": worldx, "y1": worldy, "x2": this.worldBottomRight.x, "y2": this.worldBottomRight.y }, client.worldView.ground.objectsResponse);
 }
 
+// not sure why we need this to handle the response but it works
 clsGround.prototype.objectsResponse = function (response) {
     client.worldView.ground.updateObjects(response.content);
 }
@@ -166,7 +167,7 @@ clsGround.prototype.updateObjects = function (objects) {
         if (tile != null) {
 
             if (obj.deleted == true) {
-                // delete object
+                // erase object
 
                 // loop through the existing elements in this tile.
                 for (i = 0; i < tile.children.length; i++) {
@@ -178,6 +179,7 @@ clsGround.prototype.updateObjects = function (objects) {
             }
             else {
 
+                // this is a modified object erase the old one
                 if (obj.created != obj.modified) {
                     // loop through the existing elements in this tile.
                     for (i = 0; i < tile.children.length; i++) {
@@ -188,14 +190,37 @@ clsGround.prototype.updateObjects = function (objects) {
                     }
                 }
 
-                // create new object
-                var ele = window[obj.pack]["create"](obj);
+                // draw new object
+                var ele = drawObject(obj);
                 ele.id = obj.id;
                 tile.appendChild(ele);
                 tile.style.backgroundImage = ""; // clear default background
             }
         }
     }
+}
+
+
+function drawObject(obj) {
+    // this should be a generic function that creates objects base don a template in the database
+        
+    // create div 
+    var div = document.createElement('div');
+    div.className = "object divDefault";
+    div.setAttribute("data", JSON.stringify(obj));
+    div.style.top = (-(obj.z * 32)) + "px";
+
+    // add events
+    div.onmousedown = function () { client.worldView.ground.onClickObject(this); };
+    div.addEventListener("contextmenu", function (e) { e.preventDefault(); });
+
+    // create image
+    var img = document.createElement('img');
+    img.src = "../packs/stone/images/" + obj.item + ".png";
+    img.className = "object imgDefault";
+    div.appendChild(img); // put image in container
+
+    return div;
 }
 
 
@@ -335,9 +360,11 @@ clsGround.prototype.onClickObject = function(element) {
     console.log("Clicked object.");
 
     // get info about the click
-    var screenLocation = new clsVector2D(Number(element.dataset.x), Number(element.dataset.y)); // get screen location clicked
-    var worldLocation = client.worldView.ground.screenToWorld(screenLocation); // get world location clicked
     var obj = JSON.parse(element.getAttribute("data")); // get object information
+    var worldLocation = new clsVector2D(obj.x, obj.y);
+    var screenLocation = this.worldToScreen(worldLocation); // get screen location clicked
+    //var worldLocation = client.worldView.ground.screenToWorld(screenLocation); // get world location clicked
+    
 
     // identify click type (left right middle)
     var rightclick;
@@ -350,14 +377,11 @@ clsGround.prototype.onClickObject = function(element) {
         // right click
         console.log("Right click stone @world(" + obj.x + "," + obj.y + ") and @screen(" + screenLocation.x + "," + screenLocation.y + ")");
 
-
-        // insert and redraw everyting in tile
-        //var br = Math.floor(Math.random() * 2);
-        //client.createObject(obj.x, obj.y, obj.z + 1, "stone", "bedrocktr");
+        // create object based on current template
+        client.createObject(obj.x, obj.y, obj.z + 1, client.packView.currentTemplateId);
 
         // delete and redraw everything in tile            
-        client.deleteObject(obj.id);
-        //client.worldView.ground.clearArea(screenLocation.x, screenLocation.y, screenLocation.x, screenLocation.y);
+        //client.deleteObject(obj.id);
     }
     else {
         // left click

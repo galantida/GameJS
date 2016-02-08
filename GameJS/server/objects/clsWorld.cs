@@ -19,6 +19,11 @@ namespace GameJS
             this.map = new clsMap(this.db);
         }
 
+        public clsTemplate getTemplate(int templateId)
+        {
+            return new clsTemplate(this.db, templateId);
+        }
+
         public List<clsTemplate> getTemplates()
         {
             clsTemplate template = new clsTemplate(this.db);

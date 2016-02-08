@@ -16,7 +16,7 @@ var stone = {
 
     },
 
-    create: function (obj) {
+    create_old: function (obj) {
         // this should be a generic function that creates objects base don a template in the database
 
         // create image

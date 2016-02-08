@@ -11,37 +11,86 @@ function clsContainerView(screenx, screeny, width, height) {
 
     // world view display panel
     this.displayPanel = new clsDisplayPanel("packPanel", screenx, screeny, width, height);
-
+    this.currentTemplateId = 0;
     this.setup();
 }
 
 // refresh all tiles
 clsContainerView.prototype.setup = function () {
     console.log("update pack view.");
+    
+    this.requestTemplates();
 
-    for (var y = 0; y <= 4; y++) {
-        for (var x = 0; x <= 4; x++) {
+}
 
-            // create cube div element
-            var ele = document.createElement('div');
-            ele.className = "clsContainer item";
-            ele.style.backgroundPosition = "-" + x + "em -" + y + "em";
+clsContainerView.prototype.requestTemplates = function () {
+    // request templates
+    wsi.requestJSONInfo({ "callName": "getTemplates" } , receiveTemplates);
+}
 
-            // set dataset properties
-            ele.dataset.x = x;
-            ele.dataset.y = y;
+clsContainerView.prototype.receiveTemplates = function (response) {
+    var templates = response.content;
 
-            // set element properties
-            //ele.style.left = ele.dataset.x * 64 + "px";
-            //ele.style.top = ele.dataset.y * 64 + "px";
+    for (var t = 0; t < templates.length; t++) {
 
-            // set element events
-            //ele.onmousedown = function () { cubeOnClick(this.id); };
-            //ele.addEventListener("contextmenu", function (e) { e.preventDefault(); });
-            //ele.onmouseover = function () { console.log("(" + this.id + ")"); };
-            this.displayPanel.element.appendChild(ele); // add the cube element to the buffer
+        // get object
+        var template = templates[t];
 
-        }
+        this.displayPanel.element.appendChild(this.createTemplate(template));
     }
 }
+
+clsContainerView.prototype.createTemplate = function (template) {
+
+    // create div 
+    var div = document.createElement('div');
+    div.className = "clsContainer divDefault";
+    div.setAttribute("data", JSON.stringify(template));
+    div.setAttribute("data", JSON.stringify(template));
+
+    // create image
+    var img = document.createElement('img');
+    img.src = "../packs/stone/images/" + template.image + ".png";
+    img.className = "clsContainer imgDefault";
+    div.appendChild(img);
+
+    div.appendChild(document.createElement("BR"));
+    div.appendChild(document.createTextNode(template.name));
+
+    // add events
+    div.onmousedown = function () { client.packView.onClickTemplate(this); };
+    div.addEventListener("contextmenu", function (e) { e.preventDefault(); });
+    
+    return div;
+}
+
+clsContainerView.prototype.onClickTemplate = function (element) {
+    console.log("Clicked template.");
+
+    var template = JSON.parse(element.getAttribute("data")); // get template information
+
+    // which click type was it
+    var rightclick;
+    if (!e) var e = window.event;
+    if (e.which) rightclick = (e.which == 3);
+    else if (e.button) rightclick = (e.button == 2);
+
+
+    if (rightclick == true) {
+        // right click
+
+
+    }
+    else {
+        // left click
+        //set current template
+        console.log("setting currentTemplateID = " + this.currentTemplateId);
+        this.currentTemplateId = template.id;
+    }
+
+    //return false; // don't show default right click menu
+    e.preventDefault();
+}
+
+
 

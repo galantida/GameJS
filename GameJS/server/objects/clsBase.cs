@@ -123,7 +123,7 @@ namespace GameJS
         // save and update
         public int save()
         {
-            string sql, names = "", values = "", where = "", delimiter;
+            string sql, names = "", values = "", where = "";
             int result = 0;
 
             _db.open(); // open DB connection
@@ -137,14 +137,32 @@ namespace GameJS
                 this.modified = DateTime.Now;
 
                 // build names and value for insert statment
-                delimiter = "";
+                string insertDelimiter = "";
+                string whereDelimiter = "";
+
                 foreach (var propertyInfo in this.GetType().GetProperties())
                 {
                     if (propertyInfo.Name != "ID")
                     {
-                        names += delimiter + propertyInfo.Name; // build name list
-                        values += delimiter + getProperty(propertyInfo.Name);
-                        delimiter = ", ";
+                        switch (propertyInfo.PropertyType.ToString())
+                        {
+                            case "System.Boolean":
+                            case "System.Int16":
+                            case "System.Int32":
+                            case "System.DateTime":
+                            case "System.String":
+                                {
+                                    // build insert
+                                    names += insertDelimiter + propertyInfo.Name; // build name list
+                                    values += insertDelimiter + getProperty(propertyInfo.Name);
+                                    insertDelimiter = ", ";
+
+                                    // build where for look up as well
+                                    where += whereDelimiter + propertyInfo.Name + "=" + getProperty(propertyInfo.Name);
+                                    whereDelimiter = " AND ";
+                                    break;
+                                }
+                        }
                     }
                 }
 
@@ -153,18 +171,7 @@ namespace GameJS
                 sql += " (" + names + ")";
                 sql += " VALUES (" + values + ");";
                 result = _db.execute(sql);
-
-
-                // build query string for reselect statment
-                delimiter = "";
-                foreach (var propertyInfo in this.GetType().GetProperties())
-                {
-                    if (propertyInfo.Name != "id")
-                    {
-                        where += delimiter + propertyInfo.Name + "=" + getProperty(propertyInfo.Name);
-                        delimiter = " AND ";
-                    }
-                }
+               
 
                 // build query string for read back statment
                 MySqlDataReader dr = _db.query("SELECT * FROM " + this.tableName + "s WHERE " + where + ";");
@@ -179,22 +186,33 @@ namespace GameJS
                 this.modified = DateTime.Now;
 
                 sql = "UPDATE " + this.tableName + "s SET ";
-                delimiter = "";
+                string updateDelimiter = "";
                 foreach (var propertyInfo in this.GetType().GetProperties())
                 {
                     if (propertyInfo.Name != "ID") // ignore unsavable properties
                     {
-                        string prop = getProperty(propertyInfo.Name);
-                        if (prop != null) // ignore unsavable property types
+                        switch (propertyInfo.PropertyType.ToString())
                         {
-                            sql += delimiter + propertyInfo.Name + " = " + prop;
-                            delimiter = ", ";
+                            case "System.Boolean":
+                            case "System.Int16":
+                            case "System.Int32":
+                            case "System.DateTime":
+                            case "System.String":
+                                {
+                                    string prop = getProperty(propertyInfo.Name);
+                                    if (prop != null) // ignore unsavable property types
+                                    {
+                                        sql += updateDelimiter + propertyInfo.Name + " = " + prop;
+                                        updateDelimiter = ", ";
+                                    }
+                                    break;
+                                }
                         }
                     }
                 }
                 sql += " WHERE ID = " + this.id + ";";
-
                 result = _db.execute(sql);
+
 
                 // build query string for read back statment
                 MySqlDataReader dr = _db.query("SELECT * FROM " + this.tableName + "s WHERE id=" + this.id + ";");

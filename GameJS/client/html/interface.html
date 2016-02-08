@@ -130,6 +130,11 @@
         client.process();
     }
 
+    function receiveTemplates(response) {
+        console.log("templates received");
+        client.packView.receiveTemplates(response);
+    }
+
     setup();
     
 </script>

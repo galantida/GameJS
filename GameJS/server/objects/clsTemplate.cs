@@ -14,7 +14,7 @@ namespace GameJS
     {
         // properties
         public string name { get; set; }
-        public string value { get; set; }
+        public string image { get; set; }
 
         public clsTemplate(clsDatabase db) : base(db) { }
         public clsTemplate(clsDatabase db, int id) : base(db, id) { }
