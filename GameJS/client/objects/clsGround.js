@@ -19,7 +19,7 @@ function clsGround(displayPanel) {
     this.buffer = this.createBuffer(displayPanel); // create and position buffer element based on screen size and position
 
     // rename to grid!!!!
-    this.createTiles(); // create the tile that we will fill with objects
+    this.createGrid(); // create the tile that we will fill with objects
 
     // request regular updates without user interaction
     this.lastUpdate = new Date("3/19/69");
@@ -50,43 +50,46 @@ clsGround.prototype.createBuffer = function (displayPanel) {
     return buffer;
 }
 
-clsGround.prototype.createTiles = function () {
-    console.log("Creating tiles...");
+clsGround.prototype.createGrid = function () {
+    console.log("Creating Grid...");
 
     // create cube array for faster access
-    this.tiles = new Array(this.buffer.size); // create row array with global scope
+    this.grid = new Array(this.buffer.size); // create row array with global scope
     for (var x = 0; x < this.buffer.size; x++) {
-        this.tiles[x] = new Array(this.buffer.size); // add column array to each row
+        this.grid[x] = new Array(this.buffer.size); // add column array to each row
         for (var y = 0; y < this.buffer.size; y++) {
-            this.tiles[x][y] = {}; // could add other properties to the object array here.
+            this.grid[x][y] = {}; // could add other properties to the object array here.
         }
     }
 
-    // create html tile elements
+    // create html grid elements
     for (var y = 0; y < this.buffer.size ; y++) {
         for (var x = 0; x < this.buffer.size; x++) {
 
             // create cube div element
             var ele = document.createElement('div');
-            ele.className = "clsGround tile";
+            ele.className = "clsGround grid";
 
-            // set dataset properties (not sure I even need these any more)
+            // set dataset properties
             ele.dataset.x = x;
             ele.dataset.y = y;
-            ele.dataset.defaultLeft = (((x * .5) - (y * .5)) * this.cs.displayWidth);
-            ele.dataset.defaultTop = (((x * .5) + (y * .5)) * this.cs.displayHeight);
+            //ele.dataset.defaultLeft = (((x * .5) - (y * .5)) * this.cs.displayWidth);
+            //ele.dataset.defaultTop = (((x * .5) + (y * .5)) * this.cs.displayHeight);
 
             // set element properties
-            ele.style.left = ele.dataset.defaultLeft + "px";
-            ele.style.top = ele.dataset.defaultTop + "px";
+            ele.style.left = (((x * .5) - (y * .5)) * this.cs.displayWidth) + "px";
+            ele.style.top = (((x * .5) + (y * .5)) * this.cs.displayHeight) + "px";
 
             // set element events
-            ele.onmousedown = function () { client.worldView.ground.onClickTile(this); };
+            // add events
+            ele.ondragover = function () { client.worldView.ground.onDragOverGrid(this); };
+            ele.ondrop = function () { client.worldView.ground.onDropGrid(this); };
+            ele.onmouseup = function () { client.worldView.ground.onClickTile(this); };
             ele.addEventListener("contextmenu", function (e) { e.preventDefault(); });
             this.buffer.element.appendChild(ele); // add the cube element to the buffer
 
             // add element to array for faster access
-            this.tiles[x][y].element = ele;
+            this.grid[x][y].element = ele;
         }
     }
 }
@@ -117,10 +120,10 @@ clsGround.prototype.setWorldLocation = function (worldLocation) {
 
 // sets all ground cubes in a specificed area to cube 0,0
 clsGround.prototype.clearArea = function (x1, y1, x2, y2) {
-    console.log("Clearing tiles (" + x1 + "," + y1 + " - " + x2 + "," + y2 + ")");
+    console.log("Clearing Grid (" + x1 + "," + y1 + " - " + x2 + "," + y2 + ")");
     for (var y = y1; y <= y2 ; y++) {
         for (var x = x1; x <= x2; x++) {
-            var ele = this.tiles[x][y].element;
+            var ele = this.grid[x][y].element;
             ele.innerHTML = "";
             ele.style.background = "url('../images/tiles/noTile.png')"; // set empty images to noTile background
         }
@@ -153,7 +156,7 @@ clsGround.prototype.objectsResponse = function (response) {
 // given a list of world cubes this will refresh their counter parts on the screen if they are still visible
 // this is run for all responses from the server that return updated cube information
 clsGround.prototype.updateObjects = function (objects) {
-    console.log("Updating tiles with new object list...");
+    console.log("Updating grid with new object list...");
 
     // update new objects
     for (var t = 0; t < objects.length; t++) {
@@ -161,9 +164,9 @@ clsGround.prototype.updateObjects = function (objects) {
         // get object
         var obj = objects[t];
 
-        // get objects screen tile location
+        // get objects screen grid location
         var screenLocation = this.worldToScreen(new clsVector2D(obj.x, obj.y));
-        var tile = this.tiles[screenLocation.x][screenLocation.y].element;
+        var tile = this.grid[screenLocation.x][screenLocation.y].element;
         
         // only update cubes that have not yet scrolled off the buffer
         if (tile != null) {
@@ -173,7 +176,7 @@ clsGround.prototype.updateObjects = function (objects) {
 
                 // loop through the existing elements in this tile.
                 for (i = 0; i < tile.children.length; i++) {
-                    if (obj.id == tile.children[i].id) {
+                    if (tile.children[i].id == ("obj" + obj.id)) {
                         tile.removeChild(tile.children[i]);
                         break; // either way break out of the for loop when done
                     }
@@ -185,7 +188,7 @@ clsGround.prototype.updateObjects = function (objects) {
                 if (obj.created != obj.modified) {
                     // loop through the existing elements in this tile.
                     for (i = 0; i < tile.children.length; i++) {
-                        if (obj.id == tile.children[i].id) {
+                        if (tile.children[i].id == ("obj" + obj.id)) {
                             tile.removeChild(tile.children[i]); // remove it 
                             break; // either way break out of the for loop when done
                         }
@@ -194,7 +197,6 @@ clsGround.prototype.updateObjects = function (objects) {
 
                 // draw new object
                 var ele = drawObject(obj);
-                ele.id = obj.id;
                 tile.appendChild(ele);
                 tile.style.backgroundImage = ""; // clear default background
             }
@@ -204,22 +206,27 @@ clsGround.prototype.updateObjects = function (objects) {
 
 
 function drawObject(obj) {
-    // this should be a generic function that creates objects base don a template in the database
+    // this should be a generic function that creates objects based on a template in the database
         
     // create div 
     var div = document.createElement('div');
     div.className = "object divDefault";
+    div.setAttribute("id", ("obj" + obj.id));
     div.setAttribute("data", JSON.stringify(obj));
     div.style.top = (-(obj.z * 32)) + "px";
 
     // add events
-    div.onmousedown = function () { client.worldView.ground.onClickObject(this); };
+    div.ondragover = function () { client.worldView.ground.onDragOverObject(this); };
+    div.ondrop = function () { client.worldView.ground.onDropObject(this); };
+    div.ondragstart = function () { client.worldView.ground.onDragStartObject(this); };
+    //div.onmousedown = function () { client.worldView.ground.onClickObject(this); };
+    div.onmouseup = function () { client.worldView.ground.onClickObject(this); };
     div.addEventListener("contextmenu", function (e) { e.preventDefault(); });
 
     // create image
     var img = document.createElement('img');
     img.src = "../images/world/" + obj.item + ".png";
-    img.className = "object imgDefault";
+    img.className = "object img64Default";
     div.appendChild(img); // put image in container
 
     return div;
@@ -227,9 +234,9 @@ function drawObject(obj) {
 
 
 // scroll the entire landscape one cube in any direction
-clsGround.prototype.shiftCubes = function(shiftx, shifty) {
+clsGround.prototype.shiftGrid = function(shiftx, shifty) {
 
-    console.log("Shifting cubes... (" + shiftx + ", " + shifty + ")");
+    console.log("Shifting grid... (" + shiftx + ", " + shifty + ")");
 
     // pre calc last element id
     var last = this.buffer.size - 1; // last row or column. They are the same because its a square.
@@ -281,7 +288,7 @@ clsGround.prototype.shiftCubes = function(shiftx, shifty) {
             // calculate the source location for each tiles information
             var sourcex = utils.wrap(x + shiftx, 0, last);
             var sourcey = utils.wrap(y + shifty, 0, last);
-            this.copyTile(this.tiles[sourcex][sourcey].element, this.tiles[x][y].element); // copy most tiles
+            this.copyTile(this.grid[sourcex][sourcey].element, this.grid[x][y].element); // copy most tiles
            
             x += xinc;
         }
@@ -328,12 +335,7 @@ clsGround.prototype.copyTile = function (source, destination) {
     destination.style.background = source.style.background; // copy cube image and and tile info
 }
 
-clsGround.prototype.onClickTile = function(element) {
-    console.log("Clicked tile.");
-
-    // get info about the click
-    var screenLocation = new clsVector2D(Number(element.dataset.x), Number(element.dataset.y)); // get screen location clicked
-    var worldLocation = client.worldView.ground.screenToWorld(screenLocation); // get world location clicked
+clsGround.prototype.onClickTile = function (element) {
 
     // which click type was it
     var rightclick;
@@ -341,32 +343,32 @@ clsGround.prototype.onClickTile = function(element) {
     if (e.which) rightclick = (e.which == 3);
     else if (e.button) rightclick = (e.button == 2);
 
+    if (dragflag == false) { // allow for click event on mouse up if nothing was dragged
+        console.log("Clicked tile.");
 
-    if (rightclick == true) {
-        // right click
-        //var br = Math.floor(Math.random() * 2);
-        //client.setObject(worldLocation.x, worldLocation.y,"cubes", "bedrock" + br);
-    }
-    else {
-        // left click
+        // get info about the click
+        var screenLocation = new clsVector2D(Number(element.dataset.x), Number(element.dataset.y)); // get screen location clicked
+        var worldLocation = client.worldView.ground.screenToWorld(screenLocation); // get world location clicked
 
-        // reload with new location as center
-        client.playerMoveTarget = new clsVector2D(worldLocation.x, worldLocation.y);
+
+        if (rightclick == true) {
+            // right click
+            //var br = Math.floor(Math.random() * 2);
+            //client.setObject(worldLocation.x, worldLocation.y,"cubes", "bedrock" + br);
+        }
+        else {
+            // left click
+
+            // reload with new location as center
+            client.playerMoveTarget = new clsVector2D(worldLocation.x, worldLocation.y);
+        }
     }
 
     //return false; // don't show default right click menu
     e.preventDefault();
 }
 
-clsGround.prototype.onClickObject = function(element) {
-    console.log("Clicked object.");
-
-    // get info about the click
-    var obj = JSON.parse(element.getAttribute("data")); // get object information
-    var worldLocation = new clsVector2D(obj.x, obj.y);
-    var screenLocation = this.worldToScreen(worldLocation); // get screen location clicked
-    //var worldLocation = client.worldView.ground.screenToWorld(screenLocation); // get world location clicked
-    
+clsGround.prototype.onClickObject = function (element) {
 
     // identify click type (left right middle)
     var rightclick;
@@ -374,24 +376,135 @@ clsGround.prototype.onClickObject = function(element) {
     if (e.which) rightclick = (e.which == 3);
     else if (e.button) rightclick = (e.button == 2);
 
+    if (dragflag == false) { // allow for click event on mouse up if nothing was dragged
 
-    if (rightclick == true) {
-        // right click
-        console.log("Right click stone @world(" + obj.x + "," + obj.y + ") and @screen(" + screenLocation.x + "," + screenLocation.y + ")");
+        console.log("Clicked object.");
 
-        // create object based on current template
-        client.createObject(obj.x, obj.y, obj.z + 1, client.packView.currentTemplateId);
+        // get info about the click
+        var obj = JSON.parse(element.getAttribute("data")); // get object information
+        var worldLocation = new clsVector2D(obj.x, obj.y);
+        var screenLocation = this.worldToScreen(worldLocation); // get screen location clicked
+        //var worldLocation = client.worldView.ground.screenToWorld(screenLocation); // get world location clicked
 
-        // delete and redraw everything in tile            
-        //client.deleteObject(obj.id);
+
+        if (rightclick == true) {
+            // right click
+            console.log("Right click stone @world(" + obj.x + "," + obj.y + ") and @screen(" + screenLocation.x + "," + screenLocation.y + ")");
+
+            // create object based on current template
+            client.createObject(obj.x, obj.y, obj.z + 1, client.packView.currentTemplateId);
+
+            // delete and redraw everything in tile            
+            //client.deleteObject(obj.id);
+        }
+        else {
+            // left click
+            //console.log("Left click stone @world(" + obj.x + "," + obj.y + ") and @screen(" + screenLocation.x + "," + screenLocation.y + ")");
+        }
+
+        //return false; // don't show default right click menu
     }
-    else {
-        // left click
-        //console.log("Left click stone @world(" + obj.x + "," + obj.y + ") and @screen(" + screenLocation.x + "," + screenLocation.y + ")");
-    }
-
-    //return false; // don't show default right click menu
     e.preventDefault();
+}
+
+clsGround.prototype.onDragStartObject = function (element) {
+    if (!e) var e = window.event; // get the event
+    dragflag = true; // allow for click event on mouse up if nothing was dragged
+
+    // get object and add an identifier
+    var srcObj = JSON.parse(element.getAttribute("data"));
+    srcObj.dragType = "object";
+    e.dataTransfer.setData("text", JSON.stringify(srcObj)); // pass json string of object to drag
+
+    console.log("dragging " + JSON.stringify(srcObj))
+}
+
+
+clsGround.prototype.onDragOverObject = function (element) {
+    if (!e) var e = window.event;
+    e.preventDefault();
+}
+
+clsGround.prototype.onDropObject = function (element) {
+
+    // get event information
+    if (!e) var e = window.event; // get event
+    e.preventDefault();
+
+    dragflag = false; // allow for click event on mouse up if nothing was dragged
+
+    // get dragged information
+    var srcObj = JSON.parse(e.dataTransfer.getData("text"));
+
+    // get drop location information
+    var dstObj = JSON.parse(element.getAttribute("data")); // get object information
+    var worldLocation = new clsVector2D(dstObj.x, dstObj.y);
+    var screenLocation = this.worldToScreen(worldLocation); // get screen location clicked
+
+    console.log("dropped " + JSON.stringify(srcObj) + " on " +  JSON.stringify(dstObj))
+
+    switch (srcObj.dragType) {
+        case "template":
+            {
+                // create object based on dropped template
+                client.createObject(dstObj.x, dstObj.y, dstObj.z + 1, srcObj.id);
+                break;
+            }
+        case "object":
+            {
+                // delete original object
+                //console.log("deleting " + "obj" + srcObj.id);
+                var srcEle = document.getElementById("obj" + srcObj.id);
+                srcEle.parentNode.removeChild(srcEle);
+
+                // move object to new location
+                client.updateObject(srcObj.id, dstObj.x, dstObj.y, dstObj.z + 1, srcObj.pack, srcObj.item);
+                break;
+            }
+    }
+}
+
+clsGround.prototype.onDragOverGrid = function (element) {
+    if (!e) var e = window.event;
+    e.preventDefault();
+}
+
+clsGround.prototype.onDropGrid = function (element) {
+
+    // get event information
+    if (!e) var e = window.event; // get event
+    e.preventDefault();
+
+    dragflag = false; // allow for click event on mouse up if nothing was dragged
+
+    // get dragged information
+    var srcObj = JSON.parse(e.dataTransfer.getData("text"));
+
+    // get drop location information
+    var screenLocation = new clsVector2D(Number(element.dataset.x), Number(element.dataset.y)); // get screen location
+    var worldLocation = client.worldView.ground.screenToWorld(screenLocation); // get world location
+
+    console.log("dropped " + JSON.stringify(srcObj) + " on Grid " + worldLocation.x + "," + worldLocation.y)
+
+    switch (srcObj.dragType) {
+        case "template":
+            {
+                // create object based on dropped template
+                client.createObject(worldLocation.x, worldLocation.y, 0, srcObj.id);
+                break;
+            }
+        case "object":
+            {
+                // delete original object
+                //console.log("deleting " + "obj" + srcObj.id);
+                var srcEle = document.getElementById("obj" + srcObj.id);
+                srcEle.parentNode.removeChild(srcEle);
+
+                // move object to new location
+                client.updateObject(srcObj.id, worldLocation.x, worldLocation.y, 0, srcObj.pack, srcObj.item);
+                break;
+            }
+    }
 }
 
 clsGround.prototype.update = function () {

@@ -8,7 +8,7 @@
     <link href="../styles/clsContainer.css" rel="stylesheet" />
     <link href="../styles/object.css" rel="stylesheet" />
 </head>
-<body onkeydown="keyDownHandler(event)" ondrop="drop(event)" ondragover="allowDrop(event)">
+<body>
     
 </body>
 </html>
@@ -23,24 +23,6 @@
 <script src="../objects/clsDisplayPanel.js"></script>
 <script src="../objects/clsGround.js"></script>
 
-<script>
-    // http://www.html5rocks.com/en/tutorials/dnd/basics/
-    function allowDrop(ev) {
-        ev.preventDefault();
-    }
-
-    function drag(ev) {
-        ev.dataTransfer.setData("text", ev.target.id);
-    }
-
-    function drop(ev) {
-        ev.preventDefault();
-        var data = ev.dataTransfer.getData("text");
-        ev.target.appendChild(document.getElementById(data));
-    }
-</script>
-
-
 <script type="text/javascript">
 
     /*******************************************************************
@@ -51,6 +33,7 @@
 
     // gloabl data objects
     var client = new clsClient(); // client interface
+    var dragflag = false;
 
     function setup() {
 

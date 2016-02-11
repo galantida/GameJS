@@ -1,4 +1,4 @@
-﻿.clsGround.tile
+﻿.clsGround.grid
 {
     font-size:64px;
     width:1em;
@@ -8,7 +8,7 @@
     /* transition:background-position linear 1000ms; // recall in */
 }
 
-.clsGround.tile:hover
+.clsGround.grid:hover
 {
     background-image: linear-gradient(to bottom, rgba(255,255,0,0), rgba(255,255,0,128)), url(..\\images\\tiles\\noTile.png);
     background-blend-mode: color-dodge;

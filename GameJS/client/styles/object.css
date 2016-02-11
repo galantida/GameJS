@@ -14,13 +14,26 @@
     left: 0px;
     top: 0px;
 }
-.object.imgDefault
+.object.img64Default
 {
     position:absolute;
     left: 0px; /* img 64 / 2 - 32   */
     top: 0px; /* img 64 - 32  */
 }
-.object.imgDefault:hover
+.object.img64Default:hover
+{
+    position:absolute;
+    left: 0px; /* img 64 / 2 - 32   */
+    top: 0px; /* img 64 - 32  */
+    opacity: .50;
+}
+.object.img256Default
+{
+    position:absolute;
+    left: 0px; /* img 64 / 2 - 32   */
+    top: 0px; /* img 64 - 32  */
+}
+.object.img256Default:hover
 {
     position:absolute;
     left: 0px; /* img 64 / 2 - 32   */

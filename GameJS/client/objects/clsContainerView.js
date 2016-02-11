@@ -46,7 +46,7 @@ clsContainerView.prototype.createTemplate = function (template) {
     var div = document.createElement('div');
     div.className = "clsContainer divDefault";
     div.setAttribute("data", JSON.stringify(template));
-    div.setAttribute("data", JSON.stringify(template));
+    div.setAttribute("draggable", "true");
 
     // create image
     var img = document.createElement('img');
@@ -58,7 +58,10 @@ clsContainerView.prototype.createTemplate = function (template) {
     div.appendChild(document.createTextNode(template.name));
 
     // add events
-    div.onmousedown = function () { client.packView.onClickTemplate(this); };
+    //div.onmousedown = function () { client.packView.onClickTemplate(this); };
+    div.ondragstart = function () { client.packView.onDragStartTemplate(this); };
+    div.ondragover = function () { client.packView.onDragOverTemplate(this); };
+    div.ondrop = function () { client.packView.onDropTemplate(this); };
     div.addEventListener("contextmenu", function (e) { e.preventDefault(); });
     
     return div;
@@ -90,6 +93,60 @@ clsContainerView.prototype.onClickTemplate = function (element) {
 
     //return false; // don't show default right click menu
     e.preventDefault();
+}
+
+clsContainerView.prototype.onDragStartTemplate = function (element) {
+    if (!e) var e = window.event; // get the event
+    dragflag = true; // allow for click event on mouse up if nothing was dragged
+
+    // get object and add an identifier
+    var obj = JSON.parse(element.getAttribute("data"));
+    obj.dragType = "template";
+    e.dataTransfer.setData("text", JSON.stringify(obj)); // pass json string of object to drag
+}
+
+
+clsContainerView.prototype.onDragOverTemplate = function (element) {
+    if (!e) var e = window.event;
+    e.preventDefault();
+}
+
+clsContainerView.prototype.onDropTemplate = function (element) {
+
+    // get event information
+    if (!e) var e = window.event; // get event
+    e.preventDefault();
+
+    dragflag = false; // allow for click event on mouse up if nothing was dragged
+
+    // get dragged information
+    var srcObj = JSON.parse(e.dataTransfer.getData("text"));
+
+    // get drop location information
+    var dstObj = JSON.parse(element.getAttribute("data")); // get object information
+
+
+    console.log("dropped " + JSON.stringify(srcObj) + " on " + JSON.stringify(dstObj))
+
+    switch (srcObj.dragType) {
+        case "template":
+            {
+                // do noting for template on template
+                //client.createObject(dstObj.x, dstObj.y, dstObj.z + 1, srcObj.id);
+                break;
+            }
+        case "object":
+            {
+                // delete original object
+                //console.log("deleting " + "obj" + srcObj.id);
+                //var srcEle = document.getElementById("obj" + srcObj.id);
+                //srcEle.parentNode.removeChild(srcEle);
+
+                // delete object 
+                client.deleteObject(srcObj.id);
+                break;
+            }
+    }
 }
 
 

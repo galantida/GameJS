@@ -53,7 +53,7 @@ clsWorldView.prototype.moveTowardLocation = function (worldx, worldy) {
     this.location.x += shiftx;
     this.location.y += shifty;
 
-    this.ground.shiftCubes(shiftx, shifty);
+    this.ground.shiftGrid(shiftx, shifty);
 }
 
 
