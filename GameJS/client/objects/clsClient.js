@@ -50,7 +50,7 @@ clsClient.prototype.createObject = function (worldx, worldy, worldz, templateId)
     paramObj.callName = "createObject";
 
     // request cube
-    wsi.requestJSONInfo(paramObj, client.worldView.ground.objectsResponse);
+    wsi.requestJSONInfo(paramObj, client.worldView.grid.objectsResponse);
 }
 
 // sets a tile to a specific graphic
@@ -66,7 +66,7 @@ clsClient.prototype.deleteObject = function (id) {
     paramObj.callName = "deleteObject";
 
     // request cube
-    wsi.requestJSONInfo(paramObj, client.worldView.ground.objectsResponse);
+    wsi.requestJSONInfo(paramObj, client.worldView.grid.objectsResponse);
 }
 
 // sets a tile to a specific graphic
@@ -82,7 +82,7 @@ clsClient.prototype.updateObject = function (id, worldx, worldy, worldz, pack, i
     paramObj.callName = "updateObject";
 
     // request cube
-    wsi.requestJSONInfo(paramObj, client.worldView.ground.objectsResponse);
+    wsi.requestJSONInfo(paramObj, client.worldView.grid.objectsResponse);
 }
 
 clsClient.prototype.process = function () {

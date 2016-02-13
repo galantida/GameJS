@@ -5,10 +5,10 @@
 
 
 // report version
-console.log("=== included clsGround.js ver 0.1 ===");
+console.log("=== included clsGrid.js ver 0.1 ===");
 
-function clsGround(displayPanel) {
-    console.log("Creating ground display panel...");
+function clsGrid(displayPanel) {
+    console.log("Creating grid...");
 
     // properties
     this.world = new clsVector2D(0, 0);
@@ -23,13 +23,13 @@ function clsGround(displayPanel) {
 
     // request regular updates without user interaction
     this.lastUpdate = new Date("3/19/69");
-    this.heartBeat = setInterval(function() { client.worldView.ground.update(); }, 1000);
+    this.heartBeat = setInterval(function() { client.worldView.grid.update(); }, 1000);
 }
 
 /**********************************************
     Initialization functions
 ***********************************************/
-clsGround.prototype.createBuffer = function (displayPanel) {
+clsGrid.prototype.createBuffer = function (displayPanel) {
     console.log("Creating Buffer...");
 
     var buffer = { "border": 2 }; // minimum border in cubes to load off screen 
@@ -45,12 +45,13 @@ clsGround.prototype.createBuffer = function (displayPanel) {
     buffer.element.style.left = ((displayPanel.width() / 2) - (this.cs.displayWidth / 2)) + "px"; // move right to the center of the display area
     buffer.element.style.top = ((displayPanel.height() / 2) - (buffer.displayHeight / 2) - (this.cs.displayHeight / 2)) + "px"; // move down half the display and back up half the buffer
     buffer.element.style.position = "relative";
+    buffer.element.className = "clsGrid buffer"
     //buffer.element.style.border = "1px solid red";
     displayPanel.element.appendChild(buffer.element);
     return buffer;
 }
 
-clsGround.prototype.createGrid = function () {
+clsGrid.prototype.createGrid = function () {
     console.log("Creating Grid...");
 
     // create cube array for faster access
@@ -68,7 +69,7 @@ clsGround.prototype.createGrid = function () {
 
             // create cube div element
             var ele = document.createElement('div');
-            ele.className = "clsGround grid";
+            ele.className = "clsGrid grid";
 
             // set dataset properties
             ele.dataset.x = x;
@@ -82,9 +83,9 @@ clsGround.prototype.createGrid = function () {
 
             // set element events
             // add events
-            ele.ondragover = function () { client.worldView.ground.onDragOverGrid(this); };
-            ele.ondrop = function () { client.worldView.ground.onDropGrid(this); };
-            ele.onmouseup = function () { client.worldView.ground.onClickTile(this); };
+            ele.onmouseup = function () { client.worldView.grid.onClick(this); };
+            ele.ondragover = function () { client.worldView.grid.onDragOver(this); };
+            ele.ondrop = function () { client.worldView.grid.onDrop(this); };
             ele.addEventListener("contextmenu", function (e) { e.preventDefault(); });
             this.buffer.element.appendChild(ele); // add the cube element to the buffer
 
@@ -95,19 +96,8 @@ clsGround.prototype.createGrid = function () {
 }
 
 
-/**********************************************
-    Conversion functions
-***********************************************/
-clsGround.prototype.worldToScreen = function (worldLocation) {
-    return new clsVector2D(worldLocation.x - this.world.x, worldLocation.y - this.world.y);
-}
 
-// it may be a fluke but this function did not work last time I used to. (probably should never never need it);
-clsGround.prototype.screenToWorld = function (screenLocation) {
-    return new clsVector2D(this.world.x + screenLocation.x, this.world.y + screenLocation.y);
-}
-
-clsGround.prototype.setWorldLocation = function (worldLocation) {
+clsGrid.prototype.setWorldLocation = function (worldLocation) {
     // set new world location
     this.world = worldLocation
     this.worldBottomRight = new clsVector2D(this.world.x + this.buffer.size - 1, this.world.y + this.buffer.size - 1);
@@ -119,7 +109,7 @@ clsGround.prototype.setWorldLocation = function (worldLocation) {
 ***********************************************/
 
 // sets all ground cubes in a specificed area to cube 0,0
-clsGround.prototype.clearArea = function (x1, y1, x2, y2) {
+clsGrid.prototype.clearArea = function (x1, y1, x2, y2) {
     console.log("Clearing Grid (" + x1 + "," + y1 + " - " + x2 + "," + y2 + ")");
     for (var y = y1; y <= y2 ; y++) {
         for (var x = x1; x <= x2; x++) {
@@ -130,13 +120,13 @@ clsGround.prototype.clearArea = function (x1, y1, x2, y2) {
     }
 }
 
-clsGround.prototype.clearAll = function (x1, y1, x2, y2) {
+clsGrid.prototype.clearAll = function (x1, y1, x2, y2) {
     this.clearArea(0, 0, this.buffer.size-1, this.buffer.size-1);
 }
 
 
 // sets the top left of the ground ground to a specified world location
-clsGround.prototype.jumpToLocation = function (worldx, worldy) {
+clsGrid.prototype.jumpToLocation = function (worldx, worldy) {
     console.log("Jumping top left of view to world location (" + worldx + ", " + worldy + ")");
 
     // set new world location
@@ -148,14 +138,14 @@ clsGround.prototype.jumpToLocation = function (worldx, worldy) {
 }
 
 // not sure why we need this to handle the response but it works
-clsGround.prototype.objectsResponse = function (response) {
-    client.worldView.ground.updateObjects(response.content);
+clsGrid.prototype.objectsResponse = function (response) {
+    client.worldView.grid.updateObjects(response.content);
 }
 
 
 // given a list of world cubes this will refresh their counter parts on the screen if they are still visible
 // this is run for all responses from the server that return updated cube information
-clsGround.prototype.updateObjects = function (objects) {
+clsGrid.prototype.updateObjects = function (objects) {
     console.log("Updating grid with new object list...");
 
     // update new objects
@@ -165,7 +155,7 @@ clsGround.prototype.updateObjects = function (objects) {
         var obj = objects[t];
 
         // get objects screen grid location
-        var screenLocation = this.worldToScreen(new clsVector2D(obj.x, obj.y));
+        var screenLocation = client.worldView.worldToScreen(new clsVector2D(obj.x, obj.y));
         var tile = this.grid[screenLocation.x][screenLocation.y].element;
         
         // only update cubes that have not yet scrolled off the buffer
@@ -196,7 +186,7 @@ clsGround.prototype.updateObjects = function (objects) {
                 }
 
                 // draw new object
-                var ele = drawObject(obj);
+                var ele = object.draw(obj);
                 tile.appendChild(ele);
                 tile.style.backgroundImage = ""; // clear default background
             }
@@ -204,37 +194,8 @@ clsGround.prototype.updateObjects = function (objects) {
     }
 }
 
-
-function drawObject(obj) {
-    // this should be a generic function that creates objects based on a template in the database
-        
-    // create div 
-    var div = document.createElement('div');
-    div.className = "object divDefault";
-    div.setAttribute("id", ("obj" + obj.id));
-    div.setAttribute("data", JSON.stringify(obj));
-    div.style.top = (-(obj.z * 32)) + "px";
-
-    // add events
-    div.ondragover = function () { client.worldView.ground.onDragOverObject(this); };
-    div.ondrop = function () { client.worldView.ground.onDropObject(this); };
-    div.ondragstart = function () { client.worldView.ground.onDragStartObject(this); };
-    //div.onmousedown = function () { client.worldView.ground.onClickObject(this); };
-    div.onmouseup = function () { client.worldView.ground.onClickObject(this); };
-    div.addEventListener("contextmenu", function (e) { e.preventDefault(); });
-
-    // create image
-    var img = document.createElement('img');
-    img.src = "../images/world/" + obj.item + ".png";
-    img.className = "object img64Default";
-    div.appendChild(img); // put image in container
-
-    return div;
-}
-
-
 // scroll the entire landscape one cube in any direction
-clsGround.prototype.shiftGrid = function(shiftx, shifty) {
+clsGrid.prototype.shiftGrid = function(shiftx, shifty) {
 
     console.log("Shifting grid... (" + shiftx + ", " + shifty + ")");
 
@@ -288,7 +249,7 @@ clsGround.prototype.shiftGrid = function(shiftx, shifty) {
             // calculate the source location for each tiles information
             var sourcex = utils.wrap(x + shiftx, 0, last);
             var sourcey = utils.wrap(y + shifty, 0, last);
-            this.copyTile(this.grid[sourcex][sourcey].element, this.grid[x][y].element); // copy most tiles
+            this.copyTileContents(this.grid[sourcex][sourcey].element, this.grid[x][y].element); // copy most tiles
            
             x += xinc;
         }
@@ -297,31 +258,31 @@ clsGround.prototype.shiftGrid = function(shiftx, shifty) {
 
     if (shiftx == 1) {
         // request last row
-        var worldRow1 = this.screenToWorld(new clsVector2D(last, 0));
-        var worldRow2 = this.screenToWorld(new clsVector2D(last, last));
-        wsi.requestJSONInfo({ "callName": "getArea", "x1": worldRow1.x, "y1": worldRow1.y, "x2": worldRow2.x, "y2": worldRow2.y }, client.worldView.ground.objectsResponse);
+        var worldRow1 = client.worldView.screenToWorld(new clsVector2D(last, 0));
+        var worldRow2 = client.worldView.screenToWorld(new clsVector2D(last, last));
+        wsi.requestJSONInfo({ "callName": "getArea", "x1": worldRow1.x, "y1": worldRow1.y, "x2": worldRow2.x, "y2": worldRow2.y }, client.worldView.grid.objectsResponse);
     } else if (shiftx == -1) {
         // request first row
-        var worldRow1 = this.screenToWorld(new clsVector2D(0, 0));
-        var worldRow2 = this.screenToWorld(new clsVector2D(0, last));
-        wsi.requestJSONInfo({ "callName": "getArea", "x1": worldRow1.x, "y1": worldRow1.y, "x2": worldRow2.x, "y2": worldRow2.y }, client.worldView.ground.objectsResponse);
+        var worldRow1 = client.worldView.screenToWorld(new clsVector2D(0, 0));
+        var worldRow2 = client.worldView.screenToWorld(new clsVector2D(0, last));
+        wsi.requestJSONInfo({ "callName": "getArea", "x1": worldRow1.x, "y1": worldRow1.y, "x2": worldRow2.x, "y2": worldRow2.y }, client.worldView.grid.objectsResponse);
     }
 
     if (shifty == 1) {
         // request last col
-        var worldCol1 = this.screenToWorld(new clsVector2D(0, last));
-        var worldCol2 = this.screenToWorld(new clsVector2D(last, last));
-        wsi.requestJSONInfo({ "callName": "getArea", "x1": worldCol1.x, "y1": worldCol1.y, "x2": worldCol2.x, "y2": worldCol2.y }, client.worldView.ground.objectsResponse);
+        var worldCol1 = client.worldView.screenToWorld(new clsVector2D(0, last));
+        var worldCol2 = client.worldView.screenToWorld(new clsVector2D(last, last));
+        wsi.requestJSONInfo({ "callName": "getArea", "x1": worldCol1.x, "y1": worldCol1.y, "x2": worldCol2.x, "y2": worldCol2.y }, client.worldView.grid.objectsResponse);
     } else if (shifty == -1) {
         // request first col
-        var worldCol1 = this.screenToWorld(new clsVector2D(0, 0));
-        var worldCol2 = this.screenToWorld(new clsVector2D(last, 0));
-        wsi.requestJSONInfo({ "callName": "getArea", "x1": worldCol1.x, "y1": worldCol1.y, "x2": worldCol2.x, "y2": worldCol2.y }, client.worldView.ground.objectsResponse);
+        var worldCol1 = client.worldView.screenToWorld(new clsVector2D(0, 0));
+        var worldCol2 = client.worldView.screenToWorld(new clsVector2D(last, 0));
+        wsi.requestJSONInfo({ "callName": "getArea", "x1": worldCol1.x, "y1": worldCol1.y, "x2": worldCol2.x, "y2": worldCol2.y }, client.worldView.grid.objectsResponse);
     }
 
 }
 
-clsGround.prototype.copyTile = function (source, destination) {
+clsGrid.prototype.copyTileContents = function (source, destination) {
 
     destination.innerHTML = ""; // clear destination tile
 
@@ -335,7 +296,7 @@ clsGround.prototype.copyTile = function (source, destination) {
     destination.style.background = source.style.background; // copy cube image and and tile info
 }
 
-clsGround.prototype.onClickTile = function (element) {
+clsGrid.prototype.onClick = function (element) {
 
     // which click type was it
     var rightclick;
@@ -348,7 +309,7 @@ clsGround.prototype.onClickTile = function (element) {
 
         // get info about the click
         var screenLocation = new clsVector2D(Number(element.dataset.x), Number(element.dataset.y)); // get screen location clicked
-        var worldLocation = client.worldView.ground.screenToWorld(screenLocation); // get world location clicked
+        var worldLocation = client.worldView.screenToWorld(screenLocation); // get world location clicked
 
 
         if (rightclick == true) {
@@ -368,112 +329,18 @@ clsGround.prototype.onClickTile = function (element) {
     e.preventDefault();
 }
 
-clsGround.prototype.onClickObject = function (element) {
 
-    // identify click type (left right middle)
-    var rightclick;
-    if (!e) var e = window.event;
-    if (e.which) rightclick = (e.which == 3);
-    else if (e.button) rightclick = (e.button == 2);
-
-    if (dragflag == false) { // allow for click event on mouse up if nothing was dragged
-
-        console.log("Clicked object.");
-
-        // get info about the click
-        var obj = JSON.parse(element.getAttribute("data")); // get object information
-        var worldLocation = new clsVector2D(obj.x, obj.y);
-        var screenLocation = this.worldToScreen(worldLocation); // get screen location clicked
-        //var worldLocation = client.worldView.ground.screenToWorld(screenLocation); // get world location clicked
-
-
-        if (rightclick == true) {
-            // right click
-            console.log("Right click stone @world(" + obj.x + "," + obj.y + ") and @screen(" + screenLocation.x + "," + screenLocation.y + ")");
-
-            // create object based on current template
-            client.createObject(obj.x, obj.y, obj.z + 1, client.packView.currentTemplateId);
-
-            // delete and redraw everything in tile            
-            //client.deleteObject(obj.id);
-        }
-        else {
-            // left click
-            //console.log("Left click stone @world(" + obj.x + "," + obj.y + ") and @screen(" + screenLocation.x + "," + screenLocation.y + ")");
-        }
-
-        //return false; // don't show default right click menu
-    }
-    e.preventDefault();
-}
-
-clsGround.prototype.onDragStartObject = function (element) {
-    if (!e) var e = window.event; // get the event
-    dragflag = true; // allow for click event on mouse up if nothing was dragged
-
-    // get object and add an identifier
-    var srcObj = JSON.parse(element.getAttribute("data"));
-    srcObj.dragType = "object";
-    e.dataTransfer.setData("text", JSON.stringify(srcObj)); // pass json string of object to drag
-
-    console.log("dragging " + JSON.stringify(srcObj))
-}
-
-
-clsGround.prototype.onDragOverObject = function (element) {
+clsGrid.prototype.onDragOver = function (element) {
     if (!e) var e = window.event;
     e.preventDefault();
 }
 
-clsGround.prototype.onDropObject = function (element) {
+clsGrid.prototype.onDrop = function (element) {
 
     // get event information
     if (!e) var e = window.event; // get event
     e.preventDefault();
-
-    dragflag = false; // allow for click event on mouse up if nothing was dragged
-
-    // get dragged information
-    var srcObj = JSON.parse(e.dataTransfer.getData("text"));
-
-    // get drop location information
-    var dstObj = JSON.parse(element.getAttribute("data")); // get object information
-    var worldLocation = new clsVector2D(dstObj.x, dstObj.y);
-    var screenLocation = this.worldToScreen(worldLocation); // get screen location clicked
-
-    console.log("dropped " + JSON.stringify(srcObj) + " on " +  JSON.stringify(dstObj))
-
-    switch (srcObj.dragType) {
-        case "template":
-            {
-                // create object based on dropped template
-                client.createObject(dstObj.x, dstObj.y, dstObj.z + 1, srcObj.id);
-                break;
-            }
-        case "object":
-            {
-                // delete original object
-                //console.log("deleting " + "obj" + srcObj.id);
-                var srcEle = document.getElementById("obj" + srcObj.id);
-                srcEle.parentNode.removeChild(srcEle);
-
-                // move object to new location
-                client.updateObject(srcObj.id, dstObj.x, dstObj.y, dstObj.z + 1, srcObj.pack, srcObj.item);
-                break;
-            }
-    }
-}
-
-clsGround.prototype.onDragOverGrid = function (element) {
-    if (!e) var e = window.event;
-    e.preventDefault();
-}
-
-clsGround.prototype.onDropGrid = function (element) {
-
-    // get event information
-    if (!e) var e = window.event; // get event
-    e.preventDefault();
+    //e.stopPropagation();
 
     dragflag = false; // allow for click event on mouse up if nothing was dragged
 
@@ -482,7 +349,7 @@ clsGround.prototype.onDropGrid = function (element) {
 
     // get drop location information
     var screenLocation = new clsVector2D(Number(element.dataset.x), Number(element.dataset.y)); // get screen location
-    var worldLocation = client.worldView.ground.screenToWorld(screenLocation); // get world location
+    var worldLocation = client.worldView.screenToWorld(screenLocation); // get world location
 
     console.log("dropped " + JSON.stringify(srcObj) + " on Grid " + worldLocation.x + "," + worldLocation.y)
 
@@ -507,10 +374,10 @@ clsGround.prototype.onDropGrid = function (element) {
     }
 }
 
-clsGround.prototype.update = function () {
+clsGrid.prototype.update = function () {
 
     console.log("Requesting objects modified since " + this.lastUpdate + " in (" + this.world.x + "," + this.world.y + " - " + this.worldBottomRight.x + "," + this.worldBottomRight.y + ")");
     //wsi.requestJSONInfo({ "callName": "getArea", "x1": this.world.x, "y1": this.world.y, "x2": this.worldBottomRight.x, "y2": this.worldBottomRight.y, "modified": utils.wsFriendlyDateTime(this.lastUpdate) }, JSONResponseHandler);
-    wsi.requestJSONInfo({ "callName": "getArea", "x1": this.world.x, "y1": this.world.y, "x2": this.worldBottomRight.x, "y2": this.worldBottomRight.y, "modified": utils.wsFriendlyDateTime(this.lastUpdate) }, client.worldView.ground.objectsResponse);
+    wsi.requestJSONInfo({ "callName": "getArea", "x1": this.world.x, "y1": this.world.y, "x2": this.worldBottomRight.x, "y2": this.worldBottomRight.y, "modified": utils.wsFriendlyDateTime(this.lastUpdate) }, client.worldView.grid.objectsResponse);
     this.lastUpdate = new Date();
 }
