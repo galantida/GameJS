@@ -138,80 +138,11 @@ namespace GameJS
                         int y1 = getNumericParameter("y1", true);
                         int x2 = getNumericParameter("x2", true);
                         int y2 = getNumericParameter("y2", true);
-                        int z = getNumericParameter("z");
-                        string pack = getStringParameter("pack", true);
-                        string item = getStringParameter("item", true);
 
                         // connect to world db
                         clsWorld world = new clsWorld(name, password);
-
-                        // clear area
-
-
-                        clsObject obj;
-                        List<clsObject> objects = new List<clsObject>();
-                        string JSON = "[";
-                        string delimiter = "";
-                        Random random = new Random();
-                        for (int y = y1; y <= y2; y++)
-                        {
-                            for (int x = x1; x <= x2; x++)
-                            {
-                                // new object
-                                obj = new clsObject(world.db);
-                                obj.x = x;
-                                obj.y = y;
-                                obj.z = random.Next(0, 2);
-                                obj.pack = "stone";
-                                switch (random.Next(0, 2))
-                                {
-                                    case 0:
-                                        {
-                                            obj.item = "bedrock1";
-                                            break;
-                                        }
-                                    case 1:
-                                        {
-                                            obj.item = "bedrock2";
-                                            break;
-                                        }
-                                }
-
-                                obj.save();
-                                objects.Add(obj);
-                                JSON += delimiter + obj.toJSON();
-                                delimiter = ",";
-
-                                if (obj.z == 0)
-                                {
-                                    // put some warter on top
-                                    obj = new clsObject(world.db);
-                                    obj.x = x;
-                                    obj.y = y;
-                                    obj.z = 1;
-                                    obj.pack = "stone";
-                                    obj.item = "wetrock1";
-                                    obj.save();
-                                    objects.Add(obj);
-                                    JSON += delimiter + obj.toJSON();
-                                }
-
-                                /*
-                                // put some dirt on top
-                                obj = new clsObject(world.db);
-                                obj.x = x;
-                                obj.y = y;
-                                obj.z = 2;
-                                obj.pack = "stone";
-                                obj.item = "bedrockl";
-                                obj.save();
-                                objects.Add(obj);
-                                JSON += delimiter + obj.toJSON(true);
-                                 */
-                            }
-                        }
-
-                        JSON += "]";
+                        //List<clsObject> result = world.map.createArea(x1,y1,x2,y2);
+                        string JSON = world.map.createArea(x1,y1,x2 - x1);
 
                         // formulate response
                         sendResponse("setCubes", "{x1:" + x1 + ",y1:" + y1 + ",x2:" + x2 + ",y2:" + y2 + "}", JSON);

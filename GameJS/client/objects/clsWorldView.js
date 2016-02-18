@@ -12,17 +12,11 @@ function clsWorldView(screenx, screeny, width, height) {
     // world view display panel
     this.displayPanel = new clsDisplayPanel("playerPanel", screenx, screeny, width, height);
 
-    // locations
-    this.location = new clsVector2D(0, 0); // world coordinate the view is currently centered on
-
-    // make a new ground object in the panel the display panel
+    // create grid view inside of the display panel
     this.grid = new clsGrid(this.displayPanel);
-}
 
-// refresh all tiles
-clsWorldView.prototype.update = function () {
-    console.log("update world view.");
-    this.grid.update();
+    // set the intial location
+    this.location = new clsVector2D(0, 0); // world coordinate the view is currently centered on
 }
 
 // center view on a specific location

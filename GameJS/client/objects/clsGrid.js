@@ -8,7 +8,7 @@
 console.log("=== included clsGrid.js ver 0.1 ===");
 
 function clsGrid(displayPanel) {
-    console.log("Creating grid...");
+    console.log("Creating Display Grid...");
 
     // properties
     this.world = new clsVector2D(0, 0);
@@ -16,10 +16,7 @@ function clsGrid(displayPanel) {
 
     // initializations
     this.cs = { "width":64, "height":64, "displayWidth":64, "displayHeight":32 };
-    this.buffer = this.createBuffer(displayPanel); // create and position buffer element based on screen size and position
-
-    // rename to grid!!!!
-    this.createGrid(); // create the tile that we will fill with objects
+    this.createBuffer(displayPanel); // create and position buffer element based on display panel size
 
     // request regular updates without user interaction
     this.lastUpdate = new Date("3/19/69");
@@ -32,27 +29,33 @@ function clsGrid(displayPanel) {
 clsGrid.prototype.createBuffer = function (displayPanel) {
     console.log("Creating Buffer...");
 
-    var buffer = { "border": 2 }; // minimum border in cubes to load off screen 
+    this.buffer = { "border": 2 }; // minimum border in cubes to load off screen 
 
     // calculate buffer size (based on display hypotenuse and cubesizes)
-    buffer.size = Math.ceil(displayPanel.hypotenuse() / this.cs.displayHeight) + (buffer.border * 2); // calculate buffer size in cubes
-    buffer.displayHeight = buffer.size * this.cs.displayHeight; // actual vertical pixels on screen
-    buffer.displayWidth = buffer.size * this.cs.displayWidth; // actual horizontal pixels on screen
+    this.buffer.size = Math.ceil(displayPanel.hypotenuse() / this.cs.displayHeight) + (this.buffer.border * 2); // calculate buffer size in cubes
+    this.buffer.displayHeight = this.buffer.size * this.cs.displayHeight; // actual vertical pixels on screen
+    this.buffer.displayWidth = this.buffer.size * this.cs.displayWidth; // actual horizontal pixels on screen
 
     // create and position buffer element based on display panel size
-    buffer.element = document.createElement('div');
-    buffer.element.setAttribute('id', "Buffer");
-    buffer.element.style.left = ((displayPanel.width() / 2) - (this.cs.displayWidth / 2)) + "px"; // move right to the center of the display area
-    buffer.element.style.top = ((displayPanel.height() / 2) - (buffer.displayHeight / 2) - (this.cs.displayHeight / 2)) + "px"; // move down half the display and back up half the buffer
-    buffer.element.style.position = "relative";
-    buffer.element.className = "clsGrid buffer"
-    //buffer.element.style.border = "1px solid red";
-    displayPanel.element.appendChild(buffer.element);
-    return buffer;
+    var ele = document.createElement('div');
+    ele.setAttribute('id', "Buffer");
+    ele.className = "clsGrid buffer"
+    ele.style.width = this.buffer.displayWidth + "px";
+    ele.style.height = this.buffer.displayHeight + "px";
+    //ele.style.left = ((displayPanel.width() / 2) - (this.cs.displayWidth / 2)) + "px"; // move right to the center of the display area
+    //ele.style.top = ((displayPanel.height() / 2) - (this.buffer.displayHeight / 2) - (this.cs.displayHeight / 2)) + "px"; // move down half the display and back up half the buffer
+    ele.style.left = ((displayPanel.width() / 2) - (this.buffer.displayWidth / 2)) + "px"; // move right to the center of the display area
+    ele.style.top = ((displayPanel.height() / 2) - (this.buffer.displayHeight / 2)) + "px"; // move down half the display and back up half the buffer
+    this.buffer.element = ele;
+
+    displayPanel.element.appendChild(this.buffer.element);
+
+    // create the grid that we will fill with objects
+    this.createGrid((this.buffer.element.offsetWidth / 2), +64); 
 }
 
-clsGrid.prototype.createGrid = function () {
-    console.log("Creating Grid...");
+clsGrid.prototype.createGrid = function (posx, posy) {
+    console.log("Creating Actual Grid...");
 
     // create cube array for faster access
     this.grid = new Array(this.buffer.size); // create row array with global scope
@@ -74,18 +77,25 @@ clsGrid.prototype.createGrid = function () {
             // set dataset properties
             ele.dataset.x = x;
             ele.dataset.y = y;
-            //ele.dataset.defaultLeft = (((x * .5) - (y * .5)) * this.cs.displayWidth);
-            //ele.dataset.defaultTop = (((x * .5) + (y * .5)) * this.cs.displayHeight);
 
             // set element properties
-            ele.style.left = (((x * .5) - (y * .5)) * this.cs.displayWidth) + "px";
-            ele.style.top = (((x * .5) + (y * .5)) * this.cs.displayHeight) + "px";
+            ele.style.left = ((((x * .5) - (y * .5)) * this.cs.displayWidth) + posx) + "px";
+            ele.style.top = ((((x * .5) + (y * .5)) * this.cs.displayHeight) + posy) + "px";
 
-            // set element events
-            // add events
+            // add elements events
             ele.onmouseup = function () { client.worldView.grid.onClick(this); };
+
+            // add dragable events
+            ele.ondragstart = function () { client.worldView.grid.onDragStart(this); };
+            ele.ondrag = function () { client.worldView.grid.onDrag(this); };
+            ele.ondragend = function () { client.worldView.grid.onDragEnd(this); };
+
+            // add drag target events
+            ele.ondragenter = function () { client.worldView.grid.onDragEnter(this); };
             ele.ondragover = function () { client.worldView.grid.onDragOver(this); };
+            ele.ondragleave = function () { client.worldView.grid.onDragLeave(this); };
             ele.ondrop = function () { client.worldView.grid.onDrop(this); };
+            
             ele.addEventListener("contextmenu", function (e) { e.preventDefault(); });
             this.buffer.element.appendChild(ele); // add the cube element to the buffer
 
@@ -301,6 +311,8 @@ clsGrid.prototype.onClick = function (element) {
     // which click type was it
     var rightclick;
     if (!e) var e = window.event;
+    e.stopPropagation();
+
     if (e.which) rightclick = (e.which == 3);
     else if (e.button) rightclick = (e.button == 2);
 
@@ -329,6 +341,31 @@ clsGrid.prototype.onClick = function (element) {
     e.preventDefault();
 }
 
+// drag events drag target
+clsGrid.prototype.onDragStart = function (element) {
+
+}
+
+clsGrid.prototype.onDrag = function (element) {
+
+}
+
+clsGrid.prototype.onDragEnd = function (element) {
+
+}
+
+//drag events drop target
+clsGrid.prototype.onDragEnter = function (element) {
+    // add class
+    element.classList.add('over');
+
+}
+
+clsGrid.prototype.onDragLeave = function (element) {
+    // remove class
+    element.classList.remove('over');
+
+}
 
 clsGrid.prototype.onDragOver = function (element) {
     if (!e) var e = window.event;
@@ -343,6 +380,7 @@ clsGrid.prototype.onDrop = function (element) {
     //e.stopPropagation();
 
     dragflag = false; // allow for click event on mouse up if nothing was dragged
+    element.classList.remove('over'); // remove class
 
     // get dragged information
     var srcObj = JSON.parse(e.dataTransfer.getData("text"));
@@ -355,13 +393,10 @@ clsGrid.prototype.onDrop = function (element) {
 
     switch (srcObj.dragType) {
         case "template":
-            {
                 // create object based on dropped template
                 client.createObject(worldLocation.x, worldLocation.y, 0, srcObj.id);
                 break;
-            }
         case "object":
-            {
                 // delete original object
                 //console.log("deleting " + "obj" + srcObj.id);
                 var srcEle = document.getElementById("obj" + srcObj.id);
@@ -370,7 +405,6 @@ clsGrid.prototype.onDrop = function (element) {
                 // move object to new location
                 client.updateObject(srcObj.id, worldLocation.x, worldLocation.y, 0, srcObj.pack, srcObj.item);
                 break;
-            }
     }
 }
 

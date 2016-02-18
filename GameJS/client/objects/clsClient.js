@@ -19,8 +19,8 @@ function clsClient() {
     this.packView = new clsContainerView(350, 150, 264, 480);
 
     
-
-    this.worldView.jumpToLocation(this.player.x, this.player.y);
+    // set the initial player location
+    this.setPlayerLocation(this.player.x, this.player.y);
 }
 
 clsClient.prototype.setPlayerLocation = function (worldx, worldy) {

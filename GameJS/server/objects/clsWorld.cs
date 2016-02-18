@@ -30,20 +30,7 @@ namespace GameJS
             return template.getTemplates();
         }
 
-        public void BedRock()
-        {
-            // pack = stone
-            // img = bedrock1
-            // stackable = true
-            // passthrough = false
-            // container = false
-            // ai = none
-            // weight = 100;
-
-
-            // ingredients 2 piles of stone
-
-        }
+        
 
         
     }
