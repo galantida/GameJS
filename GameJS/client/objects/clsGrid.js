@@ -156,7 +156,7 @@ clsGrid.prototype.objectsResponse = function (response) {
 // given a list of world cubes this will refresh their counter parts on the screen if they are still visible
 // this is run for all responses from the server that return updated cube information
 clsGrid.prototype.updateObjects = function (objects) {
-    console.log("Updating grid with new object list...");
+    console.groupCollapsed("Updating grid with a " + objects.length + " object list...");
 
     // update new objects
     for (var t = 0; t < objects.length; t++) {
@@ -167,16 +167,20 @@ clsGrid.prototype.updateObjects = function (objects) {
         // get objects screen grid location
         var screenLocation = client.worldView.worldToScreen(new clsVector2D(obj.x, obj.y));
         var tile = this.grid[screenLocation.x][screenLocation.y].element;
+
+        console.dir(obj);
         
         // only update cubes that have not yet scrolled off the buffer
-        if (tile != null) {
-
+        if (tile == null) console("Object is now off the screen");
+        else {
             if (obj.deleted == true) {
                 // erase object
+                console.log("Delete existing element.");
 
                 // loop through the existing elements in this tile.
                 for (i = 0; i < tile.children.length; i++) {
                     if (tile.children[i].id == ("obj" + obj.id)) {
+                        console.log("Deleting existing element 'obj" + obj.id + "'");
                         tile.removeChild(tile.children[i]);
                         break; // either way break out of the for loop when done
                     }
@@ -184,24 +188,38 @@ clsGrid.prototype.updateObjects = function (objects) {
             }
             else {
 
-                // this is a modified object erase the old one
-                if (obj.created != obj.modified) {
-                    // loop through the existing elements in this tile.
-                    for (i = 0; i < tile.children.length; i++) {
-                        if (tile.children[i].id == ("obj" + obj.id)) {
-                            tile.removeChild(tile.children[i]); // remove it 
-                            break; // either way break out of the for loop when done
-                        }
-                    }
-                }
+                var ele = document.getElementById("obj" + obj.id);
+                if (ele != null) {
 
-                // draw new object
-                var ele = object.draw(obj);
-                tile.appendChild(ele);
-                tile.style.backgroundImage = ""; // clear default background
+                    // existing element already exists
+                    var eleObj = JSON.parse(ele.getAttribute("data"));
+
+                    // if this update for this object newer then our last  
+                    if (new Date(eleObj.elementLastUpdated) < new Date(obj.modified)) {
+
+                        // modifed existing element
+                        console.log("Modify existing element.");
+                        obj.elementLastUpdated = new Date(); // add an elementCreated date to the object
+                        ele.setAttribute("data", JSON.stringify(obj));
+                        ele.style.top = (-((obj.z + 1) * 32)) + "px";
+                        tile.appendChild(ele); // move element to its new tile location
+                    }
+                    else {
+                        console.log("Already updated element.");
+                    }
+
+                }
+                else {
+                    // create new element
+                    console.log("Create new element.");
+                    var ele = object.draw(obj);
+                    tile.appendChild(ele);
+                    tile.style.backgroundImage = ""; // clear default background
+                }
             }
         }
     }
+    console.groupEnd();
 }
 
 // scroll the entire landscape one cube in any direction
@@ -308,36 +326,35 @@ clsGrid.prototype.copyTileContents = function (source, destination) {
 
 clsGrid.prototype.onClick = function (element) {
 
-    // which click type was it
-    var rightclick;
+    // get the event
     if (!e) var e = window.event;
     e.stopPropagation();
 
-    if (e.which) rightclick = (e.which == 3);
-    else if (e.button) rightclick = (e.button == 2);
-
-    if (dragflag == false) { // allow for click event on mouse up if nothing was dragged
-        console.log("Clicked tile.");
+    if (dragflag == false) { // allow for click event on mouse up only if nothing was being dragged
 
         // get info about the click
         var screenLocation = new clsVector2D(Number(element.dataset.x), Number(element.dataset.y)); // get screen location clicked
         var worldLocation = client.worldView.screenToWorld(screenLocation); // get world location clicked
 
+        // which click type was it
+        var rightclick;
+        if (e.which) rightclick = (e.which == 3);
+        else if (e.button) rightclick = (e.button == 2);
 
         if (rightclick == true) {
+            console.log("Right clicked grid at world (" + worldLocation.x + "," + worldLocation.y + ") at screen(" + screenLocation.x + "," + screenLocation.y + ")");
             // right click
             //var br = Math.floor(Math.random() * 2);
             //client.setObject(worldLocation.x, worldLocation.y,"cubes", "bedrock" + br);
         }
         else {
             // left click
+            console.log("Left clicked grid at world (" + worldLocation.x + "," + worldLocation.y + ") at screen(" + screenLocation.x + "," + screenLocation.y + ")");
 
-            // reload with new location as center
+            // move play to new location. screen will follow
             client.playerMoveTarget = new clsVector2D(worldLocation.x, worldLocation.y);
         }
     }
-
-    //return false; // don't show default right click menu
     e.preventDefault();
 }
 
@@ -356,13 +373,13 @@ clsGrid.prototype.onDragEnd = function (element) {
 
 //drag events drop target
 clsGrid.prototype.onDragEnter = function (element) {
-    // add class
+    // add selected class
     element.classList.add('over');
 
 }
 
 clsGrid.prototype.onDragLeave = function (element) {
-    // remove class
+    // remove selected class
     element.classList.remove('over');
 
 }
@@ -377,7 +394,7 @@ clsGrid.prototype.onDrop = function (element) {
     // get event information
     if (!e) var e = window.event; // get event
     e.preventDefault();
-    //e.stopPropagation();
+    //e.stopPropagation(); // not nessisary
 
     dragflag = false; // allow for click event on mouse up if nothing was dragged
     element.classList.remove('over'); // remove class
@@ -388,30 +405,32 @@ clsGrid.prototype.onDrop = function (element) {
     // get drop location information
     var screenLocation = new clsVector2D(Number(element.dataset.x), Number(element.dataset.y)); // get screen location
     var worldLocation = client.worldView.screenToWorld(screenLocation); // get world location
-
-    console.log("dropped " + JSON.stringify(srcObj) + " on Grid " + worldLocation.x + "," + worldLocation.y)
+    console.groupCollapsed("dropped " + JSON.stringify(srcObj) + " on grid " + screenLocation.x + "," + screenLocation.y)
 
     switch (srcObj.dragType) {
         case "template":
-                // create object based on dropped template
-                client.createObject(worldLocation.x, worldLocation.y, 0, srcObj.id);
-                break;
-        case "object":
-                // delete original object
-                //console.log("deleting " + "obj" + srcObj.id);
-                var srcEle = document.getElementById("obj" + srcObj.id);
-                srcEle.parentNode.removeChild(srcEle);
+            // create object based on dropped template
+            console.log("creating new object at world (" + worldLocation.x + ", " + worldLocation.y + ", " + worldLocation.z + ") based on template " + JSON.stringify(srcObj));
+            client.createObject(worldLocation.x, worldLocation.y, 0, srcObj.id);
+            break;
 
-                // move object to new location
-                client.updateObject(srcObj.id, worldLocation.x, worldLocation.y, 0, srcObj.pack, srcObj.item);
-                break;
+        case "object":
+            // delete original object
+            console.log("Deleting element 'obj" + srcObj.id + "' for object " + JSON.stringify(srcObj));
+            var srcEle = document.getElementById("obj" + srcObj.id);
+            srcEle.parentNode.removeChild(srcEle);
+
+            // move object to new location
+            console.log("Creating new element 'obj" + srcObj.id + "' for object " + JSON.stringify(srcObj));
+            client.updateObject(srcObj.id, worldLocation.x, worldLocation.y, 0, srcObj.pack, srcObj.item);
+            break;
     }
+    console.groupEnd();
 }
 
 clsGrid.prototype.update = function () {
 
     console.log("Requesting objects modified since " + this.lastUpdate + " in (" + this.world.x + "," + this.world.y + " - " + this.worldBottomRight.x + "," + this.worldBottomRight.y + ")");
-    //wsi.requestJSONInfo({ "callName": "getArea", "x1": this.world.x, "y1": this.world.y, "x2": this.worldBottomRight.x, "y2": this.worldBottomRight.y, "modified": utils.wsFriendlyDateTime(this.lastUpdate) }, JSONResponseHandler);
     wsi.requestJSONInfo({ "callName": "getArea", "x1": this.world.x, "y1": this.world.y, "x2": this.worldBottomRight.x, "y2": this.worldBottomRight.y, "modified": utils.wsFriendlyDateTime(this.lastUpdate) }, client.worldView.grid.objectsResponse);
     this.lastUpdate = new Date();
 }

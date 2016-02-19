@@ -11,12 +11,13 @@ var object = { // utils namespace
 
     draw: function (obj) {
 
-        // this should be a generic function that creates objects based on a template in the database
-
         // create div 
         var div = document.createElement('div');
         div.className = "object divDefault";
         div.setAttribute("id", ("obj" + obj.id));
+
+        // set properties
+        obj.elementLastUpdated = new Date(); // add an elementCreated date to the object
         div.setAttribute("data", JSON.stringify(obj));
         div.style.top = (-((obj.z + 1) * 32)) + "px";
 
@@ -54,44 +55,32 @@ var object = { // utils namespace
 
     onClick: function (element) {
 
-        // identify click type (left right middle)
-        var rightclick;
+        // get the event
         if (!e) var e = window.event;
         e.stopPropagation();
 
-        if (e.which) rightclick = (e.which == 3);
-        else if (e.button) rightclick = (e.button == 2);
-
-        if (dragflag == false) { // allow for click event on mouse up if nothing was dragged
-
-            console.log("Clicked object.");
+        if (dragflag == false) { // allow for click event on mouse up only if nothing was being dragged
 
             // get info about the click
             var obj = JSON.parse(element.getAttribute("data")); // get object information
             var worldLocation = new clsVector2D(obj.x, obj.y);
             var screenLocation = client.worldView.worldToScreen(worldLocation); // get screen location clicked
-            //var worldLocation = client.worldView.ground.screenToWorld(screenLocation); // get world location clicked
 
+            // which click type was it
+            var rightclick;
+            if (e.which) rightclick = (e.which == 3);
+            else if (e.button) rightclick = (e.button == 2);
 
             if (rightclick == true) {
-                // right click
-                console.log("Right click stone @world(" + obj.x + "," + obj.y + ") and @screen(" + screenLocation.x + "," + screenLocation.y + ")");
+                console.log("Right clicked object " + JSON.stringfy(obj) + " at screen(" + screenLocation.x + "," + screenLocation.y + ")");
 
-                // create object based on current template
-                //client.createObject(obj.x, obj.y, obj.z + 1, client.packView.currentTemplateId);
-
-                // delete and redraw everything in tile            
-                //client.deleteObject(obj.id);
             }
             else {
-                // left click
-                //console.log("Left click stone @world(" + obj.x + "," + obj.y + ") and @screen(" + screenLocation.x + "," + screenLocation.y + ")");
+                console.log("Left clicked object " + JSON.stringify(obj) + " at screen(" + screenLocation.x + "," + screenLocation.y + ")");
 
-                // reload with new location as center
+                // move play to new location. screen will follow
                 client.playerMoveTarget = new clsVector2D(worldLocation.x - obj.z, worldLocation.y - obj.z);
             }
-
-            //return false; // don't show default right click menu
         }
         e.preventDefault();
     },
@@ -106,7 +95,7 @@ var object = { // utils namespace
         srcObj.dragType = "object";
         e.dataTransfer.setData("text", JSON.stringify(srcObj)); // pass json string of object to drag
 
-        console.log("dragging " + JSON.stringify(srcObj))
+        console.log("Drag start " + JSON.stringify(srcObj));
     },
 
 
@@ -136,11 +125,11 @@ var object = { // utils namespace
 
         // get event information
         if (!e) var e = window.event; // get event
-        e.preventDefault();
+        e.preventDefault(); // is this really needed?
         e.stopPropagation();
 
         dragflag = false; // allow for click event on mouse up if nothing was dragged
-        element.classList.remove('over');
+        element.classList.remove('over'); // remove the selected class
 
         // get dragged information
         var srcObj = JSON.parse(e.dataTransfer.getData("text"));
@@ -149,28 +138,27 @@ var object = { // utils namespace
         var dstObj = JSON.parse(element.getAttribute("data")); // get object information
         var worldLocation = new clsVector2D(dstObj.x, dstObj.y);
         var screenLocation = client.worldView.worldToScreen(worldLocation); // get screen location clicked
-
-        console.log("dropped " + JSON.stringify(srcObj) + " on " +  JSON.stringify(dstObj))
+        console.groupCollapsed("dropped " + JSON.stringify(srcObj) + " on " + JSON.stringify(dstObj));
 
         switch (srcObj.dragType) {
             case "template":
-                {
-                    // create object based on dropped template
-                    client.createObject(dstObj.x, dstObj.y, dstObj.z + 1, srcObj.id);
-                    break;
-                }
-            case "object":
-                {
-                    // delete original object
-                    //console.log("deleting " + "obj" + srcObj.id);
-                    var srcEle = document.getElementById("obj" + srcObj.id);
-                    srcEle.parentNode.removeChild(srcEle);
+                // create object based on dropped template
+                console.log("creating new object based on template " + JSON.stringify(srcObj));
+                client.createObject(dstObj.x, dstObj.y, dstObj.z + 1, srcObj.id);
+                break;
 
-                    // move object to new location
-                    client.updateObject(srcObj.id, dstObj.x, dstObj.y, dstObj.z + 1, srcObj.pack, srcObj.item);
-                    break;
-                }
+            case "object":
+                // delete original object
+                console.log("Deleting element 'obj" + srcObj.id + "' for object " + JSON.stringify(srcObj));
+                var srcEle = document.getElementById("obj" + srcObj.id);
+                srcEle.parentNode.removeChild(srcEle);
+
+                // create new object in new location
+                console.log("Sending update request for object " + JSON.stringify(srcObj));
+                client.updateObject(srcObj.id, dstObj.x, dstObj.y, dstObj.z + 1, srcObj.pack, srcObj.item);
+                break;
         }
+        console.groupEnd();
     }
 
 }

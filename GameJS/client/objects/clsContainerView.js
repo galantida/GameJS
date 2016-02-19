@@ -6,12 +6,17 @@
 // report version
 console.log("=== included clsContainerView.js ver 0.1 ===");
 
-function clsContainerView(screenx, screeny, width, height) {
+function clsContainerView(width, height) {
     console.log("Creating Container view...");
 
     // world view display panel
-    this.displayPanel = new clsDisplayPanel("packPanel", screenx, screeny, width, height);
-    this.currentTemplateId = 0;
+    this.displayPanel = new clsDisplayPanel("packPanel",width, height);
+
+    // create back buffer div
+    this.buffer = document.createElement('div');
+    this.buffer.className = "clsContainer buffer";
+    this.displayPanel.element.appendChild(this.buffer);
+
     this.setup();
 }
 
@@ -36,7 +41,7 @@ clsContainerView.prototype.receiveTemplates = function (response) {
         // get object
         var template = templates[t];
 
-        this.displayPanel.element.appendChild(this.createTemplate(template));
+        this.buffer.appendChild(this.createTemplate(template));
     }
 }
 
@@ -68,30 +73,30 @@ clsContainerView.prototype.createTemplate = function (template) {
 }
 
 clsContainerView.prototype.onClickTemplate = function (element) {
-    console.log("Clicked template.");
 
-    var template = JSON.parse(element.getAttribute("data")); // get template information
-
-    // which click type was it
-    var rightclick;
+    // get the event
     if (!e) var e = window.event;
-    if (e.which) rightclick = (e.which == 3);
-    else if (e.button) rightclick = (e.button == 2);
+    e.stopPropagation();
 
+    if (dragflag == false) { // allow for click event on mouse up only if nothing was being dragged
 
-    if (rightclick == true) {
-        // right click
+        // get infro about this click
+        var template = JSON.parse(element.getAttribute("data"));
 
+        // which click type was it
+        var rightclick;
+        if (e.which) rightclick = (e.which == 3);
+        else if (e.button) rightclick = (e.button == 2);
 
+        if (rightclick == true) {
+            // right click
+
+        }
+        else {
+            // left click
+
+        }
     }
-    else {
-        // left click
-        //set current template
-        console.log("setting currentTemplateID = " + this.currentTemplateId);
-        this.currentTemplateId = template.id;
-    }
-
-    //return false; // don't show default right click menu
     e.preventDefault();
 }
 
@@ -120,11 +125,10 @@ clsContainerView.prototype.onDropTemplate = function (element) {
     dragflag = false; // allow for click event on mouse up if nothing was dragged
 
     // get dragged information
-    var srcObj = JSON.parse(e.dataTransfer.getData("text"));
+    var srcObj = JSON.parse(e.dataTransfer.getData("text")); // source template
 
     // get drop location information
     var dstObj = JSON.parse(element.getAttribute("data")); // get object information
-
 
     console.log("dropped " + JSON.stringify(srcObj) + " on " + JSON.stringify(dstObj))
 

@@ -158,7 +158,7 @@ namespace GameJS
                                     insertDelimiter = ", ";
 
                                     // build where for look up as well
-                                    where += whereDelimiter + propertyInfo.Name + "=" + getProperty(propertyInfo.Name);
+                                    if (propertyInfo.Name != "id") where += whereDelimiter + propertyInfo.Name + "=" + getProperty(propertyInfo.Name);
                                     whereDelimiter = " AND ";
                                     break;
                                 }
@@ -366,6 +366,7 @@ namespace GameJS
                             break;
                         }
                     case "System.String":
+                    case "System.DateTime":
                         {
                             // strings
                             result += delimiter + "\"" + propertyInfo.Name + "\":\"" + propertyInfo.GetValue(this, null).ToString() + "\"";

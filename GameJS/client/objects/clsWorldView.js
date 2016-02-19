@@ -6,11 +6,11 @@
 // report version
 console.log("=== included clsWorldView.js ver 0.1 ===");
 
-function clsWorldView(screenx, screeny, width, height) {
+function clsWorldView(width, height) {
     console.log("Creating world view...");
 
     // world view display panel
-    this.displayPanel = new clsDisplayPanel("playerPanel", screenx, screeny, width, height);
+    this.displayPanel = new clsDisplayPanel("playerPanel", width, height);
 
     // create grid view inside of the display panel
     this.grid = new clsGrid(this.displayPanel);

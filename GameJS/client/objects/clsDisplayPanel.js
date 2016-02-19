@@ -8,14 +8,10 @@
 // report version
 console.log("=== included clsDisplayPanel.js ver 0.1 ===");
 
-function clsDisplayPanel(id, x, y, width, height) {
+function clsDisplayPanel(id, width, height) {
     // create display element
     this.element = document.createElement("div");
     this.element.setAttribute("id", id);
-    //this.element.setAttribute("draggable", true);
-    //this.element.ondragstart = "drag(event)";
-    //this.element.style.left = x + "px";
-    //this.element.style.top = y + "px";
     this.element.style.width = width + "px";
     this.element.style.height = height + "px";
     this.element.className = "clsDisplayPanel_panel";
@@ -23,14 +19,6 @@ function clsDisplayPanel(id, x, y, width, height) {
 }
 
 // example of a function added to the prototype (this.value works)
-clsDisplayPanel.prototype.x = function () {
-    return this.element.offsetLeft;
-};
-
-clsDisplayPanel.prototype.y = function () {
-    return this.element.offsetTop;
-};
-
 clsDisplayPanel.prototype.width = function () {
     return this.element.offsetWidth;
 };

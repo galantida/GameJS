@@ -13,10 +13,13 @@
     position:absolute;
     left: 0px;
     top: 0px;
+    -webkit-filter: saturate(800%); /* Chrome, Safari, Opera */
+    filter: saturate(800%);
 }
 .object.divDefault.over
 {
-    background-image:url("../images/grid/tileSelected.png");
+    -webkit-filter: saturate(800%); /* Chrome, Safari, Opera */
+    filter: saturate(800%);
 }
 
 

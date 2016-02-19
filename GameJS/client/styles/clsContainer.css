@@ -1,4 +1,11 @@
-﻿.clsContainer.divDefault
+﻿.clsContainer.buffer
+{
+    width:100%;
+    height:100%;
+    overflow-x:scroll;
+    overflow-y:scroll;
+}
+.clsContainer.divDefault
 {
     font-family:Arial;
     font-size:9px;
