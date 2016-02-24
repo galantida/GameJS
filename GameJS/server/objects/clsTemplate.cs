@@ -5,6 +5,8 @@ using System.Web;
 using System.IO;
 using System.Reflection;
 using MySql.Data.MySqlClient;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 
 namespace GameJS
@@ -69,6 +71,17 @@ namespace GameJS
             }
             JSON += "]";
             return JSON;
+        }
+
+        public new void fromJSON(string JSON)
+        {
+            // put this in base and flip it on its head
+            JObject JSONObj = base.fromJSON(JSON);
+
+            this.name = (string)JSONObj["name"];
+            this.image = (string)JSONObj["image"];
+            this.created = (DateTime)JSONObj["created"]; // need if exists
+            this.modified = (DateTime)JSONObj["modified"]; // need if exists
         }
     }
 }

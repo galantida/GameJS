@@ -84,7 +84,7 @@ namespace GameJS
                                     case "System.Int32":
                                         {
                                             int v = getNumericParameter(propertyInfo.Name);
-                                            propertyInfo.SetValue(obj, v);
+                                            propertyInfo.SetValue(obj, v, null);
                                             break;
                                         }
                                     case "System.DateTime":
@@ -95,7 +95,7 @@ namespace GameJS
                                     default:
                                         {
                                             string v = getStringParameter(propertyInfo.Name);
-                                            propertyInfo.SetValue(obj, v);
+                                            propertyInfo.SetValue(obj, v, null);
                                             break;
                                         }
                                 }
@@ -153,6 +153,14 @@ namespace GameJS
                         clsWorld world = new clsWorld(name, password);
                         string JSON = clsTemplate.toJSON(world.getTemplates());
                         sendResponse("getTemplates", "{}", JSON);
+                        break;
+                    }
+                case "TEST":
+                    {
+                        clsWorld world = new clsWorld(name, password);
+                        clsTemplate template = new clsTemplate(world.db);
+                        template.fromJSON("{\"name\":\"nameTest\",\"image\":\"imageTest\"}");
+                        sendResponse("getTemplates", "{}", template.toJSON());
                         break;
                     }
                 default:

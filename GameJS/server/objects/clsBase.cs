@@ -4,6 +4,8 @@ using System.Linq;
 using System.Web;
 using System.Reflection;
 using MySql.Data.MySqlClient;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace GameJS
 {
@@ -170,11 +172,23 @@ namespace GameJS
                 sql = "INSERT INTO " + this.tableName + "s";
                 sql += " (" + names + ")";
                 sql += " VALUES (" + values + ");";
+
+                // old way
                 result = _db.execute(sql);
-               
 
                 // build query string for read back statment
                 MySqlDataReader dr = _db.query("SELECT * FROM " + this.tableName + "s WHERE " + where + ";");
+
+                // new way
+                //sql += "SELECT LAST_INSERT_ID();"; // this could break it
+                //MySqlDataReader dr = _db.query(sql);
+                //result = Convert.ToInt32(dr["LAST_INSERT_ID()"]);
+                //dr.Close();
+
+                // build query string for read back statment
+                //dr = _db.query("SELECT * FROM " + this.tableName + "s WHERE id=" + result + ";");
+                
+                
                 this.load(dr);
                 dr.Close();
             }
@@ -294,17 +308,18 @@ namespace GameJS
                     case "System.Int32":
                         {
                             // numbers
-                            propertyInfo.SetValue(this, Convert.ToInt32(dr[propertyInfo.Name]));
+                            propertyInfo.SetValue(this, Convert.ToInt32(dr[propertyInfo.Name]), null);
+                            
                             break;
                         }
                     case "System.DateTime":
                         {
-                            propertyInfo.SetValue(this, Convert.ToDateTime(dr[propertyInfo.Name]));
+                            propertyInfo.SetValue(this, Convert.ToDateTime(dr[propertyInfo.Name]), null);
                             break;
                         }
                     case "System.Boolean":
                         {
-                            propertyInfo.SetValue(this, Convert.ToBoolean(dr[propertyInfo.Name]));
+                            propertyInfo.SetValue(this, Convert.ToBoolean(dr[propertyInfo.Name]), null);
                             //if (Convert.ToInt16(dr[propertyInfo.Name]) == 0) propertyInfo.SetValue(this, false);
                             //else propertyInfo.SetValue(this, true);
                             break;
@@ -312,7 +327,7 @@ namespace GameJS
                     case "System.String":
                         {
                             // strings
-                            propertyInfo.SetValue(this, Convert.ToString(dr[propertyInfo.Name]));
+                            propertyInfo.SetValue(this, Convert.ToString(dr[propertyInfo.Name]), null);
                             break;
                         }
                     default:
@@ -383,5 +398,34 @@ namespace GameJS
             result += "}";
             return result;
         }
+
+        public string toJSON_old()
+        {
+            string result = null;
+            //try
+            //{
+                result = JsonConvert.SerializeObject(this);
+            //}
+            //catch (Exception e)
+            //{
+
+            //}
+            return result;
+        }
+
+        protected JObject fromJSON(string JSON)
+        {
+            JObject result = null;
+            //try
+            //{
+            result = (JObject)JsonConvert.DeserializeObject(JSON);    
+            //}
+            //catch (Exception e)
+            //{
+
+            //}
+            return result;
+        }
+
     }
 }
