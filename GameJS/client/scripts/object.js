@@ -46,7 +46,7 @@ var object = { // utils namespace
 
         // create image
         var img = document.createElement('img');
-        img.src = "../images/world/" + obj.item + ".png";
+        img.src = "../images/world/" + obj.image + ".png";
         img.className = "object img64Default";
         div.appendChild(img); // put image in container
 

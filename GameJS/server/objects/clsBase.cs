@@ -91,7 +91,7 @@ namespace GameJS
             return objects;
         }
 
-        public bool delete()
+        public bool destroy()
         {
             bool result = false;
             if (this.execute("DELETE FROM " + this.tableName + "s WHERE id = " + this.id + ";") > 0) {
@@ -120,6 +120,12 @@ namespace GameJS
         public bool load(int id)
         {
             return this.load("SELECT * FROM " + tableName + "s WHERE id = " + id);
+        }
+
+        // returns all objects in this table
+        public int destroyAll()
+        {
+            return this.execute("DELETE FROM " + this.tableName + "s");
         }
 
         // save and update
@@ -172,25 +178,16 @@ namespace GameJS
                 sql = "INSERT INTO " + this.tableName + "s";
                 sql += " (" + names + ")";
                 sql += " VALUES (" + values + ");";
+                int id = _db.executeInsert(sql);
 
                 // old way
-                result = _db.execute(sql);
-
                 // build query string for read back statment
-                MySqlDataReader dr = _db.query("SELECT * FROM " + this.tableName + "s WHERE " + where + ";");
+                // MySqlDataReader dr = _db.query("SELECT * FROM " + this.tableName + "s WHERE " + where + ";");
+                // this.load(dr); // get saved record with new ID
+                // dr.Close();
 
                 // new way
-                //sql += "SELECT LAST_INSERT_ID();"; // this could break it
-                //MySqlDataReader dr = _db.query(sql);
-                //result = Convert.ToInt32(dr["LAST_INSERT_ID()"]);
-                //dr.Close();
-
-                // build query string for read back statment
-                //dr = _db.query("SELECT * FROM " + this.tableName + "s WHERE id=" + result + ";");
-                
-                
-                this.load(dr);
-                dr.Close();
+                this.load(id);
             }
             else
             {
@@ -399,33 +396,48 @@ namespace GameJS
             return result;
         }
 
-        public string toJSON_old()
+        public bool fromJSON(JObject JSONObj)
         {
-            string result = null;
-            //try
-            //{
-                result = JsonConvert.SerializeObject(this);
-            //}
-            //catch (Exception e)
-            //{
+            bool result = true;
 
-            //}
+            foreach (PropertyInfo propertyInfo in this.GetType().GetProperties())
+            {
+                if (JSONObj[propertyInfo.Name] != null)
+                {
+                    switch (propertyInfo.PropertyType.ToString())
+                    {
+                        case "System.Int16":
+                        case "System.Int32":
+                            {
+                                propertyInfo.SetValue(this, (Int32)JSONObj[propertyInfo.Name], null);
+                                break;
+                            }
+                        case "System.String":
+                            {
+                                propertyInfo.SetValue(this, (string)JSONObj[propertyInfo.Name], null);
+                                break;
+                            }
+                        case "System.DateTime":
+                            {
+                                propertyInfo.SetValue(this, (DateTime)JSONObj[propertyInfo.Name], null);
+                                break;
+                            }
+                        case "System.Boolean":
+                            {
+                                propertyInfo.SetValue(this, (Boolean)JSONObj[propertyInfo.Name], null);
+                                break;
+                            }
+                        default:
+                            {
+                                // skip unknown property types
+                                result = false;
+                                break;
+                            }
+                    }
+                }
+
+            }
             return result;
         }
-
-        protected JObject fromJSON(string JSON)
-        {
-            JObject result = null;
-            //try
-            //{
-            result = (JObject)JsonConvert.DeserializeObject(JSON);    
-            //}
-            //catch (Exception e)
-            //{
-
-            //}
-            return result;
-        }
-
     }
 }

@@ -55,6 +55,7 @@ namespace GameJS
             }
         }
 
+        // executes a query and returns the results in a Data Readers
         public MySqlDataReader query(string queryString)
         {
             MySqlCommand command = _conn.CreateCommand();
@@ -62,11 +63,32 @@ namespace GameJS
             return command.ExecuteReader();
         }
 
+        //executes a non-query and returns the records affected
         public int execute(string queryString)
         {
             MySqlCommand command = _conn.CreateCommand();
             command.CommandText = queryString;
             return command.ExecuteNonQuery();
+        }
+
+        // executes an insert and returns the ID of the new record created
+        public int executeInsert(string queryString)
+        {
+            MySqlCommand command = _conn.CreateCommand();
+            command.CommandText = queryString;
+            command.ExecuteNonQuery();
+
+            // return the new Id
+            command.CommandText = "SELECT LAST_INSERT_ID();";
+            MySqlDataReader dr = command.ExecuteReader();
+
+            int id = -1;
+            if (dr.Read())
+            {
+                if (dr[0] != DBNull.Value) int.TryParse(dr[0].ToString(), out id);
+            }
+            dr.Close();
+            return id;
         }
     }
 }

@@ -13,59 +13,63 @@ namespace GameJS
     public class clsMap
     {
         // map objects
-        public clsDatabase db { get; set; }
+        protected clsDatabase _db { get; set; }
         private int[,] heights;
 
         public clsMap(clsDatabase db) 
         {
-            this.db = db;
+            _db = db;
         }
 
+        // only the worl object has access to template this may get promoted
         public clsObject createObject(int x, int y, int z)
         {
-            clsObject obj = new clsObject(this.db);
+            clsObject obj = new clsObject(_db);
+            obj.name = "";
             obj.x = x;
             obj.y = y;
             obj.z = z;
             return obj;
         }
 
-        public clsObject getObject(int id)
+        public List<clsObject> getAllObjects()
         {
-            clsObject obj = new clsObject(this.db);
-            if (obj.load(id) == true) return obj;
-            else return null;
+            clsObject obj = new clsObject(_db);
+            return obj.getAllObjects();
         }
 
-        public clsObject deleteObject(int id)
+        // delete all objects in a particular area
+        public int deleteArea(int x1, int y1, int x2, int y2, int containerId = 0)
         {
-            clsObject obj = new clsObject(this.db, id);
-            obj.delete();
-            return obj;
+            int result = 0;
+
+            // get all objects in the area and mark each one for delete
+            List<clsObject> objs = getArea(x1, y1, x2, y2, containerId);
+            foreach (clsObject obj in objs)
+            {
+                if (obj.delete() == true) result++;
+            }
+            return result;
         }
 
-        public bool destroyObject(int id)
+        // destroy all objects in a particular area
+        public int destroyArea(int x1, int y1, int x2, int y2, int containerId = 0)
         {
-            clsObject obj = new clsObject(this.db);
-            return obj.destroy();
+            int result = 0;
+
+            // initiate destruction method for each object
+            List<clsObject> objs = getArea(x1, y1, x2, y2, containerId);
+            foreach (clsObject obj in objs)
+            {
+                if (obj.destroy() == true) result++;
+            }
+            return result;
         }
 
-        public List<clsObject> getArea(int x1, int y1, int x2, int y2, DateTime? modified = null)
+        public List<clsObject> getArea(int x1, int y1, int x2, int y2, int containerId = 0, DateTime? modified = null)
         {
-            clsObject obj = new clsObject(this.db);
-            return obj.getArea(x1, y1, x2, y2, 0, modified);
-        }
-
-        public int deleteArea(int x1, int y1, int x2, int y2)
-        {
-            clsObject obj = new clsObject(this.db);
-            return obj.deleteArea(x1, y1, x2, y2, 0);
-        }
-
-        public int destroyArea(int x1, int y1, int x2, int y2)
-        {
-            clsObject obj = new clsObject(this.db);
-            return obj.destroyArea(x1, y1, x2, y2, 0);
+            clsObject obj = new clsObject(_db);
+            return obj.getArea(x1, y1, x2, y2, containerId, modified);
         }
 
         public string createArea(int x1, int y1, int size)
@@ -75,8 +79,8 @@ namespace GameJS
             size = (sqrt * sqrt) + 1;
 
             // clear the build area
-            clsObject obj = new clsObject(this.db);
-            obj.destroyArea(-1000, -1000, 1000, 1000, 0);
+            clsObject obj = new clsObject(_db);
+            this.destroyArea(-1000, -1000, 1000, 1000, 0);
 
             // seed the random
             Random r = new Random();
@@ -115,24 +119,21 @@ namespace GameJS
                     {
                         if (z <= heights[x, y])
                         {
-                            obj = new clsObject(this.db);
+                            obj = new clsObject(_db);
                             obj = this.createObject(x, y, z);
 
                             // land
                             if (z == 0)
                             {
-                                obj.pack = "stone";
-                                obj.item = "mcstone";
+                                obj.image = "mcstone";
                             }
                             else if (z == heights[x, y])
                             {
-                                obj.pack = "stone";
-                                obj.item = "mcgrass";
+                                obj.image = "mcgrass";
                             }
                             else
                             {
-                                obj.pack = "stone";
-                                obj.item = "mcdirt";
+                                obj.image = "mcdirt";
                             }
 
                             obj.save();
@@ -142,12 +143,11 @@ namespace GameJS
                         {
                             if (z <= waterLevel)
                             {
-                                obj = new clsObject(this.db);
+                                obj = new clsObject(_db);
                                 obj = this.createObject(x, y, z);
 
                                 // water
-                                obj.pack = "stone";
-                                obj.item = "mcwater";
+                                obj.image = "mcwater";
 
                                 obj.save();
                                 results.Add(obj);

@@ -5,6 +5,8 @@ using System.Web;
 using System.IO;
 using System.Reflection;
 using MySql.Data.MySqlClient;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 
 namespace GameJS
@@ -15,6 +17,7 @@ namespace GameJS
         // properties
         public string name { get; set; }
         public string value { get; set; }
+        public int objectId { get; set; }
 
         public clsAttribute(clsDatabase db) : base(db) { }
         public clsAttribute(clsDatabase db, int id) : base(db, id) { }
@@ -40,14 +43,14 @@ namespace GameJS
             return results;
         }
 
-        public List<clsAttribute> getObjectAttributes(int objectId)
+        public List<clsAttribute> getAttributes(int objectId)
         {
-            return this.getList("SELECT * FROM " + this.tableName + " WHERE objectId = " + objectId);
+            return this.getList("SELECT * FROM " + this.tableName + "s WHERE objectId = " + objectId);
         }
 
         public int deleteObjectAttributes(int objectId)
         {
-            return this.execute("DELETE FROM " + this.tableName + " WHERE objectId = " + objectId);
+            return this.execute("DELETE FROM " + this.tableName + "s WHERE objectId = " + objectId);
         }
 
         public static string toJSON(List<clsAttribute> attributes)
@@ -61,6 +64,20 @@ namespace GameJS
             }
             JSON += "]";
             return JSON;
+        }
+
+        public List<clsAttribute> fromJSON(JArray JSONArray)
+        {
+            List<clsAttribute> results = new List<clsAttribute>();
+
+            // loop thorugh all the JSON obects in the JSON array
+            foreach (JObject JSONObject in JSONArray)
+            {
+                clsAttribute attribute = new clsAttribute(_db); // create new blank template
+                attribute.fromJSON(JSONObject); // load template based on JSON Object
+                results.Add(attribute); // add new template to results
+            }
+            return results;
         }
     }
 }

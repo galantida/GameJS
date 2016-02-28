@@ -18,6 +18,8 @@ namespace GameJS
         public string name { get; set; }
         public string image { get; set; }
 
+        private List<clsTemplateAttribute> _templateAttributes = null;
+
         public clsTemplate(clsDatabase db) : base(db) { }
         public clsTemplate(clsDatabase db, int id) : base(db, id) { }
         public clsTemplate(clsDatabase db, MySqlDataReader dr) : base(db, dr) { }
@@ -28,7 +30,7 @@ namespace GameJS
             return (clsTemplate)get(sqlQuery, typeof(clsTemplate));
         }
 
-        // convert a generic list to a typed list
+        // query database and return typed list.
         private List<clsTemplate> getList(string sqlQuery)
         {
             List<object> templates = base.getList(sqlQuery, typeof(clsTemplate));
@@ -46,42 +48,98 @@ namespace GameJS
         {
             get
             {
-                clsTemplateAttribute templateAttribute = new clsTemplateAttribute(_db);
-                return templateAttribute.getTemplateAttributes(this.id);
-                // remember to delete these in the destroy function
+                if (_templateAttributes == null)
+                {
+                    clsTemplateAttribute templateAttribute = new clsTemplateAttribute(_db);
+                    _templateAttributes = templateAttribute.getTemplateAttributes(this.id);
+                }
+                return _templateAttributes;
             }
         }
 
-        // returns all objects in a particular area and cotnainer. modifed will return deleted objects as well.
-        public List<clsTemplate> getTemplates()
-        {
-            // get every object in a particular area and container. (0 is not in a container)
-            string sql = "SELECT * FROM " + this.tableName + "s order by name desc";
-            return this.getList(sql);
+        public int save(bool children = false) {
+
+            int result = base.save(); // save the base object
+
+            // ifchildren is true then save all children as well
+            if (children == true)
+            {
+                foreach (clsTemplateAttribute templateAttribute in this.templateAttributes)
+                {
+                    templateAttribute.templateId = this.id; // verify that each child actually has its parent id.
+                    result += templateAttribute.save();
+                }
+            }
+            return result;
         }
 
-        public static string toJSON(List<clsTemplate> templates)
+        public static string toJSON(List<clsTemplate> templates, bool children = false)
         {
             string delimiter = "";
             string JSON = "[";
-            foreach (clsTemplate prop in templates)
+            foreach (clsTemplate obj in templates)
             {
-                JSON += delimiter + prop.toJSON();
+                JSON += delimiter + obj.toJSON(children);
                 delimiter = ",";
             }
             JSON += "]";
             return JSON;
         }
 
-        public new void fromJSON(string JSON)
+        public string toJSON(bool children = false)
         {
-            // put this in base and flip it on its head
-            JObject JSONObj = base.fromJSON(JSON);
+            string JSONString = base.toJSON();
+            if (children == true) 
+            {
+                JSONString = JSONString.Substring(0, JSONString.Length - 1);
+                JSONString += ",\"templateAttributes\":" + clsTemplateAttribute.toJSON(this.templateAttributes) + "}";
+            }
+            return JSONString;
+        }
 
-            this.name = (string)JSONObj["name"];
-            this.image = (string)JSONObj["image"];
-            this.created = (DateTime)JSONObj["created"]; // need if exists
-            this.modified = (DateTime)JSONObj["modified"]; // need if exists
+        public List<clsTemplate> fromJSON(JArray JSONArray)
+        {
+            List<clsTemplate> results = new List<clsTemplate>();
+
+            // loop thorugh all the JSON obects in the JSON array
+            foreach (JObject JSONObject in JSONArray)
+            {
+                clsTemplate template = new clsTemplate(_db); // create new blank template
+                template.fromJSON(JSONObject); // load based on JSON Object
+                results.Add(template); // add new to results
+            }
+            return results;
+        }
+
+        public new bool fromJSON(JObject JSONObj)
+        {
+            bool result = base.fromJSON(JSONObj);
+            this.id = 0; // the id in JSON is from previous db. clear it.
+
+            // check for templateAtributes
+            if (JSONObj["templateAttributes"] != null)
+            {
+                JArray JSONArray = (JArray)JSONObj["templateAttributes"];
+
+                // convert to template attribute objects
+                clsTemplateAttribute templateAttribute = new clsTemplateAttribute(_db);
+                _templateAttributes = templateAttribute.fromJSON(JSONArray);
+
+                foreach (clsTemplateAttribute ta in this.templateAttributes)
+                {
+                    ta.id = 0; // the id in JSON is from previous db. clear it.
+                    ta.templateId = 0; // we will not know our template id until was save our template
+                }
+            }
+
+            return result;
+        }
+
+        // returns all objects in this table
+        public List<clsTemplate> getAllTemplates()
+        {
+            // get every object in a particular area and container. (0 is not in a container)
+            return this.getList("SELECT * FROM " + this.tableName + "s order by name desc");
         }
     }
 }

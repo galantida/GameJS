@@ -57,10 +57,6 @@
     <Reference Include="System.EnterpriseServices" />
     <Reference Include="System.Web.DynamicData" />
     <Reference Include="System.Web.Entity" />
-    <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <Private>True</Private>
-      <HintPath>..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
-    </Reference>
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
@@ -109,6 +105,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="client\Images\" />
+    <Folder Include="server\files\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Web.Debug.config">

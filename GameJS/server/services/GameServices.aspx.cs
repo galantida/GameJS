@@ -6,6 +6,8 @@ using System.Web.UI;
 using System.Web.UI.WebControls;
 using System.IO;
 using System.Reflection;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace GameJS
 {
@@ -29,9 +31,9 @@ namespace GameJS
             if (callName == null) callName = "";
 
             // process command first since that is the only parameter I can be sure of
-            switch (callName.ToUpper())
+            switch (callName.ToLower())
             {
-                case "CREATEOBJECT":
+                case "createobject":
                     {
                         // required properties
                         int x = getNumericParameter("x", true);
@@ -48,21 +50,20 @@ namespace GameJS
 
                         // create object based on template
                         clsObject obj = world.map.createObject(x, y, z);
-                        obj.item = template.image;
-                        obj.pack = "stone";
+                        obj.image = template.image;
                         obj.save(); 
 
                         // formulate response
                         sendResponse("createObject", "{id:" + obj.id + ",x:" + obj.x + ",y:" + obj.y + ",z:" + obj.z + "}", "[" + obj.toJSON() + "]");
                         break;
                     }
-                case "UPDATEOBJECT":
+                case "updateobject":
                     {
                         int id = getNumericParameter("id", true);
 
                         // locate an existing object
                         clsWorld world = new clsWorld(name, password);
-                        clsObject obj = world.map.getObject(id);
+                        clsObject obj = new clsObject(world.db, id);
                         if (obj == null) sendResponse("Error", "Could not locate object 'id=" + id + "' to update.");
 
 
@@ -107,17 +108,18 @@ namespace GameJS
                         sendResponse("updateObject", "{id:" + obj.id + ",x:" + obj.x + ",y:" + obj.y + ",z:" + obj.z + "}", "[" + obj.toJSON() + "]");
                         break;
                     }
-                case "DELETEOBJECT":
+                case "deleteobject":
                     {
                         int id = getNumericParameter("id", true);
 
                         clsWorld world = new clsWorld(name, password);
-                        clsObject obj = world.map.deleteObject(id);
+                        clsObject obj = new clsObject(world.db, id);
+                        obj.delete();
                         if (obj == null) sendResponse("Error", "'Could not locate object 'id=" + id + "' to delete.");
                         else sendResponse("deleteObject", "{id:" + obj.id + "}", "[" + obj.toJSON() + "]");
                         break;
                     }
-                case "GETAREA":
+                case "getarea":
                     {
                         // read requested coordinate
                         int x1 = getNumericParameter("x1", true);
@@ -127,11 +129,11 @@ namespace GameJS
                         DateTime? modified = getDateTimeParameter("modified");
 
                         clsWorld world = new clsWorld(name, password);
-                        string JSON = clsObject.toJSON(world.map.getArea(x1, y1, x2, y2, modified));
+                        string JSON = clsObject.toJSON(world.map.getArea(x1, y1, x2, y2, 0, modified));
                         sendResponse("getArea", "{x1:" + x1 + ",y1:" + y1 + ",x2:" + x2 + ",y2:" + y2 + "}", JSON);
                         break;
                     }
-                case "CREATEAREA":
+                case "createarea":
                     {
                         // read requested coordinate
                         int x1 = getNumericParameter("x1", true);
@@ -145,22 +147,104 @@ namespace GameJS
                         string JSON = world.map.createArea(x1,y1,x2 - x1);
 
                         // formulate response
-                        sendResponse("setCubes", "{x1:" + x1 + ",y1:" + y1 + ",x2:" + x2 + ",y2:" + y2 + "}", JSON);
+                        sendResponse("createArea", "{x1:" + x1 + ",y1:" + y1 + ",x2:" + x2 + ",y2:" + y2 + "}", JSON);
                         break;
                     }
-                case "GETTEMPLATES":
+                case "gettemplates":
                     {
                         clsWorld world = new clsWorld(name, password);
-                        string JSON = clsTemplate.toJSON(world.getTemplates());
+                        string JSON = clsTemplate.toJSON(world.getAllTemplates());
                         sendResponse("getTemplates", "{}", JSON);
                         break;
                     }
-                case "TEST":
+                case "savetemplates":
                     {
+                        // load the world templates from the DB
+                        clsWorld world = new clsWorld(name, password);
+                        List<clsTemplate> templates = world.getAllTemplates();
+
+                        // convert to JSON
+                        string JSONString = clsTemplate.toJSON(templates, true);
+
+                        // save to file
+                        string path = Server.MapPath("..") + "\\files\\templates.txt";
+                        File.WriteAllText(@path, JSONString);
+
+                        // respond
+                        sendResponse("saveTemplates", "{}", JSONString);
+                        break;
+                    }
+                case "loadtemplates":
+                    {
+                        // destroy existing templates & their attributes from the database
                         clsWorld world = new clsWorld(name, password);
                         clsTemplate template = new clsTemplate(world.db);
-                        template.fromJSON("{\"name\":\"nameTest\",\"image\":\"imageTest\"}");
-                        sendResponse("getTemplates", "{}", template.toJSON());
+                        clsTemplateAttribute templateAttribute = new clsTemplateAttribute(world.db);
+                        template.destroyAll();
+                        templateAttribute.destroyAll();
+
+                        // load the world templates from the file
+                        string path = Server.MapPath("..") + "\\files\\templates.txt";
+                        string JSONString = File.ReadAllText(@path);
+                        JArray JSONArray = (JArray)JsonConvert.DeserializeObject(JSONString);
+
+                        // convert to template objects
+                        List<clsTemplate> templates = template.fromJSON(JSONArray);
+
+                        int recordsAffected = 0;
+                        foreach (clsTemplate t in templates)
+                        {
+                            recordsAffected += t.save(true);
+                        }
+
+                        // respond
+                        string results = clsTemplate.toJSON(templates, true);
+                        sendResponse("loadTemplates", "{\"recordsAffected\":" + recordsAffected + "}", results);
+                        break;
+                    }
+                case "saveobjects":
+                    {
+                        // load the world templates from the DB
+                        clsWorld world = new clsWorld(name, password);
+                        List<clsObject> objects = world.map.getAllObjects();
+
+                        // convert to JSON
+                        string JSONString = clsObject.toJSON(objects, true);
+
+                        // save to file
+                        string path = Server.MapPath("..") + "\\files\\objects.txt";
+                        File.WriteAllText(@path, JSONString);
+
+                        // respond
+                        sendResponse("saveObjects", "{}", JSONString);
+                        break;
+                    }
+                case "loadobjects":
+                    {
+                        // destroy existing templates & their attributes from the database
+                        clsWorld world = new clsWorld(name, password);
+                        clsObject obj = new clsObject(world.db);
+                        clsAttribute attribute = new clsAttribute(world.db);
+                        obj.destroyAll();
+                        attribute.destroyAll();
+
+                        // load the world templates from the file
+                        string path = Server.MapPath("..") + "\\files\\objects.txt";
+                        string JSONString = File.ReadAllText(@path);
+                        JArray JSONArray = (JArray)JsonConvert.DeserializeObject(JSONString);
+
+                        // convert to template objects
+                        List<clsObject> objects = obj.fromJSON(JSONArray);
+
+                        int recordsAffected = 0;
+                        foreach (clsObject o in objects)
+                        {
+                            recordsAffected += o.save(true);
+                        }
+
+                        // respond
+                        string results = clsObject.toJSON(objects, true);
+                        sendResponse("loadObjects", "{\"recordsAffected\":" + recordsAffected + "}", results);
                         break;
                     }
                 default:

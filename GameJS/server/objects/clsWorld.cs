@@ -24,10 +24,10 @@ namespace GameJS
             return new clsTemplate(this.db, templateId);
         }
 
-        public List<clsTemplate> getTemplates()
+        public List<clsTemplate> getAllTemplates()
         {
             clsTemplate template = new clsTemplate(this.db);
-            return template.getTemplates();
+            return template.getAllTemplates();
         }
 
         
