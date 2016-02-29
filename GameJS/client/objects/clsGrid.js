@@ -266,11 +266,11 @@ clsGrid.prototype.shiftGrid = function(shiftx, shifty) {
         xinc = -1;
     }
 
-    // loop the the rows(y)
+    // loop through the rows(y)
     var y = yfrom;
     while (((y >= yfrom) && (y <= yto)) || ((y <= yfrom) && (y >= yto))) {
 
-        // loop the the columns(x)
+        // loop through the columns(x)
         var x = xfrom;
         while (((x >= xfrom) && (x <= xto)) || ((x <= xfrom) && (x >= xto))) {
 
@@ -284,6 +284,7 @@ clsGrid.prototype.shiftGrid = function(shiftx, shifty) {
         y += yinc;
     }
 
+    // request new row information
     if (shiftx == 1) {
         // request last row
         var worldRow1 = client.worldView.screenToWorld(new clsVector2D(last, 0));

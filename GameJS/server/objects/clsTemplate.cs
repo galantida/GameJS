@@ -78,26 +78,26 @@ namespace GameJS
             return result;
         }
 
-        public static string toJSON(List<clsTemplate> templates, bool children = false)
+        public static string toJSON(List<clsTemplate> templates, bool children = false, bool hideDBElements = false)
         {
             string delimiter = "";
             string JSON = "[";
             foreach (clsTemplate obj in templates)
             {
-                JSON += delimiter + obj.toJSON(children);
+                JSON += delimiter + obj.toJSON(children, hideDBElements);
                 delimiter = ",";
             }
             JSON += "]";
             return JSON;
         }
 
-        public string toJSON(bool children = false)
+        public string toJSON(bool children = false, bool hideDBElements = false)
         {
-            string JSONString = base.toJSON();
+            string JSONString = base.toJSON(hideDBElements);
             if (children == true) 
             {
                 JSONString = JSONString.Substring(0, JSONString.Length - 1);
-                JSONString += ",\"templateAttributes\":" + clsTemplateAttribute.toJSON(this.templateAttributes) + "}";
+                JSONString += ",\"templateAttributes\":" + clsTemplateAttribute.toJSON(this.templateAttributes, hideDBElements) + "}";
             }
             return JSONString;
         }

@@ -53,13 +53,13 @@ namespace GameJS
             return this.execute("DELETE FROM " + this.tableName + "s WHERE templateId = " + templateId);
         }
 
-        public static string toJSON(List<clsTemplateAttribute> TemplateAttributes)
+        public static string toJSON(List<clsTemplateAttribute> TemplateAttributes, bool hideDBElements = false)
         {
             string delimiter = "";
             string JSON = "[";
             foreach (clsTemplateAttribute attribute in TemplateAttributes)
             {
-                JSON += delimiter + attribute.toJSON();
+                JSON += delimiter + attribute.toJSON(hideDBElements);
                 delimiter = ",";
             }
             JSON += "]";

@@ -162,12 +162,13 @@ namespace GameJS
                         clsWorld world = new clsWorld(name, password);
                         List<clsTemplate> templates = world.getAllTemplates();
 
-                        // convert to JSON
-                        string JSONString = clsTemplate.toJSON(templates, true);
+                        // convert to formatted JSON
+                        string JSONString = clsTemplate.toJSON(templates, true, true);
+                        string JSONFormatted = JValue.Parse(JSONString).ToString(Formatting.Indented);
 
                         // save to file
-                        string path = Server.MapPath("..") + "\\files\\templates.txt";
-                        File.WriteAllText(@path, JSONString);
+                        string path = Server.MapPath("..") + "\\files\\templates.json";
+                        File.WriteAllText(@path, JSONFormatted);
 
                         // respond
                         sendResponse("saveTemplates", "{}", JSONString);
@@ -183,7 +184,7 @@ namespace GameJS
                         templateAttribute.destroyAll();
 
                         // load the world templates from the file
-                        string path = Server.MapPath("..") + "\\files\\templates.txt";
+                        string path = Server.MapPath("..") + "\\files\\templates.json";
                         string JSONString = File.ReadAllText(@path);
                         JArray JSONArray = (JArray)JsonConvert.DeserializeObject(JSONString);
 
@@ -207,12 +208,13 @@ namespace GameJS
                         clsWorld world = new clsWorld(name, password);
                         List<clsObject> objects = world.map.getAllObjects();
 
-                        // convert to JSON
-                        string JSONString = clsObject.toJSON(objects, true);
+                        // convert to formatted JSON
+                        string JSONString = clsObject.toJSON(objects, true, true);
+                        string JSONFormatted = JValue.Parse(JSONString).ToString(Formatting.Indented);
 
                         // save to file
-                        string path = Server.MapPath("..") + "\\files\\objects.txt";
-                        File.WriteAllText(@path, JSONString);
+                        string path = Server.MapPath("..") + "\\files\\objects.json";
+                        File.WriteAllText(@path, JSONFormatted);
 
                         // respond
                         sendResponse("saveObjects", "{}", JSONString);
@@ -228,7 +230,7 @@ namespace GameJS
                         attribute.destroyAll();
 
                         // load the world templates from the file
-                        string path = Server.MapPath("..") + "\\files\\objects.txt";
+                        string path = Server.MapPath("..") + "\\files\\objects.json";
                         string JSONString = File.ReadAllText(@path);
                         JArray JSONArray = (JArray)JsonConvert.DeserializeObject(JSONString);
 

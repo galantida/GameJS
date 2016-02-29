@@ -1,0 +1,192 @@
+[
+  {
+    "name": "Wet Rock 6",
+    "image": "wetrock6",
+    "templateAttributes": []
+  },
+  {
+    "name": "Wet Rock 5",
+    "image": "wetrock5",
+    "templateAttributes": []
+  },
+  {
+    "name": "Wet Rock 4",
+    "image": "wetrock4",
+    "templateAttributes": [
+      {
+        "name": "weight",
+        "value": "100"
+      }
+    ]
+  },
+  {
+    "name": "Wet Rock 3",
+    "image": "wetrock3",
+    "templateAttributes": [
+      {
+        "name": "weight",
+        "value": "100"
+      }
+    ]
+  },
+  {
+    "name": "Wet Rock 2",
+    "image": "wetrock2",
+    "templateAttributes": []
+  },
+  {
+    "name": "Wet Rock 1",
+    "image": "wetrock1",
+    "templateAttributes": []
+  },
+  {
+    "name": "Tree",
+    "image": "tree",
+    "templateAttributes": []
+  },
+  {
+    "name": "Moss Rock 9",
+    "image": "mossrock9",
+    "templateAttributes": []
+  },
+  {
+    "name": "Moss Rock 8",
+    "image": "mossrock8",
+    "templateAttributes": []
+  },
+  {
+    "name": "Moss Rock 7",
+    "image": "mossrock7",
+    "templateAttributes": []
+  },
+  {
+    "name": "Moss Rock 6",
+    "image": "mossrock6",
+    "templateAttributes": []
+  },
+  {
+    "name": "Moss Rock 5",
+    "image": "mossrock5",
+    "templateAttributes": []
+  },
+  {
+    "name": "Moss Rock 4",
+    "image": "mossrock4",
+    "templateAttributes": []
+  },
+  {
+    "name": "Moss Rock 3",
+    "image": "mossrock3",
+    "templateAttributes": []
+  },
+  {
+    "name": "Moss Rock 2",
+    "image": "mossrock2",
+    "templateAttributes": []
+  },
+  {
+    "name": "Moss Rock 1",
+    "image": "mossrock1",
+    "templateAttributes": []
+  },
+  {
+    "name": "MC Water",
+    "image": "mcwater",
+    "templateAttributes": []
+  },
+  {
+    "name": "MC Stone",
+    "image": "mcstone",
+    "templateAttributes": []
+  },
+  {
+    "name": "MC Grass",
+    "image": "mcgrass",
+    "templateAttributes": []
+  },
+  {
+    "name": "MC Dirt",
+    "image": "mcdirt",
+    "templateAttributes": []
+  },
+  {
+    "name": "Grass TRB",
+    "image": "grasstrb",
+    "templateAttributes": []
+  },
+  {
+    "name": "Grass TR",
+    "image": "grasstr",
+    "templateAttributes": []
+  },
+  {
+    "name": "Grass TL",
+    "image": "grasstl",
+    "templateAttributes": []
+  },
+  {
+    "name": "Grass T",
+    "image": "grasst",
+    "templateAttributes": []
+  },
+  {
+    "name": "Grass RBL",
+    "image": "grassrbl",
+    "templateAttributes": []
+  },
+  {
+    "name": "Grass R",
+    "image": "grassr",
+    "templateAttributes": []
+  },
+  {
+    "name": "Grass LTR",
+    "image": "grassltr",
+    "templateAttributes": []
+  },
+  {
+    "name": "Grass L",
+    "image": "grassl",
+    "templateAttributes": []
+  },
+  {
+    "name": "Grass BR",
+    "image": "grassbr",
+    "templateAttributes": []
+  },
+  {
+    "name": "Grass BLT",
+    "image": "grassblt",
+    "templateAttributes": []
+  },
+  {
+    "name": "Grass BL",
+    "image": "grassbl",
+    "templateAttributes": []
+  },
+  {
+    "name": "Grass B",
+    "image": "grassb",
+    "templateAttributes": []
+  },
+  {
+    "name": "Grass",
+    "image": "grass",
+    "templateAttributes": []
+  },
+  {
+    "name": "Dirt",
+    "image": "dirt",
+    "templateAttributes": []
+  },
+  {
+    "name": "Bedrock 2",
+    "image": "bedrock2",
+    "templateAttributes": []
+  },
+  {
+    "name": "Bedrock 1",
+    "image": "bedrock1",
+    "templateAttributes": []
+  }
+]

@@ -70,8 +70,8 @@
     <Content Include="client\styles\clsContainer.css" />
     <Content Include="client\styles\object.css" />
     <Content Include="server\dbScripts\mySQL.txt" />
-    <Content Include="server\files\objects.txt" />
-    <Content Include="server\files\templates.txt" />
+    <None Include="server\files\objects.json" />
+    <None Include="server\files\templates.json" />
     <Content Include="server\services\GameServices.aspx" />
     <Content Include="client\html\interface.html" />
     <Content Include="packages.config" />

@@ -196,27 +196,27 @@ namespace GameJS
             return result;
         }
 
-        public static string toJSON(List<clsObject> objects, bool children = false)
+        public static string toJSON(List<clsObject> objects, bool children = false, bool hideDBElements = false)
         {
             string delimiter = "";
             string JSON = "[";
             foreach (clsObject obj in objects)
             {
-                JSON += delimiter + obj.toJSON(children);
+                JSON += delimiter + obj.toJSON(children, hideDBElements);
                 delimiter = ",";
             }
             JSON += "]";
             return JSON;
         }
 
-        public string toJSON(bool children = false)
+        public string toJSON(bool children = false, bool hideDBElements = false)
         {
-            string JSONString = base.toJSON();
+            string JSONString = base.toJSON(hideDBElements);
             if (children == true)
             {
                 JSONString = JSONString.Substring(0, JSONString.Length - 1);
 
-                JSONString += ",\"attributes\":" + clsAttribute.toJSON(this.attributes);
+                JSONString += ",\"attributes\":" + clsAttribute.toJSON(this.attributes, hideDBElements);
                 //JSONString += ",\"contents\":" + clsObject.toJSON(this.contents); // lets let each object stand on its own
 
                 JSONString += "}";

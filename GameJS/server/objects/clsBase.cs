@@ -360,37 +360,49 @@ namespace GameJS
             }
         }
 
-        public string toJSON()
+        public string toJSON(bool hideDBElements = false)
         {
             string delimiter = "";
             string result = "{";
             foreach (PropertyInfo propertyInfo in this.GetType().GetProperties())
             {
+                string name = propertyInfo.Name.ToLower();
+                string value = propertyInfo.GetValue(this, null).ToString();
 
-                switch (propertyInfo.PropertyType.ToString())
-                {
-                    case "System.Int16":
-                    case "System.Int32":
-                    case "System.Boolean":
-                        {
-                            // numbers
-                            result += delimiter + "\"" + propertyInfo.Name + "\":" + propertyInfo.GetValue(this, null).ToString().ToLower() + "";
-                            break;
-                        }
-                    case "System.String":
-                    case "System.DateTime":
-                        {
-                            // strings
-                            result += delimiter + "\"" + propertyInfo.Name + "\":\"" + propertyInfo.GetValue(this, null).ToString() + "\"";
-                            break;
-                        }
-                    default:
-                        {
-                            // skip unknown property types
-                            break;
-                        }
+                bool displayProperty = true;
+                if (hideDBElements == true) {
+                    if ((name == "created") || (name == "modified")) displayProperty = false;
+                    else if (name.LastIndexOf("id") == name.Length - 2) displayProperty = false;
                 }
-                delimiter = ",";
+
+                // properties that are skipped when full = false
+                if (displayProperty == true)
+                {
+                    switch (propertyInfo.PropertyType.ToString())
+                    {
+                        case "System.Int16":
+                        case "System.Int32":
+                        case "System.Boolean":
+                            {
+                                // numbers
+                                result += delimiter + "\"" + name + "\":" + value.ToLower() + ""; // the ToLower() is for bool values
+                                break;
+                            }
+                        case "System.String":
+                        case "System.DateTime":
+                            {
+                                // strings
+                                result += delimiter + "\"" + name + "\":\"" + value + "\"";
+                                break;
+                            }
+                        default:
+                            {
+                                // skip unknown property types
+                                break;
+                            }
+                    }
+                    delimiter = ",";
+                }
             }
             result += "}";
             return result;
