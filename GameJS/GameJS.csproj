@@ -70,6 +70,8 @@
     <Content Include="client\styles\clsContainer.css" />
     <Content Include="client\styles\object.css" />
     <Content Include="server\dbScripts\mySQL.txt" />
+    <Content Include="server\files\objects.txt" />
+    <Content Include="server\files\templates.txt" />
     <Content Include="server\services\GameServices.aspx" />
     <Content Include="client\html\interface.html" />
     <Content Include="packages.config" />
@@ -105,7 +107,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="client\Images\" />
-    <Folder Include="server\files\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Web.Debug.config">

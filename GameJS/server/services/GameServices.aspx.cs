@@ -49,8 +49,7 @@ namespace GameJS
                         if (template == null) sendResponse("Error", "Could not locate template 'templateId=" + templateId + "' to create new object.");
 
                         // create object based on template
-                        clsObject obj = world.map.createObject(x, y, z);
-                        obj.image = template.image;
+                        clsObject obj = world.map.createObject(x, y, z, template);
                         obj.save(); 
 
                         // formulate response
@@ -67,7 +66,7 @@ namespace GameJS
                         if (obj == null) sendResponse("Error", "Could not locate object 'id=" + id + "' to update.");
 
 
-                        // populate properties
+                        // populate properties based on passed paramters
                         foreach (PropertyInfo propertyInfo in obj.GetType().GetProperties())
                         {
                             if (parameterExists(propertyInfo.Name))

@@ -29,6 +29,27 @@ namespace GameJS
         public clsObject(clsDatabase db, int id) : base(db, id) { }
         public clsObject(clsDatabase db, MySqlDataReader dr) : base(db, dr) { }
 
+        // create an object from a temple
+        public clsObject(clsDatabase db, int x,int y, int z, clsTemplate template): base(db)
+        {
+            this.x = x;
+            this.y = y;
+            this.z = z;
+
+            this.name = template.name; // this should be the attribute name not the template name
+            this.image = template.image;
+
+            // look through template attibutes and use them to create object
+            foreach (clsTemplateAttribute ta in template.templateAttributes)
+            {
+                // copy paste right now but could have random numbers, names etc....
+                clsAttribute a = new clsAttribute(_db);
+                a.name = ta.name;
+                a.value = ta.value;
+                this.attributes.Add(a);
+            }
+        }
+
         // convert a generic object to a typed one
         private clsObject get(string sqlQuery)
         {

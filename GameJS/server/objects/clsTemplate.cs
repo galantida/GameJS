@@ -24,6 +24,11 @@ namespace GameJS
         public clsTemplate(clsDatabase db, int id) : base(db, id) { }
         public clsTemplate(clsDatabase db, MySqlDataReader dr) : base(db, dr) { }
 
+        public clsTemplate(clsDatabase db, string name): base(db)
+        {
+            this.load("SELECT * FROM " + this.tableName + "s WHERE name = '" + name + "'");
+        }
+
         // convert a generic object to a typed one
         private clsTemplate get(string sqlQuery)
         {

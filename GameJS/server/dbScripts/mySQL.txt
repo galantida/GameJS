@@ -1,23 +1,24 @@
 ﻿CREATE DATABASE IF NOT EXISTS `testdatabase` /*!40100 DEFAULT CHARACTER SET utf8 */;
 
 
-CREATE TABLE IF NOT EXISTS `objects` (
+CREATE TABLE `objects` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(45) NOT NULL DEFAULT '',
   `x` int(11) NOT NULL DEFAULT '0',
   `y` int(11) NOT NULL DEFAULT '0',
   `z` int(11) NOT NULL DEFAULT '0',
-  `pack` varchar(45) DEFAULT NULL,
-  `item` varchar(45) DEFAULT NULL,
+  `image` varchar(45) DEFAULT NULL,
   `containerId` int(11) NOT NULL DEFAULT '0',
   `deleted` tinyint(1) DEFAULT '0',
   `created` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `modified` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`,`x`,`y`,`z`),
   UNIQUE KEY `id_UNIQUE` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=84954 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=521300 DEFAULT CHARSET=utf8;
 
 
-CREATE TABLE IF NOT EXISTS `attributes` (
+
+CREATE TABLE `attributes` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `objectId` int(11) NOT NULL DEFAULT '0',
   `name` varchar(45) NOT NULL DEFAULT '',
@@ -28,17 +29,19 @@ CREATE TABLE IF NOT EXISTS `attributes` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
-CREATE TABLE IF NOT EXISTS `templates` (
+
+CREATE TABLE `templates` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(45) NOT NULL DEFAULT '',
   `image` varchar(45) NOT NULL DEFAULT '',
   `created` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `modified` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=113 DEFAULT CHARSET=utf8;
 
 
-CREATE TABLE IF NOT EXISTS `templateattributes` (
+
+CREATE TABLE `templateattributes` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `templateId` int(11) NOT NULL DEFAULT '0',
   `name` varchar(45) NOT NULL DEFAULT '',
@@ -46,4 +49,5 @@ CREATE TABLE IF NOT EXISTS `templateattributes` (
   `created` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `modified` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8;
+

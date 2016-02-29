@@ -22,14 +22,9 @@ namespace GameJS
         }
 
         // only the worl object has access to template this may get promoted
-        public clsObject createObject(int x, int y, int z)
+        public clsObject createObject(int x, int y, int z, clsTemplate template)
         {
-            clsObject obj = new clsObject(_db);
-            obj.name = "";
-            obj.x = x;
-            obj.y = y;
-            obj.z = z;
-            return obj;
+            return new clsObject(_db, x, y, z, template);
         }
 
         public List<clsObject> getAllObjects()
@@ -119,21 +114,18 @@ namespace GameJS
                     {
                         if (z <= heights[x, y])
                         {
-                            obj = new clsObject(_db);
-                            obj = this.createObject(x, y, z);
-
                             // land
                             if (z == 0)
                             {
-                                obj.image = "mcstone";
+                                obj = this.createObject(x, y, z, new clsTemplate(_db, "mcstone"));
                             }
                             else if (z == heights[x, y])
                             {
-                                obj.image = "mcgrass";
+                                obj = this.createObject(x, y, z, new clsTemplate(_db, "mcgrass"));
                             }
                             else
                             {
-                                obj.image = "mcdirt";
+                                obj = this.createObject(x, y, z, new clsTemplate(_db, "mcdirt"));
                             }
 
                             obj.save();
@@ -143,12 +135,7 @@ namespace GameJS
                         {
                             if (z <= waterLevel)
                             {
-                                obj = new clsObject(_db);
-                                obj = this.createObject(x, y, z);
-
-                                // water
-                                obj.image = "mcwater";
-
+                                obj = this.createObject(x, y, z, new clsTemplate(_db, "mcwater"));
                                 obj.save();
                                 results.Add(obj);
                             }
