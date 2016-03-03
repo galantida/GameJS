@@ -58,9 +58,11 @@ var object = { // object namespace
     position: function (img) {
         var div = img.parentElement;
         var obj = JSON.parse(div.getAttribute("data"));
-        div.style.left = (64 - img.clientWidth) + "px";
+        //div.style.left = (-(img.clientWidth / 2)) + "px";
+        div.style.left = 0 + "px";
         //div.style.top = (-((obj.z + 1) * 32)) + "px";
-        div.style.top = (-((obj.z + 1) * 32)) + "px";
+        div.style.top = (-obj.z) + "px"; // this works perfect except it is below the grid
+        div.style.top = (-(obj.z + 32)) + "px"; // this works perfect except it is below the grid
         //console.log("position ele " + element.style.left);
     },
 
@@ -90,7 +92,7 @@ var object = { // object namespace
                 console.log("Left clicked object " + JSON.stringify(obj) + " at screen(" + screenLocation.x + "," + screenLocation.y + ")");
 
                 // move play to new location. screen will follow
-                client.playerMoveTarget = new clsVector2D(worldLocation.x - obj.z, worldLocation.y - obj.z);
+                client.playerMoveTarget = new clsVector2D(worldLocation.x - (obj.z / 32), worldLocation.y - (obj.z / 32));
             }
         }
         e.preventDefault();
@@ -155,7 +157,7 @@ var object = { // object namespace
             case "template":
                 // create object based on dropped template
                 console.log("creating new object based on template " + JSON.stringify(srcObj));
-                client.createObject(dstObj.x, dstObj.y, dstObj.z + 1, srcObj.id);
+                client.createObject(dstObj.x, dstObj.y, dstObj.z + 32, srcObj.id);
                 break;
 
             case "object":
@@ -166,7 +168,7 @@ var object = { // object namespace
 
                 // create new object in new location
                 console.log("Sending update request for object " + JSON.stringify(srcObj));
-                client.updateObject(srcObj.id, dstObj.x, dstObj.y, dstObj.z + 1, srcObj.pack, srcObj.item);
+                client.updateObject(srcObj.id, dstObj.x, dstObj.y, dstObj.z + 32, srcObj.pack, srcObj.item);
                 break;
         }
         console.groupEnd();
