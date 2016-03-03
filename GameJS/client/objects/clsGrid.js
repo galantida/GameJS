@@ -201,7 +201,8 @@ clsGrid.prototype.updateObjects = function (objects) {
                         console.log("Modify existing element.");
                         obj.elementLastUpdated = new Date(); // add an elementCreated date to the object
                         ele.setAttribute("data", JSON.stringify(obj));
-                        ele.style.top = (-((obj.z + 1) * 32)) + "px";
+                        object.position(ele.firstElementChild);
+                        //ele.style.top = (-((obj.z + 1) * 32)) + "px";
                         tile.appendChild(ele); // move element to its new tile location
                     }
                     else {

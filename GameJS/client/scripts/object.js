@@ -7,7 +7,7 @@
 // report version
 console.log("=== included clsObject.js ver 0.1 ===");
 
-var object = { // utils namespace
+var object = { // object namespace
 
     draw: function (obj) {
 
@@ -19,7 +19,7 @@ var object = { // utils namespace
         // set properties
         obj.elementLastUpdated = new Date(); // add an elementCreated date to the object
         div.setAttribute("data", JSON.stringify(obj));
-        div.style.top = (-((obj.z + 1) * 32)) + "px";
+        //div.style.top = (-((obj.z + 1) * 32)) + "px";
 
         // add events
         //div.onmousedown = function () { object.onClick(this); };
@@ -46,11 +46,22 @@ var object = { // utils namespace
 
         // create image
         var img = document.createElement('img');
+        img.onload = function () { object.position(this); }; // add onload event to position element after image size available
         img.src = "../images/world/" + obj.image + ".png";
         img.className = "object img64Default";
+
         div.appendChild(img); // put image in container
 
         return div;
+    },
+
+    position: function (img) {
+        var div = img.parentElement;
+        var obj = JSON.parse(div.getAttribute("data"));
+        div.style.left = (64 - img.clientWidth) + "px";
+        //div.style.top = (-((obj.z + 1) * 32)) + "px";
+        div.style.top = (-((obj.z + 1) * 32)) + "px";
+        //console.log("position ele " + element.style.left);
     },
 
     onClick: function (element) {

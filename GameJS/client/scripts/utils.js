@@ -41,5 +41,4 @@ var utils = { // utils namespace
         script.src = url;
         document.getElementsByTagName("head")[0].appendChild(script);
     }
-
 };

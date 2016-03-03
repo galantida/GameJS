@@ -17,6 +17,7 @@ namespace GameJS
         // properties
         public string name { get; set; }
         public string image { get; set; }
+        public int weight { get; set; }
 
         private List<clsTemplateAttribute> _templateAttributes = null;
 
