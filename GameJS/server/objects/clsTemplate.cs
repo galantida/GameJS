@@ -18,6 +18,8 @@ namespace GameJS
         public string name { get; set; }
         public string image { get; set; }
         public int weight { get; set; }
+        public bool stackable { get; set; }
+        public bool blocking { get; set; }
 
         private List<clsTemplateAttribute> _templateAttributes = null;
 

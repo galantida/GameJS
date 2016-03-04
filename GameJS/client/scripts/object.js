@@ -58,12 +58,11 @@ var object = { // object namespace
     position: function (img) {
         var div = img.parentElement;
         var obj = JSON.parse(div.getAttribute("data"));
-        //div.style.left = (-(img.clientWidth / 2)) + "px";
-        div.style.left = 0 + "px";
-        //div.style.top = (-((obj.z + 1) * 32)) + "px";
-        div.style.top = (-obj.z) + "px"; // this works perfect except it is below the grid
-        div.style.top = (-(obj.z + 32)) + "px"; // this works perfect except it is below the grid
-        //console.log("position ele " + element.style.left);
+        obj.imgWidth = img.clientWidth;
+        obj.imgHeight = img.clientHeight;
+        div.setAttribute("data", JSON.stringify(obj));
+        div.style.left = (32 - obj.imgWidth /2) + "px";
+        div.style.top = (-(obj.z + 32) -(obj.imgHeight -64)) + "px"; // this works perfectly
     },
 
     onClick: function (element) {

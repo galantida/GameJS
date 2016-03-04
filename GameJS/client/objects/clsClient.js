@@ -69,13 +69,13 @@ clsClient.prototype.deleteObject = function (id) {
 }
 
 // sets a tile to a specific graphic
-clsClient.prototype.updateObject = function (id, worldx, worldy, worldz, pack, item) {
+clsClient.prototype.updateObject = function (id, worldx, worldy, worldz) {
 
     console.log("Updating object...");
 
     // update/create a tile
     // {"id ":1,"x":0,"y":0,"z":0,"tilesetId ":0,"col":0,"row ":0}
-    var obj = { "id": id, "x": worldx, "y": worldy, "z": worldz, "pack": pack, "item": item }
+    var obj = { "id": id, "x": worldx, "y": worldy, "z": worldz }
 
     var paramObj = obj;
     paramObj.callName = "updateObject";

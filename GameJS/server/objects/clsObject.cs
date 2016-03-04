@@ -20,6 +20,9 @@ namespace GameJS
         public int y { get; set; }
         public int z { get; set; }
         public string image { get; set; }
+        public int weight { get; set; }
+        public bool stackable { get; set; }
+        public bool blocking { get; set; }
         public int containerId { get; set; }
         public bool deleted { get; set; }
 
@@ -38,6 +41,9 @@ namespace GameJS
 
             this.name = template.name; // this should be the attribute name not the template name
             this.image = template.image;
+            this.weight = template.weight;
+            this.stackable = template.stackable;
+            this.blocking = template.blocking;
 
             // look through template attibutes and use them to create object
             foreach (clsTemplateAttribute ta in template.templateAttributes)
