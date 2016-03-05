@@ -117,15 +117,15 @@ namespace GameJS
                             // land
                             if (z == 0)
                             {
-                                obj = this.createObject(x, y, z, new clsTemplate(_db, "mcstone"));
+                                obj = this.createObject(x, y, z * 32, new clsTemplate(_db, "MC Stone"));
                             }
                             else if (z == heights[x, y])
                             {
-                                obj = this.createObject(x, y, z, new clsTemplate(_db, "mcgrass"));
+                                obj = this.createObject(x, y, z * 32, new clsTemplate(_db, "MC Grass"));
                             }
                             else
                             {
-                                obj = this.createObject(x, y, z, new clsTemplate(_db, "mcdirt"));
+                                obj = this.createObject(x, y, z * 32, new clsTemplate(_db, "MC Dirt"));
                             }
 
                             obj.save();
@@ -135,7 +135,7 @@ namespace GameJS
                         {
                             if (z <= waterLevel)
                             {
-                                obj = this.createObject(x, y, z, new clsTemplate(_db, "mcwater"));
+                                obj = this.createObject(x, y, z * 32, new clsTemplate(_db, "MC Water"));
                                 obj.save();
                                 results.Add(obj);
                             }
@@ -192,7 +192,7 @@ namespace GameJS
             {
                 for (int x = half; x < max; x += size) 
                 {
-                    square(x, y, half, r.Next(0, 3) * (int)scale * 2 - (int)scale);
+                    square(x, y, half, r.Next(0, 3) * (int)(scale * 2 - scale));
                 }
             }
 
@@ -200,7 +200,7 @@ namespace GameJS
             {
                 for (int x = (y + half) % size; x <= max; x += size) 
                 {
-                    diamond(x, y, half, r.Next(0, 3) * (int)scale * 2 - (int)scale);
+                    diamond(x, y, half, r.Next(0, 3) * (int)(scale * 2 - scale));
                 }
             }
 
