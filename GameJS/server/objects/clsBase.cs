@@ -372,7 +372,7 @@ namespace GameJS
                 bool displayProperty = true;
                 if (hideDBElements == true) {
                     if ((name == "created") || (name == "modified")) displayProperty = false;
-                    else if (name.LastIndexOf("id") == name.Length - 2) displayProperty = false;
+                    else if (name.EndsWith("id")) displayProperty = false;
                 }
 
                 // properties that are skipped when full = false
