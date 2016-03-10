@@ -10,28 +10,12 @@ namespace GameJS
     public class clsDatabase
     {
         // map objects
-        private string _database;
-        private string _password;
         private MySqlConnection _conn;
         
 
-        public clsDatabase(string database, string password)
+        public clsDatabase(string conString)
         {
-            _database = database;
-            _password = password;
-
-            string myConnectionString = "server=127.0.0.1;uid=root;pwd=" + this.password + ";database=" + this.database + ";";
-            _conn = new MySqlConnection(myConnectionString);
-        }
-
-        public string database
-        {
-            get { return _database; }
-        }
-
-        public string password
-        {
-            get { return _password; }
+            _conn = new MySqlConnection(conString);
         }
 
         public MySqlConnection conn

@@ -1,7 +1,6 @@
-c:\users\home\documents\visual studio 2012\Projects\GameJS\GameJS\bin\GameJS.dll
-c:\users\home\documents\visual studio 2012\Projects\GameJS\GameJS\bin\GameJS.pdb
-c:\users\home\documents\visual studio 2012\Projects\GameJS\GameJS\obj\Debug\GameJS.csprojResolveAssemblyReference.cache
-c:\users\home\documents\visual studio 2012\Projects\GameJS\GameJS\obj\Debug\GameJS.dll
-c:\users\home\documents\visual studio 2012\Projects\GameJS\GameJS\obj\Debug\GameJS.pdb
+C:\Users\Home\Documents\Visual Studio 2012\Projects\GameJS\GameJS\bin\GameJS.dll
+C:\Users\Home\Documents\Visual Studio 2012\Projects\GameJS\GameJS\bin\GameJS.pdb
 C:\Users\Home\Documents\Visual Studio 2012\Projects\GameJS\GameJS\bin\Newtonsoft.Json.pdb
 C:\Users\Home\Documents\Visual Studio 2012\Projects\GameJS\GameJS\bin\Newtonsoft.Json.xml
+C:\Users\Home\Documents\Visual Studio 2012\Projects\GameJS\GameJS\obj\Debug\GameJS.dll
+C:\Users\Home\Documents\Visual Studio 2012\Projects\GameJS\GameJS\obj\Debug\GameJS.pdb

@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
-//using MySql.Data;
+using System.Web.Configuration;
+
 
 namespace GameJS
 {
@@ -13,9 +14,10 @@ namespace GameJS
         public clsDatabase db {get; set; }
         public clsMap map;
 
-        public clsWorld(string name, string password)
+        public clsWorld()
         {
-            this.db = new clsDatabase(name, password);
+            string dbConString = WebConfigurationManager.AppSettings["dbConString"];
+            this.db = new clsDatabase(dbConString);
             this.map = new clsMap(this.db);
         }
 

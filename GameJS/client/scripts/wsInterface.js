@@ -5,13 +5,33 @@
 // *************************************************************************************************
 
 // report version
-console.log("=== included wsInterface.js ver 0.1 ===");
-
-// decide which service to use base on the domain in the URL
-var wsURL = "http://localhost:7973/server/services/gameservices.aspx";
-
+console.log("=== included wsInterface.js ver 0.2 ===");
 
 var wsi = { // wsi namespace
+
+    // decide which service to use base on the domain in the URL
+    wsURL: function () {
+        var url = "";
+
+        switch (window.location.host) {
+            case "localhost:7973":
+                {
+                    url = "http://localhost:7973/server/services/gameservices.aspx";
+                    break;
+                }
+            case "www.codestudiocreation.com":
+                {
+                    url = "http://www.codestudiocreation.com/GameJS/server/services/gameservices.aspx";
+                    break;
+                }
+            default:
+                {
+                    alert("Error: Unrecognised deployment location '" + window.location.host + "'");
+                    break;
+                }
+        }
+        return url;
+    },
         
     // ***********************************************************************************************************************
     // requestJSONInfo - multithreaded handler for requesting information in the form of JSON objects
@@ -39,7 +59,7 @@ var wsi = { // wsi namespace
         }
 
         // log sending request attempt to server
-        console.log("JSON Request: " + paramObj.callName + " - " + wsURL + paramString); // display the request in the console
+        console.log("JSON Request: " + paramObj.callName + " - " + wsi.wsURL() + paramString); // display the request in the console
     
         // prepare service request
         var xhr = new XMLHttpRequest(); // communication object    
@@ -50,7 +70,7 @@ var wsi = { // wsi namespace
         // Access-Control-Allow-Methods = GET,POST,OPTIONS
         // Access-Control-Allow-Origin = http://tcgportal1:1212
 	
-        xhr.open("GET", wsURL + paramString, true); // create a post in the com object
+        xhr.open("GET", wsi.wsURL() + paramString, true); // create a post in the com object
         xhr.timeout = 30000; // 30000 = 30 seconds	
         xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded; charset=UTF-8");   
         xhr.onreadystatechange = function () { wsi.receiveJSONInfo(paramObj.callName, xhr, callBack) };
@@ -70,7 +90,7 @@ var wsi = { // wsi namespace
         if (xhr.readyState == 4) {
             // report connection failure
             if (xhr.status != 200){
-                console.log("ERROR: failed to execute '" + callName + "' on server '" + wsURL + "' returned status '" + xhr.status + "'.");
+                console.log("ERROR: failed to execute '" + callName + "' on server '" + wsi.wsURL() + "' returned status '" + xhr.status + "'.");
             } 
             else {
                 try {

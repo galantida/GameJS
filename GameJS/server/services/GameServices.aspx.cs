@@ -17,14 +17,8 @@ namespace GameJS
 
         protected void Page_Load(object sender, EventArgs e)
         {
-            /****** Session Support ******/
-            //clsAccount myAccount = (clsAccount)Session["myAccount"]; // load a session if there is one
-            //if (myAccount != null) sessionUserName = myAccount.eMail;
-            //else sendResponse("Error", "Logon expired."); 
-
-            string name = "testdatabase";
-            string password = "IBMs3666";
-
+            sendResponse("Error", "I got this far");
+            return;
 
             /****** web services ******/
             string callName = getStringParameter("callName");
@@ -42,7 +36,7 @@ namespace GameJS
                         int templateId = getNumericParameter("templateId", true);
 
                         // connect to worl
-                        clsWorld world = new clsWorld(name, password);
+                        clsWorld world = new clsWorld();
 
                         // load template
                         clsTemplate template = world.getTemplate(templateId);
@@ -61,7 +55,7 @@ namespace GameJS
                         int id = getNumericParameter("id", true);
 
                         // locate an existing object
-                        clsWorld world = new clsWorld(name, password);
+                        clsWorld world = new clsWorld();
                         clsObject obj = new clsObject(world.db, id);
                         if (obj == null) sendResponse("Error", "Could not locate object 'id=" + id + "' to update.");
 
@@ -111,7 +105,7 @@ namespace GameJS
                     {
                         int id = getNumericParameter("id", true);
 
-                        clsWorld world = new clsWorld(name, password);
+                        clsWorld world = new clsWorld();
                         clsObject obj = new clsObject(world.db, id);
                         obj.delete();
                         if (obj == null) sendResponse("Error", "'Could not locate object 'id=" + id + "' to delete.");
@@ -127,7 +121,7 @@ namespace GameJS
                         int y2 = getNumericParameter("y2");
                         DateTime? modified = getDateTimeParameter("modified");
 
-                        clsWorld world = new clsWorld(name, password);
+                        clsWorld world = new clsWorld();
                         string JSON = clsObject.toJSON(world.map.getArea(x1, y1, x2, y2, 0, modified));
                         sendResponse("getArea", "{x1:" + x1 + ",y1:" + y1 + ",x2:" + x2 + ",y2:" + y2 + "}", JSON);
                         break;
@@ -141,7 +135,7 @@ namespace GameJS
                         int y2 = getNumericParameter("y2", true);
 
                         // connect to world db
-                        clsWorld world = new clsWorld(name, password);
+                        clsWorld world = new clsWorld();
                         //List<clsObject> result = world.map.createArea(x1,y1,x2,y2);
                         string JSON = world.map.createArea(x1,y1,x2 - x1);
 
@@ -151,7 +145,7 @@ namespace GameJS
                     }
                 case "gettemplates":
                     {
-                        clsWorld world = new clsWorld(name, password);
+                        clsWorld world = new clsWorld();
                         string JSON = clsTemplate.toJSON(world.getAllTemplates());
                         sendResponse("getTemplates", "{}", JSON);
                         break;
@@ -159,7 +153,7 @@ namespace GameJS
                 case "savetemplates":
                     {
                         // load the world templates from the DB
-                        clsWorld world = new clsWorld(name, password);
+                        clsWorld world = new clsWorld();
                         List<clsTemplate> templates = world.getAllTemplates();
 
                         // convert to formatted JSON
@@ -177,7 +171,7 @@ namespace GameJS
                 case "loadtemplates":
                     {
                         // destroy existing templates & their attributes from the database
-                        clsWorld world = new clsWorld(name, password);
+                        clsWorld world = new clsWorld();
                         clsTemplate template = new clsTemplate(world.db);
                         clsTemplateAttribute templateAttribute = new clsTemplateAttribute(world.db);
                         template.destroyAll();
@@ -205,7 +199,7 @@ namespace GameJS
                 case "saveobjects":
                     {
                         // load the world templates from the DB
-                        clsWorld world = new clsWorld(name, password);
+                        clsWorld world = new clsWorld();
                         List<clsObject> objects = world.map.getAllObjects();
 
                         // convert to formatted JSON
@@ -223,7 +217,7 @@ namespace GameJS
                 case "loadobjects":
                     {
                         // destroy existing templates & their attributes from the database
-                        clsWorld world = new clsWorld(name, password);
+                        clsWorld world = new clsWorld();
                         clsObject obj = new clsObject(world.db);
                         clsAttribute attribute = new clsAttribute(world.db);
                         obj.destroyAll();

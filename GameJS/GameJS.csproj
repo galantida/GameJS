@@ -70,6 +70,10 @@
     <Content Include="client\styles\clsContainer.css" />
     <Content Include="client\styles\object.css" />
     <Content Include="server\dbScripts\mySQL.txt" />
+    <Content Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </Content>
     <None Include="server\files\objects.json" />
     <None Include="server\files\templates.json" />
     <Content Include="server\services\GameServices.aspx" />
@@ -86,6 +90,11 @@
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
     <Compile Include="server\objects\clsBase.cs" />
     <Compile Include="server\objects\clsDatabase.cs" />
     <Compile Include="server\objects\clsMap.cs" />
@@ -129,7 +138,7 @@
         <WebProjectProperties>
           <UseIIS>True</UseIIS>
           <AutoAssignPort>True</AutoAssignPort>
-          <DevelopmentServerPort>0</DevelopmentServerPort>
+          <DevelopmentServerPort>50860</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
           <IISUrl>http://localhost:7973/</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>
