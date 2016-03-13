@@ -17,6 +17,13 @@ var utils = { // utils namespace
         valueB = tmp;
     },
 
+    // epoch time
+    getEpochTime: function (date) {
+        var d = new Date();
+        if (date != null) d = new Date(date);
+        return d.getTime();
+    },
+
     wsFriendlyDateTime: function (dateTime) {
         return (dateTime.getMonth() + 1) + '/' + dateTime.getDate() + '/' + dateTime.getFullYear() + " " + dateTime.getHours() + ":" + dateTime.getMinutes() + ":" + dateTime.getSeconds();
     },

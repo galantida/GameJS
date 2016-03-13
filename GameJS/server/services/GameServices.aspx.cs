@@ -13,12 +13,10 @@ namespace GameJS
 {
     public partial class GameServices : System.Web.UI.Page
     {
-        
-
         protected void Page_Load(object sender, EventArgs e)
         {
-            sendResponse("Error", "I got this far");
-            return;
+            //sendResponse("Error", "I got this far");
+            //return;
 
             /****** web services ******/
             string callName = getStringParameter("callName");
@@ -35,7 +33,7 @@ namespace GameJS
                         int z = getNumericParameter("z", true);
                         int templateId = getNumericParameter("templateId", true);
 
-                        // connect to worl
+                        // connect to world
                         clsWorld world = new clsWorld();
 
                         // load template
@@ -256,11 +254,10 @@ namespace GameJS
         // standard place for all responses to be sent from
         private void sendResponse(string callName, string details, string obj = "null")
         {
-            //clsEventLog.entry(EntryType.Response, summary + " (" + sessionUserName + " @ " + Request.UserHostAddress + ")", description, "session.aspx");
             Response.Write("{");
             Response.Write("\"callName\":\"" + callName + "\"");
             Response.Write(",\"details\":\"" + details + "\"");
-            Response.Write(",\"compiled\":\"" + DateTime.Now + "\"");
+            Response.Write(",\"compiled\":\"" + DateTime.UtcNow + "\"");
             Response.Write(",\"content\":" + obj);
             Response.Write("}");
             Response.End();

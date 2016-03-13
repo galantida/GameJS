@@ -121,11 +121,11 @@ namespace GameJS
                             }
                             else if (z == heights[x, y])
                             {
-                                obj = this.createObject(x, y, z * 32, new clsTemplate(_db, "MC Grass"));
+                                //obj = this.createObject(x, y, z * 32, new clsTemplate(_db, "MC Grass"));
                             }
                             else
                             {
-                                obj = this.createObject(x, y, z * 32, new clsTemplate(_db, "MC Dirt"));
+                                //obj = this.createObject(x, y, z * 32, new clsTemplate(_db, "MC Dirt"));
                             }
 
                             obj.save();

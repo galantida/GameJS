@@ -24,7 +24,7 @@ namespace GameJS
                 string typeName = this.GetType().ToString(); // get the matching object name
                 int start = typeName.LastIndexOf(".") + 4; // skip the cls
                 int length = typeName.Length - start;
-                return typeName.Substring(start, length);
+                return typeName.Substring(start, length).ToLower();
             }
         }
 
@@ -141,8 +141,8 @@ namespace GameJS
                 // insert - INSERT INTO table (column1, column2, ... ) VALUES (expression1, expression2, ... );
 
                 // set defaults
-                this.created = DateTime.Now;
-                this.modified = DateTime.Now;
+                this.created = DateTime.UtcNow;
+                this.modified = DateTime.UtcNow;
 
                 // build names and value for insert statment
                 string insertDelimiter = "";
@@ -194,7 +194,7 @@ namespace GameJS
                 // update - UPDATE table SET column1 = expression1,column2 = expression2,... WHERE conditions;
 
                 // set defaults
-                this.modified = DateTime.Now;
+                this.modified = DateTime.UtcNow;
 
                 sql = "UPDATE " + this.tableName + "s SET ";
                 string updateDelimiter = "";
@@ -367,7 +367,6 @@ namespace GameJS
             foreach (PropertyInfo propertyInfo in this.GetType().GetProperties())
             {
                 string name = propertyInfo.Name.ToLower();
-                string value = propertyInfo.GetValue(this, null).ToString();
 
                 bool displayProperty = true;
                 if (hideDBElements == true) {
@@ -375,9 +374,13 @@ namespace GameJS
                     else if (name.EndsWith("id")) displayProperty = false;
                 }
 
+                if ((name == "attributes") || (name == "contents")) displayProperty = false;
+
                 // properties that are skipped when full = false
                 if (displayProperty == true)
                 {
+                    string value = propertyInfo.GetValue(this, null).ToString();
+
                     switch (propertyInfo.PropertyType.ToString())
                     {
                         case "System.Int16":

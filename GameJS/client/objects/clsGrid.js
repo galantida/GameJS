@@ -20,7 +20,8 @@ function clsGrid(displayPanel) {
 
     // request regular updates without user interaction
     this.lastUpdate = new Date("3/19/69");
-    this.heartBeat = setInterval(function() { client.worldView.grid.update(); }, 1000);
+    this.heartBeat = setInterval(function () { client.worldView.grid.update(); }, 1000);
+    //this.heartBeat = setTimeout(function () { client.worldView.grid.update(); }, 1000); // singel call for debug only
 }
 
 /**********************************************

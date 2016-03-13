@@ -71,7 +71,7 @@ var wsi = { // wsi namespace
         // Access-Control-Allow-Origin = http://tcgportal1:1212
 	
         xhr.open("GET", wsi.wsURL() + paramString, true); // create a post in the com object
-        xhr.timeout = 30000; // 30000 = 30 seconds	
+        xhr.timeout = 60 * 1000; // seconds	
         xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded; charset=UTF-8");   
         xhr.onreadystatechange = function () { wsi.receiveJSONInfo(paramObj.callName, xhr, callBack) };
         try {

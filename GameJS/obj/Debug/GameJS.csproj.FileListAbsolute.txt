@@ -4,3 +4,5 @@ C:\Users\Home\Documents\Visual Studio 2012\Projects\GameJS\GameJS\bin\Newtonsoft
 C:\Users\Home\Documents\Visual Studio 2012\Projects\GameJS\GameJS\bin\Newtonsoft.Json.xml
 C:\Users\Home\Documents\Visual Studio 2012\Projects\GameJS\GameJS\obj\Debug\GameJS.dll
 C:\Users\Home\Documents\Visual Studio 2012\Projects\GameJS\GameJS\obj\Debug\GameJS.pdb
+C:\Users\Home\Documents\Visual Studio 2012\Projects\GameJS\GameJS\bin\MySql.Data.dll
+C:\Users\Home\Documents\Visual Studio 2012\Projects\GameJS\GameJS\obj\Debug\GameJS.csprojResolveAssemblyReference.cache

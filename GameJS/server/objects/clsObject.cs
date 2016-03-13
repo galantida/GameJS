@@ -26,8 +26,6 @@ namespace GameJS
         public int containerId { get; set; }
         public bool deleted { get; set; }
 
-        private List<clsAttribute> _attributes = null;
-
         public clsObject(clsDatabase db) : base(db) { }
         public clsObject(clsDatabase db, int id) : base(db, id) { }
         public clsObject(clsDatabase db, MySqlDataReader dr) : base(db, dr) { }
@@ -50,9 +48,10 @@ namespace GameJS
             {
                 // copy paste right now but could have random numbers, names etc....
                 clsAttribute a = new clsAttribute(_db);
+                a.objectId = this.id;
                 a.name = ta.name;
                 a.value = ta.value;
-                this.attributes.Add(a);
+                a.save();
             }
         }
 
@@ -100,28 +99,14 @@ namespace GameJS
             return this.getList(sql);
         }
 
-        public List<clsObject> contents
+        public List<clsAttribute> attributes()
         {
-            get {
-                return this.referenced();
-            }
-        }
-
-        public List<clsAttribute> attributes
-        {
-            get
-            {
-                if (_attributes == null)
-                {
-                    clsAttribute attribute = new clsAttribute(_db);
-                    _attributes = attribute.getAttributes(this.id);
-                }
-                return _attributes;
-            }
+            clsAttribute attribute = new clsAttribute(_db);
+            return attribute.getAttributes(this.id);
         }
 
         // returns the contents of this object. passing a modified date will return deleted as well.
-        public List<clsObject> referenced(DateTime? modified = null)
+        public List<clsObject> contents(DateTime? modified = null)
         {
             // get every object in a particular area and container. (0 is not in a container)
             string sql = "SELECT * FROM " + this.tableName + "s WHERE containerId = " + this.id;
@@ -147,7 +132,7 @@ namespace GameJS
             // ifchildren is true then save all children as well
             if (children == true)
             {
-                foreach (clsAttribute attribute in this.attributes)
+                foreach (clsAttribute attribute in this.attributes())
                 {
                     attribute.objectId = this.id; // verify that each child actually has its parent id.
                     result += attribute.save();
@@ -162,7 +147,7 @@ namespace GameJS
             this.deleted = true;
 
             // mark contents for delete first
-            foreach (clsObject obj in this.contents)
+            foreach (clsObject obj in this.contents())
             {
                 if (obj.delete() == false) this.deleted = false;
             }
@@ -182,13 +167,13 @@ namespace GameJS
             bool result = true;
 
             // destroy attributes
-            foreach (clsAttribute attribute in this.attributes)
+            foreach (clsAttribute attribute in this.attributes())
             {
                 if (attribute.destroy() == false) result = false;
             }
 
             // destroy contents
-            foreach (clsObject obj in this.contents)
+            foreach (clsObject obj in this.contents())
             {
                 if (obj.destroy() == false) result = false;
             }
@@ -222,7 +207,7 @@ namespace GameJS
             {
                 JSONString = JSONString.Substring(0, JSONString.Length - 1);
 
-                JSONString += ",\"attributes\":" + clsAttribute.toJSON(this.attributes, hideDBElements);
+                JSONString += ",\"attributes\":" + clsAttribute.toJSON(this.attributes(), hideDBElements);
                 //JSONString += ",\"contents\":" + clsObject.toJSON(this.contents); // lets let each object stand on its own
 
                 JSONString += "}";
@@ -247,7 +232,7 @@ namespace GameJS
         public new bool fromJSON(JObject JSONObj)
         {
             bool result = base.fromJSON(JSONObj);
-            this.id = 0; // the id in JSON is from previous db. clear it.
+            this.save();
 
             // check for templateAtributes
             if (JSONObj["attributes"] != null)
@@ -256,12 +241,13 @@ namespace GameJS
 
                 // convert to attribute objects
                 clsAttribute attribute = new clsAttribute(_db);
-                _attributes = attribute.fromJSON(JSONArray);
+                attribute.objectId = this.id;
+                List<clsAttribute> attributes = attribute.fromJSON(JSONArray);
 
-                foreach (clsAttribute a in this.attributes)
+                foreach (clsAttribute a in attributes)
                 {
-                    a.id = 0; // the id in JSON is from previous db. clear it.
-                    a.objectId = 0; // we will not know our template id until was save our template
+                    a.objectId = this.id; // we will not know our template id until was save our template
+                    a.save();
                 }
             }
 
