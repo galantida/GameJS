@@ -58,7 +58,7 @@
     "templateAttributes": []
   },
   {
-    "name": "well",
+    "name": "Well",
     "image": "well",
     "weight": 0,
     "stackable": false,
@@ -202,6 +202,14 @@
     "templateAttributes": []
   },
   {
+    "name": "Man",
+    "image": "man",
+    "weight": 0,
+    "stackable": false,
+    "blocking": true,
+    "templateAttributes": []
+  },
+  {
     "name": "House",
     "image": "house",
     "weight": 0,
@@ -310,6 +318,14 @@
     "image": "grass",
     "weight": 0,
     "stackable": true,
+    "blocking": true,
+    "templateAttributes": []
+  },
+  {
+    "name": "Dog",
+    "image": "dog",
+    "weight": 0,
+    "stackable": false,
     "blocking": true,
     "templateAttributes": []
   },
