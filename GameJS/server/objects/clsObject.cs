@@ -26,11 +26,15 @@ namespace GameJS
         public int containerId { get; set; }
         public bool deleted { get; set; }
 
+        // children
+        private List<clsAttribute> _attributes = null;
+        private List<clsObject> _contents = null;
+
         public clsObject(clsDatabase db) : base(db) { }
         public clsObject(clsDatabase db, int id) : base(db, id) { }
         public clsObject(clsDatabase db, MySqlDataReader dr) : base(db, dr) { }
 
-        // create an object from a temple
+        // create an object from a template
         public clsObject(clsDatabase db, int x,int y, int z, clsTemplate template): base(db)
         {
             this.x = x;
@@ -42,8 +46,9 @@ namespace GameJS
             this.weight = template.weight;
             this.stackable = template.stackable;
             this.blocking = template.blocking;
+            this.save();
 
-            // look through template attibutes and use them to create object
+            // loop through template attibutes and use them to create object
             foreach (clsTemplateAttribute ta in template.templateAttributes)
             {
                 // copy paste right now but could have random numbers, names etc....
@@ -99,29 +104,51 @@ namespace GameJS
             return this.getList(sql);
         }
 
-        public List<clsAttribute> attributes()
+        // returns all objects in this table
+        public List<clsObject> getAll()
         {
-            clsAttribute attribute = new clsAttribute(_db);
-            return attribute.getAttributes(this.id);
+            // get every object in a particular area and container. (0 is not in a container)
+            return this.getList("SELECT * FROM " + this.tableName + "s WHERE deleted = 0 ORDER BY name DESC");
+        }
+
+        public List<clsAttribute> attributes
+        {
+            get
+            {
+                if (_attributes == null)
+                {
+                    clsAttribute attribute = new clsAttribute(_db);
+                    _attributes = attribute.getAttributes(this.id);
+                }
+                return _attributes;
+            }
         }
 
         // returns the contents of this object. passing a modified date will return deleted as well.
         public List<clsObject> contents(DateTime? modified = null)
         {
-            // get every object in a particular area and container. (0 is not in a container)
-            string sql = "SELECT * FROM " + this.tableName + "s WHERE containerId = " + this.id;
-
-            // if a modified value is not passed only return objects that have not been deleted
-            if (modified == null) sql += " AND deleted = 0";
+            if (modified == null)
+            {
+                if (_contents == null) _contents = this.getList("SELECT * FROM " + this.tableName + "s WHERE containerId = " + this.id);
+                return _contents;
+            }
             else
             {
-                // if a modified value has been passed show things that have been recently deleted as well
-                // date format for mySQL = '1/19/2016 9:14:03 PM'
-                DateTime dt = (DateTime)modified;
-                sql += " AND modified >= '" + dt.ToString("yyyy-MM-dd HH:mm:ss") + "'";
+                // get every object in a particular area and container. (0 is not in a container)
+                string sql = "SELECT * FROM " + this.tableName + "s WHERE containerId = " + this.id;
+
+                // if a modified value is not passed only return objects that have not been deleted
+                if (modified == null) sql += " AND deleted = 0";
+                else
+                {
+                    // if a modified value has been passed show things that have been recently deleted as well
+                    // date format for mySQL = '1/19/2016 9:14:03 PM'
+                    DateTime dt = (DateTime)modified;
+                    sql += " AND modified >= '" + dt.ToString("yyyy-MM-dd HH:mm:ss") + "'";
+                }
+                sql += " ORDER BY x, y, z;";
+                return this.getList(sql);
             }
-            sql += " ORDER BY x, y, z;";
-            return this.getList(sql);
         }
 
         public int save(bool children = false)
@@ -132,7 +159,7 @@ namespace GameJS
             // ifchildren is true then save all children as well
             if (children == true)
             {
-                foreach (clsAttribute attribute in this.attributes())
+                foreach (clsAttribute attribute in this.attributes)
                 {
                     attribute.objectId = this.id; // verify that each child actually has its parent id.
                     result += attribute.save();
@@ -142,49 +169,122 @@ namespace GameJS
         }
 
         // delete an object by marking it as deleted so that other processes can update their info
-        public bool delete()
+        public int delete()
         {
-            this.deleted = true;
+            int result = 0;
 
             // mark contents for delete first
+            result += this.delete(this.contents()); // mark its children as deleted 
+
+            // mark this object as deleted
+            this.deleted = true;
+            result += this.save(); 
+
+            return result;
+        }
+
+        // deletes all objects in a particular area and container. (0 is not in a container)
+        public int deleteArea(int x1, int y1, int x2, int y2, int containerId = 0)
+        {
+            util.sort(ref x1, ref x2);
+            util.sort(ref y1, ref y2);
+
+            return this.execute("UPDATE " + this.tableName + "s SET deleted = true WHERE x>=" + x1 + " AND y>=" + y1 + " AND x<=" + x2 + " AND y<=" + y2 + " AND containerId = " + containerId);
+        }
+
+        public int delete(List<clsObject> objects)
+        {
+            // destroy contents
+            int result = 0;
             foreach (clsObject obj in this.contents())
             {
-                if (obj.delete() == false) this.deleted = false;
+                result += obj.delete();
             }
+            return result;
+        }
 
-            // only when all of the contents have been marked for delete then mark this object for delete
-            if (this.deleted == true)
-            {
-                if (this.save() == 0) this.deleted = false;
-            }
-            return this.deleted;
+        public int deleteAll()
+        {
+            return this.execute("UPDATE " + this.tableName + "s SET deleted = true;");
         }
 
 
         // destroy an object by removing it and every reference to it from the database
-        public new bool destroy()
+        public new int destroy()
         {
-            bool result = true;
-
-            // destroy attributes
-            foreach (clsAttribute attribute in this.attributes())
-            {
-                if (attribute.destroy() == false) result = false;
-            }
+            int result = 0;
 
             // destroy contents
-            foreach (clsObject obj in this.contents())
-            {
-                if (obj.destroy() == false) result = false;
-            }
+            result += this.destroyContents();
 
-            // only when all of the reference to this object have been destroyed then destroy object
-            if (result == true)
+            // destroy atributes
+            result += this.execute("DELETE FROM attributes WHERE objectId = " + this.id + ";");
+            
+            // destroy object
+            result += base.destroy();
+
+            return result;
+        }
+
+        public int destroy(List<clsObject> objects)
+        {
+            int result = 0;
+            foreach (clsObject obj in objects) 
             {
-                if (this.execute("DELETE FROM " + this.tableName + "s WHERE id = " + this.id + ";") > 0) this.id = 0;
-                else result = false;
+                result += this.destroy(obj.contents()); // call the same method to destroy this objects contents
+                result += base.destroy();
             }
             return result;
+        }
+
+        public int destroyContents(bool internalUseOnly = true)
+        {
+            int result = 0;
+
+            // execute this same function for the imeadiate contents of each of this objects imeadiate contents
+            List<clsObject> objects = this.getList("SELECT * FROM " + this.tableName + "s WHERE containerId = " + this.id + ";");
+            foreach (clsObject obj in objects)
+            {
+                result += obj.destroyContents(false);
+            }
+
+            // delete this objects imeadiate contents in one call
+            result += this.execute("DELETE FROM " + this.tableName + "s WHERE containerId = " + this.id + ";");
+
+            // once all objects and their contents are destroyed then destroy all disconnected attributes in one call
+            if (internalUseOnly == true)
+            {
+                clsAttribute attribute = new clsAttribute(_db);
+                attribute.destroyDisconnected();
+            }
+
+            return result;
+        }
+
+        // destroys all objects in a particular area and container. (0 is not in a container)
+        public int destroyArea(int x1, int y1, int x2, int y2, int containerId = 0)
+        {
+            util.sort(ref x1, ref x2);
+            util.sort(ref y1, ref y2);
+
+            int result = 0;
+
+            // destroy objects
+            result += this.execute("DELETE FROM " + this.tableName + "s WHERE x>=" + x1 + " AND y>=" + y1 + " AND x<=" + x2 + " AND y<=" + y2 + " AND containerId = " + containerId);
+
+            // destroy disconnected objects
+            result += this.destroyDisconnected();
+
+            // destroy disconnected attributes
+            clsAttribute attribute = new clsAttribute(_db);
+            result += attribute.destroyDisconnected();
+
+            return result;
+        }
+
+        public int destroyDisconnected()
+        {
+            return this.delete("SELECT * FROM " + this.tableName + "s WHERE containerid <> 0 AND containerid NOT IN (SELECT id FROM objects);");
         }
 
         public static string toJSON(List<clsObject> objects, bool children = false, bool hideDBElements = false)
@@ -207,7 +307,7 @@ namespace GameJS
             {
                 JSONString = JSONString.Substring(0, JSONString.Length - 1);
 
-                JSONString += ",\"attributes\":" + clsAttribute.toJSON(this.attributes(), hideDBElements);
+                JSONString += ",\"attributes\":" + clsAttribute.toJSON(this.attributes, hideDBElements);
                 //JSONString += ",\"contents\":" + clsObject.toJSON(this.contents); // lets let each object stand on its own
 
                 JSONString += "}";
@@ -252,13 +352,6 @@ namespace GameJS
             }
 
             return result;
-        }
-
-        // returns all objects in this table
-        public List<clsObject> getAllObjects()
-        {
-            // get every object in a particular area and container. (0 is not in a container)
-            return this.getList("SELECT * FROM " + this.tableName + "s WHERE deleted = 0 ORDER BY name DESC");
         }
     }
 }

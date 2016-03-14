@@ -48,9 +48,19 @@ namespace GameJS
             return this.getList("SELECT * FROM " + this.tableName + "s WHERE templateId = " + templateId);
         }
 
-        public int deleteTemplateAttributes(int templateId)
+        public int save(bool children = false)
+        {
+            return base.save();
+        }
+
+        public int destroyTemplateAttributes(int templateId)
         {
             return this.execute("DELETE FROM " + this.tableName + "s WHERE templateId = " + templateId);
+        }
+
+        public int destroyDisconnected()
+        {
+            return this.delete("SELECT * FROM " + this.tableName + "s WHERE templateId NOT IN (SELECT id FROM templates);");
         }
 
         public static string toJSON(List<clsTemplateAttribute> TemplateAttributes, bool hideDBElements = false)

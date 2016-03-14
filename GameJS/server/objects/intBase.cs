@@ -9,5 +9,7 @@ namespace GameJS
     public interface intBase
     {
         bool populate(MySqlDataReader sqlReader);
+        int save();
+        int save(bool children);
     }
 }

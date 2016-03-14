@@ -32,6 +32,23 @@ namespace GameJS
             return template.getAllTemplates();
         }
 
+        public int destroyAll()
+        {
+            int result = 0;
+
+            // destroy templates
+            clsTemplate template = new clsTemplate(db);
+            result += template.destroyAll();
+
+            // destroy template attributes
+            clsTemplateAttribute templateAttribute = new clsTemplateAttribute(db);
+            result += templateAttribute.destroyAll();
+
+            this.map.destroyAll(); // destroy objects and attributes
+
+            return result;
+        }
+
         
 
         

@@ -21,6 +21,7 @@ namespace GameJS
         public bool stackable { get; set; }
         public bool blocking { get; set; }
 
+        // children
         private List<clsTemplateAttribute> _templateAttributes = null;
 
         public clsTemplate(clsDatabase db) : base(db) { }

@@ -51,6 +51,21 @@ namespace GameJS
             return result;
         }
 
+        protected int delete(string sql)
+        {
+            int result = 0;
+
+            _db.open();
+            MySqlDataReader dr = _db.query(sql); // execute query to get the record that are to be deleted
+            while (dr.Read())
+            {
+                result += this.execute("DELETE FROM " + this.tableName + "s WHERE id = " + Convert.ToInt32(dr["id"]) + ";");
+            }
+            dr.Close();
+            _db.close();
+            return result;
+        }
+
         // return an object based on the contents of a SQLDataReader
         protected static object get(MySqlDataReader dr, Type type)
         {
@@ -91,14 +106,17 @@ namespace GameJS
             return objects;
         }
 
-        public bool destroy()
+        public int destroy()
         {
-            bool result = false;
-            if (this.execute("DELETE FROM " + this.tableName + "s WHERE id = " + this.id + ";") > 0) {
-                this.id = 0;
-                result = true;
-            }
+            int result = 0;
+            result += this.execute("DELETE FROM " + this.tableName + "s WHERE id = " + this.id + ";");
+            if ( result > 0) this.id = 0;
             return result;
+        }
+
+        public int destroyAll()
+        {
+            return this.execute("DELETE FROM " + this.tableName + "s;");
         }
 
         // load this object with the record in the DB with the same ID
@@ -120,12 +138,6 @@ namespace GameJS
         public bool load(int id)
         {
             return this.load("SELECT * FROM " + tableName + "s WHERE id = " + id);
-        }
-
-        // returns all objects in this table
-        public int destroyAll()
-        {
-            return this.execute("DELETE FROM " + this.tableName + "s");
         }
 
         // save and update
@@ -233,6 +245,16 @@ namespace GameJS
 
             _db.close(); // close DB connection
 
+            return result;
+        }
+
+        public int save(IEnumerable<intBase> objects)
+        {
+            int result = 0;
+            foreach (intBase o in objects)
+            {
+                result += o.save(true);
+            }
             return result;
         }
 

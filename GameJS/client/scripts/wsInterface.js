@@ -9,6 +9,8 @@ console.log("=== included wsInterface.js ver 0.2 ===");
 
 var wsi = { // wsi namespace
 
+    debug: false,
+
     // decide which service to use base on the domain in the URL
     wsURL: function () {
         var url = "";
@@ -101,7 +103,9 @@ var wsi = { // wsi namespace
                 }
 
                 // log the response from the server
-                console.log("JSON Response: " + callName + " - " + JSON.stringify(JSONResponse) + "\n\n"); // display the response in the console
+                var JSONString = JSON.stringify(JSONResponse);
+                if (JSONString.length > 100) JSONString = JSONString.substring(0, 100) + "...";
+                console.log("JSON Response: " + callName + " - " + JSONString + "\n\n"); // display the response in the console
 			
                 // generic error handling
                 /*

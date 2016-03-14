@@ -30,34 +30,45 @@ namespace GameJS
         public List<clsObject> getAllObjects()
         {
             clsObject obj = new clsObject(_db);
-            return obj.getAllObjects();
+            return obj.getAll();
         }
 
         // delete all objects in a particular area
         public int deleteArea(int x1, int y1, int x2, int y2, int containerId = 0)
         {
-            int result = 0;
-
             // get all objects in the area and mark each one for delete
-            List<clsObject> objs = getArea(x1, y1, x2, y2, containerId);
-            foreach (clsObject obj in objs)
-            {
-                if (obj.delete() == true) result++;
-            }
+            int result = 0;
+            clsObject obj = new clsObject(_db);
+            result += obj.deleteArea(x1, y1, x2, y2, containerId);
             return result;
+        }
+
+        public int deleteAll()
+        {
+            clsObject obj = new clsObject(_db);
+            return obj.deleteAll();
         }
 
         // destroy all objects in a particular area
         public int destroyArea(int x1, int y1, int x2, int y2, int containerId = 0)
         {
+            // initiate destruction method for each object
+            int result = 0;
+            clsObject obj = new clsObject(_db);
+            result += obj.destroyArea(x1, y1, x2, y2, containerId);
+            return result;
+        }
+
+        public int destroyAll()
+        {
             int result = 0;
 
-            // initiate destruction method for each object
-            List<clsObject> objs = getArea(x1, y1, x2, y2, containerId);
-            foreach (clsObject obj in objs)
-            {
-                if (obj.destroy() == true) result++;
-            }
+            clsObject obj = new clsObject(_db);
+            result += obj.destroyAll();
+
+            clsAttribute attribute = new clsAttribute(_db);
+            result += attribute.destroyAll();
+
             return result;
         }
 
@@ -77,6 +88,11 @@ namespace GameJS
             clsObject obj = new clsObject(_db);
             this.destroyArea(-1000, -1000, 1000, 1000, 0);
 
+            // load templates
+            clsTemplate template = new clsTemplate(_db);
+            List<clsTemplate> templates = template.getAllTemplates();
+
+
             // seed the random
             Random r = new Random();
 
@@ -86,11 +102,11 @@ namespace GameJS
             {
                 for (int x = 0; x < size; x++)
                 {
-                    heights[x, y] = -1000;
+                    heights[x, y] = -1;
                 }
             }
 
-            // set the corners
+            // seed the corners
             heights[0, 0] = r.Next(0, 3);
             heights[size - 1, 0] = r.Next(0, 3);
             heights[0, size - 1] = r.Next(0, 3);
@@ -98,11 +114,11 @@ namespace GameJS
             
 
             // mid point displacement loop
-            divide(heights.GetLength(0));
+            //divide(heights.GetLength(0));
 
             // http://minecraft.gamepedia.com/
 
-            int waterLevel = 2;
+            int waterLevel = 0;
 
             // save results to database
             List<clsObject> results = new List<clsObject>();
@@ -110,33 +126,33 @@ namespace GameJS
             {
                 for (int x = 0; x < size; x++)
                 {
-                    for (int z = 0; z <= 25; z++)
+                    for (int z = 0; z <= 5; z++)
                     {
-                        if (z <= heights[x, y])
+                        if (z <= heights[x,y])
                         {
                             // land
                             if (z == 0)
                             {
-                                obj = this.createObject(x, y, z * 32, new clsTemplate(_db, "MC Stone"));
+                                obj = this.createObject(x, y, z * 32, templates.Find(i => i.name.Contains("MC Stone")));
                             }
-                            else if (z == heights[x, y])
+                            else if (z == 3)
                             {
-                                //obj = this.createObject(x, y, z * 32, new clsTemplate(_db, "MC Grass"));
+                                obj = this.createObject(x, y, z * 32, templates.Find(i => i.name.Contains("MC Grass")));
                             }
                             else
                             {
-                                //obj = this.createObject(x, y, z * 32, new clsTemplate(_db, "MC Dirt"));
+                                obj = this.createObject(x, y, z * 32, templates.Find(i => i.name.Contains("MC Dirt")));
                             }
 
-                            obj.save();
+                            //obj.save();
                             results.Add(obj);
                         }
                         else
                         {
                             if (z <= waterLevel)
                             {
-                                obj = this.createObject(x, y, z * 32, new clsTemplate(_db, "MC Water"));
-                                obj.save();
+                                obj = this.createObject(x, y, z * 32, templates.Find(i => i.name.Contains("MC Water")));
+                                //obj.save();
                                 results.Add(obj);
                             }
                         }
@@ -148,29 +164,10 @@ namespace GameJS
 
 
             // height map to JSON
-            string JSON, rowDelimiter, colDelimiter;
-
-            JSON = "[";
-            rowDelimiter = "";
-            for (int y = 0; y < size; y++)
-            {
-                JSON += rowDelimiter + "{\"" + y + "\":";
-                rowDelimiter = ", ";
-                
-                colDelimiter = "";
-                JSON += "[";
-                for (int x = 0; x < size; x++)
-                {
-                    JSON += colDelimiter + heights[x, y];
-                    colDelimiter = ", ";
-                }
-                JSON += "]";
-
-                JSON += "}";
-                
-            }
-            JSON += "]";
-
+            string JSON;
+            JSON = "{";
+            JSON = "\"objectsCreated\":" + results.Count + "";
+            JSON += "}";
             return JSON;
         }
 

@@ -48,9 +48,19 @@ namespace GameJS
             return this.getList("SELECT * FROM " + this.tableName + "s WHERE objectId = " + objectId);
         }
 
+        public int save(bool children = false)
+        {
+            return base.save();
+        }
+
         public int deleteObjectAttributes(int objectId)
         {
             return this.execute("DELETE FROM " + this.tableName + "s WHERE objectId = " + objectId);
+        }
+
+        public int destroyDisconnected()
+        {
+            return this.delete("SELECT * FROM " + this.tableName + "s WHERE objectId NOT IN (SELECT id FROM objects);");
         }
 
         public static string toJSON(List<clsAttribute> attributes, bool hideDBElements = false)

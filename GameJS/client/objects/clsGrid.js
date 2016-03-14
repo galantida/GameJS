@@ -20,9 +20,12 @@ function clsGrid(displayPanel) {
 
     // request regular updates without user interaction
     this.lastUpdate = new Date("3/19/69");
+
     this.heartBeat = setInterval(function () { client.worldView.grid.update(); }, 1000);
     //this.heartBeat = setTimeout(function () { client.worldView.grid.update(); }, 1000); // singel call for debug only
 }
+
+clsGrid.prototype.debug = false;
 
 /**********************************************
     Initialization functions
@@ -176,12 +179,12 @@ clsGrid.prototype.updateObjects = function (objects) {
         else {
             if (obj.deleted == true) {
                 // erase object
-                console.log("Delete existing element.");
+                if (this.debug == true) console.log("Delete existing element.");
 
                 // loop through the existing elements in this tile.
                 for (i = 0; i < tile.children.length; i++) {
                     if (tile.children[i].id == ("obj" + obj.id)) {
-                        console.log("Deleting existing element 'obj" + obj.id + "'");
+                        if (this.debug == true) console.log("Deleting existing element 'obj" + obj.id + "'");
                         tile.removeChild(tile.children[i]);
                         break; // either way break out of the for loop when done
                     }
@@ -199,7 +202,7 @@ clsGrid.prototype.updateObjects = function (objects) {
                     if (new Date(eleObj.elementLastUpdated) < new Date(obj.modified)) {
 
                         // modifed existing element
-                        console.log("Modify existing element.");
+                        if (this.debug == true) console.log("Modify existing element.");
                         obj.elementLastUpdated = new Date(); // add an elementCreated date to the object
                         ele.setAttribute("data", JSON.stringify(obj));
                         object.position(ele.firstElementChild);
@@ -207,13 +210,13 @@ clsGrid.prototype.updateObjects = function (objects) {
                         tile.appendChild(ele); // move element to its new tile location
                     }
                     else {
-                        console.log("Already updated element.");
+                        if (this.debug == true) console.log("Already updated element.");
                     }
 
                 }
                 else {
                     // create new element
-                    console.log("Create new element.");
+                    if (this.debug == true) console.log("Create new element.");
                     var ele = object.draw(obj);
                     tile.appendChild(ele);
                     tile.style.backgroundImage = ""; // clear default background
@@ -432,8 +435,8 @@ clsGrid.prototype.onDrop = function (element) {
 }
 
 clsGrid.prototype.update = function () {
-
-    console.log("Requesting objects modified since " + this.lastUpdate + " in (" + this.world.x + "," + this.world.y + " - " + this.worldBottomRight.x + "," + this.worldBottomRight.y + ")");
-    wsi.requestJSONInfo({ "callName": "getArea", "x1": this.world.x, "y1": this.world.y, "x2": this.worldBottomRight.x, "y2": this.worldBottomRight.y, "modified": utils.wsFriendlyDateTime(this.lastUpdate) }, client.worldView.grid.objectsResponse);
+    console.log("Requesting objects modified since " +  utils.wsFriendlyGMTTimeString(this.lastUpdate) + " in (" + this.world.x + "," + this.world.y + " - " + this.worldBottomRight.x + "," + this.worldBottomRight.y + ")");
+    wsi.requestJSONInfo({ "callName": "getArea", "x1": this.world.x, "y1": this.world.y, "x2": this.worldBottomRight.x, "y2": this.worldBottomRight.y, "modified": utils.wsFriendlyGMTTimeString(this.lastUpdate) }, client.worldView.grid.objectsResponse);
     this.lastUpdate = new Date();
 }
+

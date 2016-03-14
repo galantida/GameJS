@@ -170,10 +170,7 @@ namespace GameJS
                     {
                         // destroy existing templates & their attributes from the database
                         clsWorld world = new clsWorld();
-                        clsTemplate template = new clsTemplate(world.db);
-                        clsTemplateAttribute templateAttribute = new clsTemplateAttribute(world.db);
-                        template.destroyAll();
-                        templateAttribute.destroyAll();
+                        int recordsDeleted = world.destroyAll();
 
                         // load the world templates from the file
                         string path = Server.MapPath("..") + "\\files\\templates.json";
@@ -181,17 +178,13 @@ namespace GameJS
                         JArray JSONArray = (JArray)JsonConvert.DeserializeObject(JSONString);
 
                         // convert to template objects
+                        clsTemplate template = new clsTemplate(world.db);
                         List<clsTemplate> templates = template.fromJSON(JSONArray);
-
-                        int recordsAffected = 0;
-                        foreach (clsTemplate t in templates)
-                        {
-                            recordsAffected += t.save(true);
-                        }
+                        int recordsCreated = template.save(templates.Cast<intBase>());
 
                         // respond
                         string results = clsTemplate.toJSON(templates, true);
-                        sendResponse("loadTemplates", "{\"recordsAffected\":" + recordsAffected + "}", results);
+                        sendResponse("loadTemplates", "{\"recordsCreated\":" + recordsCreated + "}", results);
                         break;
                     }
                 case "saveobjects":
@@ -216,10 +209,7 @@ namespace GameJS
                     {
                         // destroy existing templates & their attributes from the database
                         clsWorld world = new clsWorld();
-                        clsObject obj = new clsObject(world.db);
-                        clsAttribute attribute = new clsAttribute(world.db);
-                        obj.destroyAll();
-                        attribute.destroyAll();
+                        world.map.destroyAll();
 
                         // load the world templates from the file
                         string path = Server.MapPath("..") + "\\files\\objects.json";
@@ -227,17 +217,13 @@ namespace GameJS
                         JArray JSONArray = (JArray)JsonConvert.DeserializeObject(JSONString);
 
                         // convert to template objects
+                        clsObject obj = new clsObject(world.db);
                         List<clsObject> objects = obj.fromJSON(JSONArray);
-
-                        int recordsAffected = 0;
-                        foreach (clsObject o in objects)
-                        {
-                            recordsAffected += o.save(true);
-                        }
+                        int recordsCreated = obj.save(objects.Cast<intBase>());
 
                         // respond
                         string results = clsObject.toJSON(objects, true);
-                        sendResponse("loadObjects", "{\"recordsAffected\":" + recordsAffected + "}", results);
+                        sendResponse("loadObjects", "{\"recordsCreated\":" + recordsCreated + "}", results);
                         break;
                     }
                 default:

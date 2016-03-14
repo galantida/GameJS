@@ -17,11 +17,10 @@ var utils = { // utils namespace
         valueB = tmp;
     },
 
-    // epoch time
-    getEpochTime: function (date) {
+    wsFriendlyGMTTimeString: function (date) {
         var d = new Date();
         if (date != null) d = new Date(date);
-        return d.getTime();
+        return d.toUTCString();
     },
 
     wsFriendlyDateTime: function (dateTime) {
