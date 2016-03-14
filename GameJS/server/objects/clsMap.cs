@@ -102,7 +102,7 @@ namespace GameJS
             {
                 for (int x = 0; x < size; x++)
                 {
-                    heights[x, y] = -1;
+                    heights[x, y] = 0;
                 }
             }
 
@@ -131,11 +131,7 @@ namespace GameJS
                         if (z <= heights[x,y])
                         {
                             // land
-                            if (z == 0)
-                            {
-                                obj = this.createObject(x, y, z * 32, templates.Find(i => i.name.Contains("MC Stone")));
-                            }
-                            else if (z == 3)
+                            if (z == heights[x, y])
                             {
                                 obj = this.createObject(x, y, z * 32, templates.Find(i => i.name.Contains("MC Grass")));
                             }
@@ -143,8 +139,6 @@ namespace GameJS
                             {
                                 obj = this.createObject(x, y, z * 32, templates.Find(i => i.name.Contains("MC Dirt")));
                             }
-
-                            //obj.save();
                             results.Add(obj);
                         }
                         else
