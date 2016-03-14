@@ -2736,6 +2736,18 @@
     "attributes": []
   },
   {
+    "name": "Man",
+    "x": 3,
+    "y": 4,
+    "z": 64,
+    "image": "man",
+    "weight": 0,
+    "stackable": false,
+    "blocking": true,
+    "deleted": false,
+    "attributes": []
+  },
+  {
     "name": "House",
     "x": 2,
     "y": 3,
@@ -2744,6 +2756,18 @@
     "weight": 0,
     "stackable": false,
     "blocking": false,
+    "deleted": false,
+    "attributes": []
+  },
+  {
+    "name": "Dog",
+    "x": 8,
+    "y": 6,
+    "z": 64,
+    "image": "dog",
+    "weight": 0,
+    "stackable": false,
+    "blocking": true,
     "deleted": false,
     "attributes": []
   }
