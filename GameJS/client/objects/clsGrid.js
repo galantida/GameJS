@@ -435,8 +435,8 @@ clsGrid.prototype.onDrop = function (element) {
 }
 
 clsGrid.prototype.update = function () {
-    console.log("Requesting objects modified since " +  utils.wsFriendlyGMTTimeString(this.lastUpdate) + " in (" + this.world.x + "," + this.world.y + " - " + this.worldBottomRight.x + "," + this.worldBottomRight.y + ")");
-    wsi.requestJSONInfo({ "callName": "getArea", "x1": this.world.x, "y1": this.world.y, "x2": this.worldBottomRight.x, "y2": this.worldBottomRight.y, "modified": utils.wsFriendlyGMTTimeString(this.lastUpdate) }, client.worldView.grid.objectsResponse);
+    console.log("Requesting objects modified since " +  utils.mySQLFriendlyGMTDateTime(this.lastUpdate) + " in (" + this.world.x + "," + this.world.y + " - " + this.worldBottomRight.x + "," + this.worldBottomRight.y + ")");
+    wsi.requestJSONInfo({ "callName": "getArea", "x1": this.world.x, "y1": this.world.y, "x2": this.worldBottomRight.x, "y2": this.worldBottomRight.y, "modified": utils.mySQLFriendlyGMTDateTime(this.lastUpdate) }, client.worldView.grid.objectsResponse);
     this.lastUpdate = new Date();
 }
 

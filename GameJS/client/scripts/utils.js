@@ -17,13 +17,22 @@ var utils = { // utils namespace
         valueB = tmp;
     },
 
-    wsFriendlyGMTTimeString: function (date) {
-        var d = new Date();
-        if (date != null) d = new Date(date);
-        return d.toUTCString();
+    mySQLFriendlyGMTDateTime: function (dateTime) {
+        if (dateTime == null) dateTime = new Date(); // if you don't pass a datetime the current datetime will be used
+
+        // create a GMT string
+        var GMTString = dateTime.toUTCString(); // convert local time to GMT
+        GMTString = GMTString.substring(0, GMTString.length - 3); // chop the timezone off the string
+
+        // create a spoofed GMT date object
+        GMTDateTime = new Date(GMTString); // this date time will says it is eastern but we know better
+
+        // format the date time to a mySQL friendly format without timezone
+        return utils.mySQLFriendlyDateTime(GMTDateTime); 
     },
 
-    wsFriendlyDateTime: function (dateTime) {
+    mySQLFriendlyDateTime: function (dateTime) {
+        if (dateTime == null) dateTime = new Date(); // if you don't pass a datetime the current datetime will be used
         return (dateTime.getMonth() + 1) + '/' + dateTime.getDate() + '/' + dateTime.getFullYear() + " " + dateTime.getHours() + ":" + dateTime.getMinutes() + ":" + dateTime.getSeconds();
     },
 
