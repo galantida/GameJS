@@ -45,9 +45,9 @@ namespace GameJS
 
         protected int execute(string sqlQuery)
         {
-            _db.open();
+            //_db.open();
             int result = _db.execute(sqlQuery);
-            _db.close();
+            //_db.close();
             return result;
         }
 
@@ -55,14 +55,14 @@ namespace GameJS
         {
             int result = 0;
 
-            _db.open();
+            //_db.open();
             MySqlDataReader dr = _db.query(sql); // execute query to get the record that are to be deleted
             while (dr.Read())
             {
                 result += this.execute("DELETE FROM " + this.tableName + "s WHERE id = " + Convert.ToInt32(dr["id"]) + ";");
             }
             dr.Close();
-            _db.close();
+            //_db.close();
             return result;
         }
 
@@ -77,9 +77,11 @@ namespace GameJS
         // get an object from database based on query
         protected object get(string sqlQuery, Type type)
         {
-            _db.open(); 
-            object obj = get(_db.query(sqlQuery), type);
-            _db.close();
+            //_db.open(); 
+            MySqlDataReader dr = _db.query(sqlQuery);
+            object obj = get(dr, type);
+            dr.Close();
+            //_db.close();
             return obj;
         }
 
@@ -87,9 +89,11 @@ namespace GameJS
         protected List<object> getList(string sqlQuery, Type type)
         {
             // get sqlDataReader from dbCon and copy it to generic list so we can close the connection
-            _db.open();
-            List<object> results = getList(_db.query(sqlQuery), type);
-            _db.close();
+            //_db.open();
+            MySqlDataReader dr = _db.query(sqlQuery);
+            List<object> results = getList(dr, type);
+            dr.Close();
+            //_db.close();
             return results;
         }
 
@@ -128,9 +132,11 @@ namespace GameJS
         // load this object with the first record in the DB that matches the query
         public bool load(string sqlQuery)
         {
-            _db.open();
-            bool result = this.load(_db.query(sqlQuery));
-            _db.close();
+            //_db.open();
+            MySqlDataReader dr = _db.query(sqlQuery);
+            bool result = this.load(dr);
+            dr.Close();
+            //_db.close();
             return result;
         }
 
@@ -146,7 +152,7 @@ namespace GameJS
             string sql, names = "", values = "", where = "";
             int result = 0;
 
-            _db.open(); // open DB connection
+            //_db.open(); // open DB connection
 
             if (this.id == 0)
             {
@@ -243,7 +249,7 @@ namespace GameJS
                 dr.Close();
             }
 
-            _db.close(); // close DB connection
+            //_db.close(); // close DB connection
 
             return result;
         }
@@ -396,7 +402,7 @@ namespace GameJS
                     else if (name.EndsWith("id")) displayProperty = false;
                 }
 
-                if ((name == "attributes") || (name == "contents")) displayProperty = false;
+                if ((name == "attributes") || (name == "templateattributes") || (name == "contents")) displayProperty = false;
 
                 // properties that are skipped when full = false
                 if (displayProperty == true)

@@ -21,6 +21,15 @@ namespace GameJS
             this.map = new clsMap(this.db);
         }
 
+        public void open() {
+            this.db.open();
+        }
+
+        public void close()
+        {
+            this.db.close();
+        }
+
         public clsTemplate getTemplate(int templateId)
         {
             return new clsTemplate(this.db, templateId);

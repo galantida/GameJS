@@ -35,6 +35,7 @@ namespace GameJS
 
                         // connect to world
                         clsWorld world = new clsWorld();
+                        world.open();
 
                         // load template
                         clsTemplate template = world.getTemplate(templateId);
@@ -42,7 +43,8 @@ namespace GameJS
 
                         // create object based on template
                         clsObject obj = world.map.createObject(x, y, z, template);
-                        obj.save(); 
+                        obj.save();
+                        world.close();
 
                         // formulate response
                         sendResponse("createObject", "{id:" + obj.id + ",x:" + obj.x + ",y:" + obj.y + ",z:" + obj.z + "}", "[" + obj.toJSON() + "]");
@@ -54,6 +56,7 @@ namespace GameJS
 
                         // locate an existing object
                         clsWorld world = new clsWorld();
+                        world.open();
                         clsObject obj = new clsObject(world.db, id);
                         if (obj == null) sendResponse("Error", "Could not locate object 'id=" + id + "' to update.");
 
@@ -93,7 +96,8 @@ namespace GameJS
                                 }
                             }
                         }
-                        obj.save(); 
+                        obj.save();
+                        world.close();
 
                         // formulate response
                         sendResponse("updateObject", "{id:" + obj.id + ",x:" + obj.x + ",y:" + obj.y + ",z:" + obj.z + "}", "[" + obj.toJSON() + "]");
@@ -104,8 +108,10 @@ namespace GameJS
                         int id = getNumericParameter("id", true);
 
                         clsWorld world = new clsWorld();
+                        world.open();
                         clsObject obj = new clsObject(world.db, id);
                         obj.delete();
+                        world.close();
                         if (obj == null) sendResponse("Error", "'Could not locate object 'id=" + id + "' to delete.");
                         else sendResponse("deleteObject", "{id:" + obj.id + "}", "[" + obj.toJSON() + "]");
                         break;
@@ -120,7 +126,9 @@ namespace GameJS
                         DateTime? modified = getDateTimeParameter("modified");
 
                         clsWorld world = new clsWorld();
+                        world.open();
                         string JSON = clsObject.toJSON(world.map.getArea(x1, y1, x2, y2, 0, modified));
+                        world.close();
                         sendResponse("getArea", "{x1:" + x1 + ",y1:" + y1 + ",x2:" + x2 + ",y2:" + y2 + "}", JSON);
                         break;
                     }
@@ -134,8 +142,10 @@ namespace GameJS
 
                         // connect to world db
                         clsWorld world = new clsWorld();
+                        world.open();
                         //List<clsObject> result = world.map.createArea(x1,y1,x2,y2);
                         string JSON = world.map.createArea(x1,y1,x2 - x1);
+                        world.close();
 
                         // formulate response
                         sendResponse("createArea", "{x1:" + x1 + ",y1:" + y1 + ",x2:" + x2 + ",y2:" + y2 + "}", JSON);
@@ -144,7 +154,9 @@ namespace GameJS
                 case "gettemplates":
                     {
                         clsWorld world = new clsWorld();
+                        world.open();
                         string JSON = clsTemplate.toJSON(world.getAllTemplates());
+                        world.close();
                         sendResponse("getTemplates", "{}", JSON);
                         break;
                     }
@@ -152,6 +164,7 @@ namespace GameJS
                     {
                         // load the world templates from the DB
                         clsWorld world = new clsWorld();
+                        world.open();
                         List<clsTemplate> templates = world.getAllTemplates();
 
                         // convert to formatted JSON
@@ -161,6 +174,7 @@ namespace GameJS
                         // save to file
                         string path = Server.MapPath("..") + "\\files\\templates.json";
                         File.WriteAllText(@path, JSONFormatted);
+                        world.close();
 
                         // respond
                         sendResponse("saveTemplates", "{}", JSONString);
@@ -170,6 +184,7 @@ namespace GameJS
                     {
                         // destroy existing templates & their attributes from the database
                         clsWorld world = new clsWorld();
+                        world.open();
                         int recordsDeleted = world.destroyAll();
 
                         // load the world templates from the file
@@ -181,6 +196,7 @@ namespace GameJS
                         clsTemplate template = new clsTemplate(world.db);
                         List<clsTemplate> templates = template.fromJSON(JSONArray);
                         int recordsCreated = template.save(templates.Cast<intBase>());
+                        world.close();
 
                         // respond
                         string results = clsTemplate.toJSON(templates, true);
@@ -191,6 +207,7 @@ namespace GameJS
                     {
                         // load the world templates from the DB
                         clsWorld world = new clsWorld();
+                        world.open();
                         List<clsObject> objects = world.map.getAllObjects();
 
                         // convert to formatted JSON
@@ -200,6 +217,7 @@ namespace GameJS
                         // save to file
                         string path = Server.MapPath("..") + "\\files\\objects.json";
                         File.WriteAllText(@path, JSONFormatted);
+                        world.close();
 
                         // respond
                         sendResponse("saveObjects", "{}", JSONString);
@@ -209,6 +227,7 @@ namespace GameJS
                     {
                         // destroy existing templates & their attributes from the database
                         clsWorld world = new clsWorld();
+                        world.open();
                         world.map.destroyAll();
 
                         // load the world templates from the file
@@ -220,6 +239,7 @@ namespace GameJS
                         clsObject obj = new clsObject(world.db);
                         List<clsObject> objects = obj.fromJSON(JSONArray);
                         int recordsCreated = obj.save(objects.Cast<intBase>());
+                        world.close();
 
                         // respond
                         string results = clsObject.toJSON(objects, true);
