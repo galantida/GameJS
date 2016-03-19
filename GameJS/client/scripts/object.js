@@ -47,7 +47,8 @@ var object = { // object namespace
         // create image
         var img = document.createElement('img');
         img.onload = function () { object.position(this); }; // add onload event to position element after image size available
-        img.src = "../images/world/" + obj.image + ".png";
+        if (obj.image != "animatedtree") img.src = "../images/world/" + obj.image + ".png";
+        else img.src = "../images/world/" + obj.image + ".gif";
         img.className = "object img64Default";
 
         div.appendChild(img); // put image in container
