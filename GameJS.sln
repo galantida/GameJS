@@ -3,6 +3,10 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameJS", "GameJS\GameJS.csproj", "{D5123CFB-70CA-4B6C-958C-F925E39B49FD}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameWorld", "GameWorld\GameWorld.csproj", "{71A91676-381C-4E88-A56F-F620A122B546}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameServer", "GameServer\GameServer.csproj", "{7B61115F-0894-499F-9A6B-75822503C648}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -13,6 +17,14 @@ Global
 		{D5123CFB-70CA-4B6C-958C-F925E39B49FD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D5123CFB-70CA-4B6C-958C-F925E39B49FD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D5123CFB-70CA-4B6C-958C-F925E39B49FD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{71A91676-381C-4E88-A56F-F620A122B546}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{71A91676-381C-4E88-A56F-F620A122B546}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{71A91676-381C-4E88-A56F-F620A122B546}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{71A91676-381C-4E88-A56F-F620A122B546}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7B61115F-0894-499F-9A6B-75822503C648}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7B61115F-0894-499F-9A6B-75822503C648}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7B61115F-0894-499F-9A6B-75822503C648}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7B61115F-0894-499F-9A6B-75822503C648}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

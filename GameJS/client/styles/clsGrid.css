@@ -16,8 +16,8 @@
     height:1em;
     position:absolute;
     background-image:url("../images/grid/tile.png");
-    background-size:64px;
-    background-image:url("../images/tiles/wc-anim3.gif");
+    //background-size:64px;
+    //background-image:url("../images/tiles/wc-anim3.gif");
     /* transition:background-position linear 1000ms; // recall in */
 }
 

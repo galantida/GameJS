@@ -22,7 +22,7 @@ function clsGrid(displayPanel) {
     this.lastUpdate = new Date("3/19/69");
 
     this.heartBeat = setInterval(function () { client.worldView.grid.update(); }, 1000);
-    //this.heartBeat = setTimeout(function () { client.worldView.grid.update(); }, 1000); // singel call for debug only
+    //this.heartBeat = setTimeout(function () { client.worldView.grid.update(); }, 1000); // single call for debug only
 }
 
 clsGrid.prototype.debug = false;
@@ -170,7 +170,7 @@ clsGrid.prototype.updateObjects = function (objects) {
 
         // get objects screen grid location
         var screenLocation = client.worldView.worldToScreen(new clsVector2D(obj.x, obj.y));
-        var tile = this.grid[screenLocation.x][screenLocation.y].element;
+        var tile = this.grid[screenLocation.x][screenLocation.y].element; // locate the tile for this object
 
         console.dir(obj);
         
@@ -203,11 +203,20 @@ clsGrid.prototype.updateObjects = function (objects) {
 
                         // modifed existing element
                         if (this.debug == true) console.log("Modify existing element.");
+
+                        var origPosition = this.getScreenPosition(ele); // get the elements original location
+                        console.log("original position (" + origPosition.x + "," + origPosition.y + ")")
+
                         obj.elementLastUpdated = new Date(); // add an elementCreated date to the object
                         ele.setAttribute("data", JSON.stringify(obj));
-                        object.position(ele.firstElementChild);
-                        //ele.style.top = (-((obj.z + 1) * 32)) + "px";
+
+                        object.position(ele.firstElementChild); // position img
                         tile.appendChild(ele); // move element to its new tile location
+
+                        var newPosition = this.getScreenPosition(ele); // get the images new location
+                        console.log("new position (" + newPosition.x + "," + newPosition.y + ")")
+
+                        object.moving(ele.firstChild, (origPosition.x - newPosition.x), (origPosition.y - newPosition.y));
                     }
                     else {
                         if (this.debug == true) console.log("Already updated element.");
@@ -225,6 +234,20 @@ clsGrid.prototype.updateObjects = function (objects) {
         }
     }
     console.groupEnd();
+}
+
+clsGrid.prototype.getScreenPosition = function (element) {
+    var result = new clsVector2D(0, 0);
+    console.log("Start(" + result.x + ", " + result.y + ")")
+    if (element.offsetParent) {
+        do {
+            result.x += element.offsetLeft;
+            result.y += element.offsetTop;
+            console.log("(" + result.x + ", " + result.y + ")")
+        } while (element = element.offsetParent);
+    }
+    console.log("End(" + result.x + ", " + result.y + ")")
+    return result;
 }
 
 // scroll the entire landscape one cube in any direction

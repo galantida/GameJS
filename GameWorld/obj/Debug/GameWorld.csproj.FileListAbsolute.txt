@@ -1,0 +1,6 @@
+C:\Users\Home\Documents\Visual Studio 2012\Projects\GameJS\GameWorld\bin\Debug\GameWorld.dll
+C:\Users\Home\Documents\Visual Studio 2012\Projects\GameJS\GameWorld\bin\Debug\GameWorld.pdb
+C:\Users\Home\Documents\Visual Studio 2012\Projects\GameJS\GameWorld\bin\Debug\Newtonsoft.Json.dll
+C:\Users\Home\Documents\Visual Studio 2012\Projects\GameJS\GameWorld\obj\Debug\GameWorld.dll
+C:\Users\Home\Documents\Visual Studio 2012\Projects\GameJS\GameWorld\obj\Debug\GameWorld.pdb
+C:\Users\Home\Documents\Visual Studio 2012\Projects\GameJS\GameWorld\obj\Debug\GameWorld.csprojResolveAssemblyReference.cache

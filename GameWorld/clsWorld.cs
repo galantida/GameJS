@@ -1,11 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.Configuration;
 
-
-namespace GameJS
+namespace GameWorld
 {
     // world object that contains everything to instance an entire universe
     public class clsWorld
@@ -14,9 +10,8 @@ namespace GameJS
         public clsDatabase db {get; set; }
         public clsMap map;
 
-        public clsWorld()
+        public clsWorld(string dbConString)
         {
-            string dbConString = WebConfigurationManager.AppSettings["dbConString"];
             this.db = new clsDatabase(dbConString);
             this.map = new clsMap(this.db);
         }

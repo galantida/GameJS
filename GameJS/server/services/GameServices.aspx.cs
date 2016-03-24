@@ -4,10 +4,12 @@ using System.Linq;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
+using System.Web.Configuration;
 using System.IO;
 using System.Reflection;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using GameWorld;
 
 namespace GameJS
 {
@@ -22,6 +24,8 @@ namespace GameJS
             string callName = getStringParameter("callName");
             if (callName == null) callName = "";
 
+            string dbConString = WebConfigurationManager.AppSettings["dbConString"];
+
             // process command first since that is the only parameter I can be sure of
             switch (callName.ToLower())
             {
@@ -34,7 +38,7 @@ namespace GameJS
                         int templateId = getNumericParameter("templateId", true);
 
                         // connect to world
-                        clsWorld world = new clsWorld();
+                        clsWorld world = new clsWorld(dbConString);
                         world.open();
 
                         // load template
@@ -55,7 +59,7 @@ namespace GameJS
                         int id = getNumericParameter("id", true);
 
                         // locate an existing object
-                        clsWorld world = new clsWorld();
+                        clsWorld world = new clsWorld(dbConString);
                         world.open();
                         clsObject obj = new clsObject(world.db, id);
                         if (obj == null) sendResponse("Error", "Could not locate object 'id=" + id + "' to update.");
@@ -107,7 +111,7 @@ namespace GameJS
                     {
                         int id = getNumericParameter("id", true);
 
-                        clsWorld world = new clsWorld();
+                        clsWorld world = new clsWorld(dbConString);
                         world.open();
                         clsObject obj = new clsObject(world.db, id);
                         obj.delete();
@@ -125,7 +129,7 @@ namespace GameJS
                         int y2 = getNumericParameter("y2");
                         DateTime? modified = getDateTimeParameter("modified");
 
-                        clsWorld world = new clsWorld();
+                        clsWorld world = new clsWorld(dbConString);
                         world.open();
                         string JSON = clsObject.toJSON(world.map.getArea(x1, y1, x2, y2, 0, modified));
                         world.close();
@@ -141,7 +145,7 @@ namespace GameJS
                         int y2 = getNumericParameter("y2", true);
 
                         // connect to world db
-                        clsWorld world = new clsWorld();
+                        clsWorld world = new clsWorld(dbConString);
                         world.open();
                         //List<clsObject> result = world.map.createArea(x1,y1,x2,y2);
                         string JSON = world.map.createArea(x1,y1,x2 - x1);
@@ -153,7 +157,7 @@ namespace GameJS
                     }
                 case "gettemplates":
                     {
-                        clsWorld world = new clsWorld();
+                        clsWorld world = new clsWorld(dbConString);
                         world.open();
                         string JSON = clsTemplate.toJSON(world.getAllTemplates());
                         world.close();
@@ -163,7 +167,7 @@ namespace GameJS
                 case "savetemplates":
                     {
                         // load the world templates from the DB
-                        clsWorld world = new clsWorld();
+                        clsWorld world = new clsWorld(dbConString);
                         world.open();
                         List<clsTemplate> templates = world.getAllTemplates();
 
@@ -183,7 +187,7 @@ namespace GameJS
                 case "loadtemplates":
                     {
                         // destroy existing templates & their attributes from the database
-                        clsWorld world = new clsWorld();
+                        clsWorld world = new clsWorld(dbConString);
                         world.open();
                         int recordsDeleted = world.destroyAll();
 
@@ -206,7 +210,7 @@ namespace GameJS
                 case "saveobjects":
                     {
                         // load the world templates from the DB
-                        clsWorld world = new clsWorld();
+                        clsWorld world = new clsWorld(dbConString);
                         world.open();
                         List<clsObject> objects = world.map.getAllObjects();
 
@@ -226,7 +230,7 @@ namespace GameJS
                 case "loadobjects":
                     {
                         // destroy existing templates & their attributes from the database
-                        clsWorld world = new clsWorld();
+                        clsWorld world = new clsWorld(dbConString);
                         world.open();
                         world.map.destroyAll();
 

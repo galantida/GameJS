@@ -18,5 +18,11 @@
     -webkit-filter: saturate(800%); /* Chrome, Safari, Opera */
     filter: saturate(800%);
 }
+.object.imgDefault
+{
+    position:absolute;
+    left: 0px;
+    top: 0px;
+}
 
 

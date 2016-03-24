@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.IO;
 
-namespace GameJS
+namespace GameWorld
 {
     // a map is a colmanation of multiple files
     //  tile information from the tile file
@@ -31,6 +28,12 @@ namespace GameJS
         {
             clsObject obj = new clsObject(_db);
             return obj.getAll();
+        }
+
+        public List<clsObject> getObjectsByType(string objectType)
+        {
+            clsObject obj = new clsObject(_db);
+            return obj.getByType(objectType);
         }
 
         // delete all objects in a particular area

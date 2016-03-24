@@ -1,15 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.IO;
-using System.Reflection;
 using MySql.Data.MySqlClient;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 
-namespace GameJS
+namespace GameWorld
 {
     // the tile object is a container for information pertaining to a single ground tile collected from multiple files
     public class clsObject : clsBase, intBase
@@ -19,12 +15,14 @@ namespace GameJS
         public int x { get; set; }
         public int y { get; set; }
         public int z { get; set; }
+        public string type { get; set; }
         public string image { get; set; }
         public int weight { get; set; }
         public bool stackable { get; set; }
         public bool blocking { get; set; }
         public int containerId { get; set; }
         public bool deleted { get; set; }
+        
 
         // children
         private List<clsAttribute> _attributes = null;
@@ -41,6 +39,7 @@ namespace GameJS
             this.y = y;
             this.z = z;
 
+            this.type = template.type;
             this.name = template.name; // this should be the attribute name not the template name
             this.image = template.image;
             this.weight = template.weight;
@@ -109,6 +108,13 @@ namespace GameJS
         {
             // get every object in a particular area and container. (0 is not in a container)
             return this.getList("SELECT * FROM " + this.tableName + "s WHERE deleted = 0 ORDER BY name DESC");
+        }
+
+        // returns all objects in this table
+        public List<clsObject> getByType(string objectType)
+        {
+            // get every object ov a certain type
+            return this.getList("SELECT * FROM " + this.tableName + "s WHERE deleted = 0 AND type = '" + objectType +  "' ORDER BY name DESC");
         }
 
         public List<clsAttribute> attributes

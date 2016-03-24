@@ -1,5 +1,6 @@
 [
   {
+    "type": "",
     "name": "Wet Rock 6",
     "image": "wetrock6",
     "weight": 0,
@@ -8,6 +9,7 @@
     "templateAttributes": []
   },
   {
+    "type": "",
     "name": "Wet Rock 5",
     "image": "wetrock5",
     "weight": 0,
@@ -16,6 +18,7 @@
     "templateAttributes": []
   },
   {
+    "type": "",
     "name": "Wet Rock 4",
     "image": "wetrock4",
     "weight": 0,
@@ -29,6 +32,7 @@
     ]
   },
   {
+    "type": "",
     "name": "Wet Rock 3",
     "image": "wetrock3",
     "weight": 0,
@@ -42,6 +46,7 @@
     ]
   },
   {
+    "type": "",
     "name": "Wet Rock 2",
     "image": "wetrock2",
     "weight": 0,
@@ -50,6 +55,7 @@
     "templateAttributes": []
   },
   {
+    "type": "",
     "name": "Wet Rock 1",
     "image": "wetrock1",
     "weight": 0,
@@ -58,6 +64,7 @@
     "templateAttributes": []
   },
   {
+    "type": "",
     "name": "Well",
     "image": "well",
     "weight": 0,
@@ -66,6 +73,7 @@
     "templateAttributes": []
   },
   {
+    "type": "",
     "name": "Tree",
     "image": "tree",
     "weight": 0,
@@ -74,6 +82,7 @@
     "templateAttributes": []
   },
   {
+    "type": "",
     "name": "Real Tree",
     "image": "realtree",
     "weight": 0,
@@ -82,6 +91,7 @@
     "templateAttributes": []
   },
   {
+    "type": "",
     "name": "Moss Rock 9",
     "image": "mossrock9",
     "weight": 0,
@@ -90,6 +100,7 @@
     "templateAttributes": []
   },
   {
+    "type": "",
     "name": "Moss Rock 8",
     "image": "mossrock8",
     "weight": 0,
@@ -98,6 +109,7 @@
     "templateAttributes": []
   },
   {
+    "type": "",
     "name": "Moss Rock 7",
     "image": "mossrock7",
     "weight": 0,
@@ -106,6 +118,7 @@
     "templateAttributes": []
   },
   {
+    "type": "",
     "name": "Moss Rock 6",
     "image": "mossrock6",
     "weight": 0,
@@ -114,6 +127,7 @@
     "templateAttributes": []
   },
   {
+    "type": "",
     "name": "Moss Rock 5",
     "image": "mossrock5",
     "weight": 0,
@@ -122,6 +136,7 @@
     "templateAttributes": []
   },
   {
+    "type": "",
     "name": "Moss Rock 4",
     "image": "mossrock4",
     "weight": 0,
@@ -130,6 +145,7 @@
     "templateAttributes": []
   },
   {
+    "type": "",
     "name": "Moss Rock 3",
     "image": "mossrock3",
     "weight": 0,
@@ -138,6 +154,7 @@
     "templateAttributes": []
   },
   {
+    "type": "",
     "name": "Moss Rock 2",
     "image": "mossrock2",
     "weight": 0,
@@ -146,6 +163,7 @@
     "templateAttributes": []
   },
   {
+    "type": "",
     "name": "Moss Rock 1",
     "image": "mossrock1",
     "weight": 0,
@@ -154,6 +172,7 @@
     "templateAttributes": []
   },
   {
+    "type": "",
     "name": "MC Wood",
     "image": "mcwood",
     "weight": 0,
@@ -162,6 +181,7 @@
     "templateAttributes": []
   },
   {
+    "type": "",
     "name": "MC Water",
     "image": "mcwater",
     "weight": 0,
@@ -170,6 +190,7 @@
     "templateAttributes": []
   },
   {
+    "type": "",
     "name": "MC Stone",
     "image": "mcstone",
     "weight": 0,
@@ -178,6 +199,7 @@
     "templateAttributes": []
   },
   {
+    "type": "",
     "name": "MC Leaves",
     "image": "mcleaves",
     "weight": 0,
@@ -186,6 +208,7 @@
     "templateAttributes": []
   },
   {
+    "type": "",
     "name": "MC Grass",
     "image": "mcgrass",
     "weight": 0,
@@ -194,6 +217,7 @@
     "templateAttributes": []
   },
   {
+    "type": "",
     "name": "MC Dirt",
     "image": "mcdirt",
     "weight": 0,
@@ -202,6 +226,7 @@
     "templateAttributes": []
   },
   {
+    "type": "man",
     "name": "Man",
     "image": "man",
     "weight": 0,
@@ -210,6 +235,7 @@
     "templateAttributes": []
   },
   {
+    "type": "",
     "name": "House",
     "image": "house",
     "weight": 0,
@@ -218,6 +244,7 @@
     "templateAttributes": []
   },
   {
+    "type": "",
     "name": "Grass TRB",
     "image": "grasstrb",
     "weight": 0,
@@ -226,6 +253,7 @@
     "templateAttributes": []
   },
   {
+    "type": "",
     "name": "Grass TR",
     "image": "grasstr",
     "weight": 0,
@@ -234,6 +262,7 @@
     "templateAttributes": []
   },
   {
+    "type": "",
     "name": "Grass TL",
     "image": "grasstl",
     "weight": 0,
@@ -242,6 +271,7 @@
     "templateAttributes": []
   },
   {
+    "type": "",
     "name": "Grass T",
     "image": "grasst",
     "weight": 0,
@@ -250,6 +280,7 @@
     "templateAttributes": []
   },
   {
+    "type": "",
     "name": "Grass RBL",
     "image": "grassrbl",
     "weight": 0,
@@ -258,6 +289,7 @@
     "templateAttributes": []
   },
   {
+    "type": "",
     "name": "Grass R",
     "image": "grassr",
     "weight": 0,
@@ -266,6 +298,7 @@
     "templateAttributes": []
   },
   {
+    "type": "",
     "name": "Grass LTR",
     "image": "grassltr",
     "weight": 0,
@@ -274,6 +307,7 @@
     "templateAttributes": []
   },
   {
+    "type": "",
     "name": "Grass L",
     "image": "grassl",
     "weight": 0,
@@ -282,6 +316,7 @@
     "templateAttributes": []
   },
   {
+    "type": "",
     "name": "Grass BR",
     "image": "grassbr",
     "weight": 0,
@@ -290,6 +325,7 @@
     "templateAttributes": []
   },
   {
+    "type": "",
     "name": "Grass BLT",
     "image": "grassblt",
     "weight": 0,
@@ -298,6 +334,7 @@
     "templateAttributes": []
   },
   {
+    "type": "",
     "name": "Grass BL",
     "image": "grassbl",
     "weight": 0,
@@ -306,6 +343,7 @@
     "templateAttributes": []
   },
   {
+    "type": "",
     "name": "Grass B",
     "image": "grassb",
     "weight": 0,
@@ -314,6 +352,7 @@
     "templateAttributes": []
   },
   {
+    "type": "",
     "name": "Grass",
     "image": "grass",
     "weight": 0,
@@ -322,6 +361,7 @@
     "templateAttributes": []
   },
   {
+    "type": "dog",
     "name": "Dog",
     "image": "dog",
     "weight": 0,
@@ -330,6 +370,7 @@
     "templateAttributes": []
   },
   {
+    "type": "",
     "name": "Dirt",
     "image": "dirt",
     "weight": 0,
@@ -338,6 +379,7 @@
     "templateAttributes": []
   },
   {
+    "type": "",
     "name": "Bedrock 2",
     "image": "bedrock2",
     "weight": 0,
@@ -346,11 +388,31 @@
     "templateAttributes": []
   },
   {
+    "type": "",
     "name": "Bedrock 1",
     "image": "bedrock1",
     "weight": 0,
     "stackable": true,
     "blocking": true,
     "templateAttributes": []
+  },
+  {
+    "type": "chicken",
+    "name": "Chicken",
+    "image": "chicken",
+    "weight": 0,
+    "stackable": false,
+    "blocking": true,
+    "templateAttributes": []
+  },
+  {
+    "type": "chicken",
+    "name": "Baby Chicken",
+    "image": "babychicken",
+    "weight": 0,
+    "stackable": false,
+    "blocking": true,
+    "templateAttributes": []
   }
+
 ]

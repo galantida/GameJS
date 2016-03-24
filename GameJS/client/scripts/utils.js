@@ -28,7 +28,7 @@ var utils = { // utils namespace
         GMTDateTime = new Date(GMTString); // this date time will says it is eastern but we know better
 
         // format the date time to a mySQL friendly format without timezone
-        return utils.mySQLFriendlyDateTime(GMTDateTime); 
+        return utils.mySQLFriendlyDateTime(GMTDateTime);
     },
 
     mySQLFriendlyDateTime: function (dateTime) {
@@ -56,4 +56,4 @@ var utils = { // utils namespace
         script.src = url;
         document.getElementsByTagName("head")[0].appendChild(script);
     }
-};
+}

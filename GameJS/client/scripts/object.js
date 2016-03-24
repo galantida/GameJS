@@ -46,16 +46,16 @@ var object = { // object namespace
 
         // create image
         var img = document.createElement('img');
-        img.onload = function () { object.position(this); }; // add onload event to position element after image size available
-        if (obj.image != "animatedtree") img.src = "../images/world/" + obj.image + ".png";
-        else img.src = "../images/world/" + obj.image + ".gif";
-        img.className = "object img64Default";
+        img.onload = function () { object.position(this); }; // add onload event to position element after image loaded and size available
+        img.src = "../images/world/" + obj.image + ".png";
+        img.className = "object imgDefault";
 
         div.appendChild(img); // put image in container
 
         return div;
     },
 
+    // this will position the image after it is loaded
     position: function (img) {
         var div = img.parentElement;
         var obj = JSON.parse(div.getAttribute("data"));
@@ -64,6 +64,36 @@ var object = { // object namespace
         div.setAttribute("data", JSON.stringify(obj));
         div.style.left = (32 - obj.imgWidth /2) + "px";
         div.style.top = (-(obj.z + 32) -(obj.imgHeight -64)) + "px"; // this works perfectly
+    },
+
+    // this is used to smooth the move over time
+    moving: function (element, xOffset, yOffset) {
+        var speed = 5;
+        var movesPerSecond = 10;
+
+        console.log("moving " + element.id + " (" + xOffset + "," + yOffset + ")");
+
+
+        // slowly move the image to the desired location
+        xOffset -= (xOffset / Math.abs(xOffset) * speed); // this will never end has to be fixed
+        yOffset -= (yOffset / Math.abs(yOffset) * speed); // this will never end has to be fixed
+
+        var stillMoving = false;
+        if (Math.abs(xOffset) > speed) {
+            element.style.left = xOffset + "px";
+            stillMoving = true;
+        }
+        else element.style.left = "0px";
+
+        if (Math.abs(yOffset) > speed) {
+            element.style.top = yOffset + "px";
+            stillMoving = true;
+        }
+        else element.style.top = "0px";
+        
+        // setup next move execution
+        if (stillMoving == true) setTimeout(function () { object.moving(element, xOffset, yOffset); }, (1000 / movesPerSecond));
+
     },
 
     onClick: function (element) {

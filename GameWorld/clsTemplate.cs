@@ -1,20 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.IO;
-using System.Reflection;
 using MySql.Data.MySqlClient;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 
-namespace GameJS
+namespace GameWorld
 {
     // the tile object is a container for information pertaining to a single ground tile collected from multiple files
     public class clsTemplate : clsBase, intBase
     {
         // properties
+        public string type { get; set; }
         public string name { get; set; }
         public string image { get; set; }
         public int weight { get; set; }

@@ -1,0 +1,9 @@
+C:\Users\Home\Documents\Visual Studio 2012\Projects\GameJS\GameServer\obj\Debug\GameServer.csprojResolveAssemblyReference.cache
+C:\Users\Home\Documents\Visual Studio 2012\Projects\GameJS\GameServer\bin\Debug\GameServer.exe.config
+C:\Users\Home\Documents\Visual Studio 2012\Projects\GameJS\GameServer\bin\Debug\GameServer.exe
+C:\Users\Home\Documents\Visual Studio 2012\Projects\GameJS\GameServer\bin\Debug\GameServer.pdb
+C:\Users\Home\Documents\Visual Studio 2012\Projects\GameJS\GameServer\bin\Debug\GameWorld.dll
+C:\Users\Home\Documents\Visual Studio 2012\Projects\GameJS\GameServer\bin\Debug\Newtonsoft.Json.dll
+C:\Users\Home\Documents\Visual Studio 2012\Projects\GameJS\GameServer\bin\Debug\GameWorld.pdb
+C:\Users\Home\Documents\Visual Studio 2012\Projects\GameJS\GameServer\obj\Debug\GameServer.exe
+C:\Users\Home\Documents\Visual Studio 2012\Projects\GameJS\GameServer\obj\Debug\GameServer.pdb
