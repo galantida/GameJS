@@ -170,12 +170,17 @@ clsGrid.prototype.updateObjects = function (objects) {
 
         // get objects screen grid location
         var screenLocation = client.worldView.worldToScreen(new clsPoint(obj.x, obj.y));
-        var tile = this.grid[screenLocation.x][screenLocation.y].element; // locate the tile for this object
+        var tile = null;
+        if ((screenLocation.x >= 0) && (screenLocation.x < objects.length)) {
+            if ((screenLocation.y >= 0) && (screenLocation.y < objects.length)) {
+                tile = this.grid[screenLocation.x][screenLocation.y].element; // locate the tile for this object
+            }
+        }
 
         console.dir(obj);
         
         // only update cubes that have not yet scrolled off the buffer
-        if (tile == null) console("Object is now off the screen");
+        if (tile == null) console.log("Object is now off the screen");
         else {
             if (obj.deleted == true) {
                 // erase object
@@ -268,7 +273,7 @@ clsGrid.prototype.shiftGrid = function(shiftx, shifty) {
         yfrom = 0;
         yto = last;
         yinc = 1;
-    } else if (shifty == 1) {
+    } else if (shifty == 1) { 
         yfrom = 0;
         yto = last - 1; 
         yinc = 1;
