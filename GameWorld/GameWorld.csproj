@@ -49,8 +49,10 @@
     <Compile Include="clsDatabase.cs" />
     <Compile Include="clsMap.cs" />
     <Compile Include="clsObject.cs" />
+    <Compile Include="clsPoint.cs" />
     <Compile Include="clsTemplate.cs" />
     <Compile Include="clsTemplateAttribute.cs" />
+    <Compile Include="clsVector.cs" />
     <Compile Include="clsWorld.cs" />
     <Compile Include="intBase.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

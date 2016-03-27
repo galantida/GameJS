@@ -16,7 +16,7 @@ function clsWorldView(width, height) {
     this.grid = new clsGrid(this.displayPanel);
 
     // set the intial location
-    this.location = new clsVector2D(0, 0); // world coordinate the view is currently centered on
+    this.location = new clsPoint(0, 0); // world coordinate the view is currently centered on
 }
 
 // center view on a specific location
@@ -27,7 +27,7 @@ clsWorldView.prototype.jumpToLocation = function (worldx, worldy) {
     this.location.y = worldy;
 
     // calculate top, left corner in world since ground does not accept center location
-    var worldViewTopLeft = new clsVector2D(worldx - (this.grid.buffer.size / 2), worldy - (this.grid.buffer.size / 2));
+    var worldViewTopLeft = new clsPoint(worldx - (this.grid.buffer.size / 2), worldy - (this.grid.buffer.size / 2));
     this.grid.setWorldLocation(worldViewTopLeft);
 }
 
@@ -54,12 +54,12 @@ clsWorldView.prototype.moveTowardLocation = function (worldx, worldy) {
     Conversion functions
 ***********************************************/
 clsWorldView.prototype.worldToScreen = function (worldLocation) {
-    return new clsVector2D(worldLocation.x - this.grid.world.x, worldLocation.y - this.grid.world.y);
+    return new clsPoint(worldLocation.x - this.grid.world.x, worldLocation.y - this.grid.world.y);
 }
 
 // it may be a fluke but this function did not work last time I used to. (probably should never never need it);
 clsWorldView.prototype.screenToWorld = function (screenLocation) {
-    return new clsVector2D(this.grid.world.x + screenLocation.x, this.grid.world.y + screenLocation.y);
+    return new clsPoint(this.grid.world.x + screenLocation.x, this.grid.world.y + screenLocation.y);
 }
 
 

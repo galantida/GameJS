@@ -106,7 +106,7 @@ var object = { // object namespace
 
             // get info about the click
             var obj = JSON.parse(element.getAttribute("data")); // get object information
-            var worldLocation = new clsVector2D(obj.x, obj.y);
+            var worldLocation = new clsPoint(obj.x, obj.y);
             var screenLocation = client.worldView.worldToScreen(worldLocation); // get screen location clicked
 
             // which click type was it
@@ -122,7 +122,7 @@ var object = { // object namespace
                 console.log("Left clicked object " + JSON.stringify(obj) + " at screen(" + screenLocation.x + "," + screenLocation.y + ")");
 
                 // move play to new location. screen will follow
-                client.playerMoveTarget = new clsVector2D(worldLocation.x - (obj.z / 32), worldLocation.y - (obj.z / 32));
+                client.playerMoveTarget = new clsPoint(worldLocation.x - (obj.z / 32), worldLocation.y - (obj.z / 32));
             }
         }
         e.preventDefault();
@@ -179,7 +179,7 @@ var object = { // object namespace
 
         // get drop location information
         var dstObj = JSON.parse(element.getAttribute("data")); // get object information
-        var worldLocation = new clsVector2D(dstObj.x, dstObj.y);
+        var worldLocation = new clsPoint(dstObj.x, dstObj.y);
         var screenLocation = client.worldView.worldToScreen(worldLocation); // get screen location clicked
         console.groupCollapsed("dropped " + JSON.stringify(srcObj) + " on " + JSON.stringify(dstObj));
 

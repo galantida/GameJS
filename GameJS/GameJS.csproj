@@ -89,7 +89,7 @@
     <Content Include="client\html\interface.html" />
     <Content Include="packages.config" />
     <Content Include="client\objects\clsDisplayPanel.js" />
-    <Content Include="client\objects\clsVector2D.js" />
+    <Content Include="client\objects\clsPoint.js" />
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
     <Content Include="client\objects\clsWorldView.js" />

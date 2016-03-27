@@ -141,18 +141,16 @@ namespace GameJS
                         // read requested coordinate
                         int x1 = getNumericParameter("x1", true);
                         int y1 = getNumericParameter("y1", true);
-                        int x2 = getNumericParameter("x2", true);
-                        int y2 = getNumericParameter("y2", true);
+                        int size = getNumericParameter("size", true);
 
                         // connect to world db
                         clsWorld world = new clsWorld(dbConString);
                         world.open();
-                        //List<clsObject> result = world.map.createArea(x1,y1,x2,y2);
-                        string JSON = world.map.createArea(x1,y1,x2 - x1);
+                        string JSON = world.map.createArea(x1,y1,size);
                         world.close();
 
                         // formulate response
-                        sendResponse("createArea", "{x1:" + x1 + ",y1:" + y1 + ",x2:" + x2 + ",y2:" + y2 + "}", JSON);
+                        sendResponse("createArea", "{x1:" + x1 + ",y1:" + y1 + ",size:" + size + "}", JSON);
                         break;
                     }
                 case "gettemplates":

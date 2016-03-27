@@ -86,20 +86,16 @@ namespace GameWorld
             // make sure it a calculable size
             int sqrt = (int)Math.Sqrt(size);
             size = (sqrt * sqrt) + 1;
-
-            // clear the build area
-            clsObject obj = new clsObject(_db);
-            this.destroyArea(-1000, -1000, 1000, 1000, 0);
+            int hsize = size / 2;
 
             // load templates
             clsTemplate template = new clsTemplate(_db);
             List<clsTemplate> templates = template.getAllTemplates();
 
+            // clear the build area
+            this.destroyArea(x1 - hsize, y1 - hsize, x1 + hsize, y1 + hsize, 0);
 
-            // seed the random
-            Random r = new Random();
-
-            // create the array
+            // create the height array
             heights = new int[size, size];
             for (int y = 0; y < size; y++)
             {
@@ -110,20 +106,23 @@ namespace GameWorld
             }
 
             // seed the corners
-            heights[0, 0] = r.Next(0, 3);
-            heights[size - 1, 0] = r.Next(0, 3);
-            heights[0, size - 1] = r.Next(0, 3);
-            heights[size - 1, size - 1] = r.Next(0, 3);
+            int maxHeight = 5;
+            Random r = new Random(); // seed the random
+            heights[0, 0] = r.Next(0, maxHeight);
+            heights[size - 1, 0] = r.Next(0, maxHeight);
+            heights[0, size - 1] = r.Next(0, maxHeight);
+            heights[size - 1, size - 1] = r.Next(0, maxHeight);
             
 
             // mid point displacement loop
-            //divide(heights.GetLength(0));
+            divide(heights.GetLength(0));
 
             // http://minecraft.gamepedia.com/
 
             int waterLevel = 0;
 
             // save results to database
+            clsObject obj = new clsObject(_db);
             List<clsObject> results = new List<clsObject>();
             for (int y = 0; y < size; y++)
             {
@@ -136,11 +135,11 @@ namespace GameWorld
                             // land
                             if (z == heights[x, y])
                             {
-                                obj = this.createObject(x, y, z * 32, templates.Find(i => i.name.Contains("MC Grass")));
+                                obj = this.createObject(x1+x, y1+y, z * 32, templates.Find(i => i.name.Contains("MC Grass")));
                             }
                             else
                             {
-                                obj = this.createObject(x, y, z * 32, templates.Find(i => i.name.Contains("MC Dirt")));
+                                obj = this.createObject(x1+x, y1+y, z * 32, templates.Find(i => i.name.Contains("MC Dirt")));
                             }
                             results.Add(obj);
                         }
@@ -148,13 +147,11 @@ namespace GameWorld
                         {
                             if (z <= waterLevel)
                             {
-                                obj = this.createObject(x, y, z * 32, templates.Find(i => i.name.Contains("MC Water")));
+                                obj = this.createObject(x1+x, y1+y, z * 32, templates.Find(i => i.name.Contains("MC Water")));
                                 //obj.save();
                                 results.Add(obj);
                             }
                         }
-
-                        
                     }
                 }
             }
@@ -175,7 +172,7 @@ namespace GameWorld
             
             
             int half = size / 2;
-            float scale = roughness * size;
+            float scale = roughness * (float)size;
             if (half < 1) return;
             int max = heights.GetLength(0);
 
@@ -234,7 +231,10 @@ namespace GameWorld
         }
 
         public void setHeight(int x, int y, int value) {
-            if ((x >= 0) && (x < heights.GetLength(0)) && (y >= 0) && (y < heights.GetLength(1)))
+            int min = 0;
+            int max = heights.GetLength(0);
+
+            if ((x >= min) && (x < max) && (y >= min) && (y < max))
             {
                 if (value > 6) value = 6;
                 if (value < 0) value = 0;
@@ -244,7 +244,10 @@ namespace GameWorld
 
         public int getHeight(int x, int y)
         {
-            if ((x >= 0) && (x < heights.GetLength(0)) && (y >= 0) && (y < heights.GetLength(1)))
+            int min = 0;
+            int max = heights.GetLength(0);
+
+            if ((x >= min) && (x < max) && (y >= min) && (y < max))
             {
                 return heights[x, y];
             }

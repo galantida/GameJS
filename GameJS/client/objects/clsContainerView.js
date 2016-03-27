@@ -23,9 +23,7 @@ function clsContainerView(width, height) {
 // refresh all tiles
 clsContainerView.prototype.setup = function () {
     console.log("update pack view.");
-    
     this.requestTemplates();
-
 }
 
 clsContainerView.prototype.requestTemplates = function () {
@@ -35,12 +33,8 @@ clsContainerView.prototype.requestTemplates = function () {
 
 clsContainerView.prototype.receiveTemplates = function (response) {
     var templates = response.content;
-
     for (var t = 0; t < templates.length; t++) {
-
-        // get object
-        var template = templates[t];
-
+        var template = templates[t]; // get object
         this.buffer.appendChild(this.createTemplate(template));
     }
 }

@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+﻿4<!DOCTYPE html>
 
 <html xmlns="http://www.w3.org/1999/xhtml" style="background:#000000;">
 <head id="Head1" runat="server">
@@ -17,7 +17,7 @@
 <script src="../scripts/utils.js"></script>
 <script src="../scripts/wsInterface.js"></script>
 <script src="../scripts/Object.js"></script>
-<script src="../objects/clsVector2D.js"></script>
+<script src="../objects/clsPoint.js"></script>
 <script src="../objects/clsClient.js"></script>
 <script src="../objects/clsWorldView.js"></script>
 <script src="../objects/clsContainerView.js"></script>
@@ -38,6 +38,8 @@
 
     function setup() {
 
+        document.addEventListener("keydown", keyDownHandler);
+
         // start game loop
         //client.heartBeat = setInterval(function () { gameLoop(); }, 1500 / 10);
         client.heartBeat = setInterval(function () { gameLoop(); }, 100);
@@ -52,49 +54,49 @@
             case 36:
                 {
                     // up left
-                    client.playerMoveTarget = new clsVector2D(client.player.x - 1, client.player.y);
+                    client.playerMoveTarget = new clsPoint(client.player.x - 1, client.player.y);
                     break;
                 }
             case 38:
                 {
                     // up
-                    client.playerMoveTarget = new clsVector2D(client.player.x - 1, client.player.y - 1);
+                    client.playerMoveTarget = new clsPoint(client.player.x - 1, client.player.y - 1);
                     break;
                 }
             case 33:
                 {
                     // up right
-                    client.playerMoveTarget = new clsVector2D(client.player.x, client.player.y - 1);
+                    client.playerMoveTarget = new clsPoint(client.player.x, client.player.y - 1);
                     break;
                 }
             case 37:
                 {
                     // left
-                    client.playerMoveTarget = new clsVector2D(client.player.x - 1, client.player.y + 1);
+                    //client.playerMoveTarget = new clsPoint(client.player.x - 1, client.player.y + 1); // bad
                     break;
                 }
             case 39:
                 {
                     // right
-                    client.playerMoveTarget = new clsVector2D(client.player.x + 1, client.player.y - 1);
+                    //client.playerMoveTarget = new clsPoint(client.player.x + 1, client.player.y - 1); // bad
                     break;
                 }
             case 35:
                 {
                     // down left
-                    client.playerMoveTarget = new clsVector2D(client.player.x, client.player.y + 1);
+                    client.playerMoveTarget = new clsPoint(client.player.x, client.player.y + 1);
                     break;
                 }
             case 40:
                 {
                     // down
-                    client.playerMoveTarget = new clsVector2D(client.player.x + 1, client.player.y + 1);
+                    //client.playerMoveTarget = new clsPoint(client.player.x + 1, client.player.y + 1); // bad
                     break;
                 }
             case 34:
                 {
                     // down right
-                    client.playerMoveTarget = new clsVector2D(client.player.x + 1, client.player.y);
+                    client.playerMoveTarget = new clsPoint(client.player.x + 1, client.player.y);
                     break;
                 }
             default:
@@ -110,7 +112,7 @@
 
     function receiveTemplates(response) {
         console.log("templates received");
-        client.packView.receiveTemplates(response);
+        //client.packView.receiveTemplates(response);
     }
 
     setup();

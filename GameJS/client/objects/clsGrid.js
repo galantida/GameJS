@@ -11,8 +11,8 @@ function clsGrid(displayPanel) {
     console.log("Creating Display Grid...");
 
     // properties
-    this.world = new clsVector2D(0, 0);
-    this.worldBottomRight = new clsVector2D(0, 0);
+    this.world = new clsPoint(0, 0);
+    this.worldBottomRight = new clsPoint(0, 0);
 
     // initializations
     this.cs = { "width":64, "height":64, "displayWidth":64, "displayHeight":32 };
@@ -114,7 +114,7 @@ clsGrid.prototype.createGrid = function (posx, posy) {
 clsGrid.prototype.setWorldLocation = function (worldLocation) {
     // set new world location
     this.world = worldLocation
-    this.worldBottomRight = new clsVector2D(this.world.x + this.buffer.size - 1, this.world.y + this.buffer.size - 1);
+    this.worldBottomRight = new clsPoint(this.world.x + this.buffer.size - 1, this.world.y + this.buffer.size - 1);
 }
 
 
@@ -144,7 +144,7 @@ clsGrid.prototype.jumpToLocation = function (worldx, worldy) {
     console.log("Jumping top left of view to world location (" + worldx + ", " + worldy + ")");
 
     // set new world location
-    this.setWorldLocation(new clsVector2D(worldx, worldy));
+    this.setWorldLocation(new clsPoint(worldx, worldy));
     this.clearAll(); // clear all existing cubes
 
     // request objects
@@ -169,7 +169,7 @@ clsGrid.prototype.updateObjects = function (objects) {
         var obj = objects[t];
 
         // get objects screen grid location
-        var screenLocation = client.worldView.worldToScreen(new clsVector2D(obj.x, obj.y));
+        var screenLocation = client.worldView.worldToScreen(new clsPoint(obj.x, obj.y));
         var tile = this.grid[screenLocation.x][screenLocation.y].element; // locate the tile for this object
 
         console.dir(obj);
@@ -237,7 +237,7 @@ clsGrid.prototype.updateObjects = function (objects) {
 }
 
 clsGrid.prototype.getScreenPosition = function (element) {
-    var result = new clsVector2D(0, 0);
+    var result = new clsPoint(0, 0);
     console.log("Start(" + result.x + ", " + result.y + ")")
     if (element.offsetParent) {
         do {
@@ -259,8 +259,8 @@ clsGrid.prototype.shiftGrid = function(shiftx, shifty) {
     var last = this.buffer.size - 1; // last row or column. They are the same because its a square.
 
     // set new world location
-    this.world = new clsVector2D(this.world.x += shiftx, this.world.y += shifty);
-    this.worldBottomRight = new clsVector2D(this.world.x + this.buffer.size - 1, this.world.y + last);
+    this.world = new clsPoint(this.world.x += shiftx, this.world.y += shifty);
+    this.worldBottomRight = new clsPoint(this.world.x + this.buffer.size - 1, this.world.y + last);
 
     // determine the best copy direction based on the y shift direction
     var yfrom, yto, yinc;
@@ -315,25 +315,25 @@ clsGrid.prototype.shiftGrid = function(shiftx, shifty) {
     // request new row information
     if (shiftx == 1) {
         // request last row
-        var worldRow1 = client.worldView.screenToWorld(new clsVector2D(last, 0));
-        var worldRow2 = client.worldView.screenToWorld(new clsVector2D(last, last));
+        var worldRow1 = client.worldView.screenToWorld(new clsPoint(last, 0));
+        var worldRow2 = client.worldView.screenToWorld(new clsPoint(last, last));
         wsi.requestJSONInfo({ "callName": "getArea", "x1": worldRow1.x, "y1": worldRow1.y, "x2": worldRow2.x, "y2": worldRow2.y }, client.worldView.grid.objectsResponse);
     } else if (shiftx == -1) {
         // request first row
-        var worldRow1 = client.worldView.screenToWorld(new clsVector2D(0, 0));
-        var worldRow2 = client.worldView.screenToWorld(new clsVector2D(0, last));
+        var worldRow1 = client.worldView.screenToWorld(new clsPoint(0, 0));
+        var worldRow2 = client.worldView.screenToWorld(new clsPoint(0, last));
         wsi.requestJSONInfo({ "callName": "getArea", "x1": worldRow1.x, "y1": worldRow1.y, "x2": worldRow2.x, "y2": worldRow2.y }, client.worldView.grid.objectsResponse);
     }
 
     if (shifty == 1) {
         // request last col
-        var worldCol1 = client.worldView.screenToWorld(new clsVector2D(0, last));
-        var worldCol2 = client.worldView.screenToWorld(new clsVector2D(last, last));
+        var worldCol1 = client.worldView.screenToWorld(new clsPoint(0, last));
+        var worldCol2 = client.worldView.screenToWorld(new clsPoint(last, last));
         wsi.requestJSONInfo({ "callName": "getArea", "x1": worldCol1.x, "y1": worldCol1.y, "x2": worldCol2.x, "y2": worldCol2.y }, client.worldView.grid.objectsResponse);
     } else if (shifty == -1) {
         // request first col
-        var worldCol1 = client.worldView.screenToWorld(new clsVector2D(0, 0));
-        var worldCol2 = client.worldView.screenToWorld(new clsVector2D(last, 0));
+        var worldCol1 = client.worldView.screenToWorld(new clsPoint(0, 0));
+        var worldCol2 = client.worldView.screenToWorld(new clsPoint(last, 0));
         wsi.requestJSONInfo({ "callName": "getArea", "x1": worldCol1.x, "y1": worldCol1.y, "x2": worldCol2.x, "y2": worldCol2.y }, client.worldView.grid.objectsResponse);
     }
 
@@ -362,7 +362,7 @@ clsGrid.prototype.onClick = function (element) {
     if (dragflag == false) { // allow for click event on mouse up only if nothing was being dragged
 
         // get info about the click
-        var screenLocation = new clsVector2D(Number(element.dataset.x), Number(element.dataset.y)); // get screen location clicked
+        var screenLocation = new clsPoint(Number(element.dataset.x), Number(element.dataset.y)); // get screen location clicked
         var worldLocation = client.worldView.screenToWorld(screenLocation); // get world location clicked
 
         // which click type was it
@@ -381,7 +381,7 @@ clsGrid.prototype.onClick = function (element) {
             console.log("Left clicked grid at world (" + worldLocation.x + "," + worldLocation.y + ") at screen(" + screenLocation.x + "," + screenLocation.y + ")");
 
             // move play to new location. screen will follow
-            client.playerMoveTarget = new clsVector2D(worldLocation.x, worldLocation.y);
+            client.playerMoveTarget = new clsPoint(worldLocation.x, worldLocation.y);
         }
     }
     e.preventDefault();
@@ -432,7 +432,7 @@ clsGrid.prototype.onDrop = function (element) {
     var srcObj = JSON.parse(e.dataTransfer.getData("text"));
 
     // get drop location information
-    var screenLocation = new clsVector2D(Number(element.dataset.x), Number(element.dataset.y)); // get screen location
+    var screenLocation = new clsPoint(Number(element.dataset.x), Number(element.dataset.y)); // get screen location
     var worldLocation = client.worldView.screenToWorld(screenLocation); // get world location
     console.groupCollapsed("dropped " + JSON.stringify(srcObj) + " on grid " + screenLocation.x + "," + screenLocation.y)
 
