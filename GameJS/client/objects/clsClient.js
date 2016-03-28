@@ -14,8 +14,8 @@ function clsClient() {
     this.player = new clsPoint(0, 0);
     this.playerMoveTarget = new clsPoint(0, 0); // world coordinates to scroll
 
-    //this.worldView = new clsWorldView(640, 480);
-    this.worldView = new clsWorldView(320, 200);
+    this.worldView = new clsWorldView(640, 480);
+    //this.worldView = new clsWorldView(320, 200);
     this.packView = new clsContainerView(284, 480);
 
     

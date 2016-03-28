@@ -12,6 +12,7 @@ namespace GameWorld
         // map objects
         protected clsDatabase _db { get; set; }
         private int[,] heights;
+        private Random r = new Random(); // seed the random
 
         public clsMap(clsDatabase db) 
         {
@@ -53,13 +54,18 @@ namespace GameWorld
         }
 
         // destroy all objects in a particular area
-        public int destroyArea(int x1, int y1, int x2, int y2, int containerId = 0)
+        public int destroyArea(clsPoint topLeft, clsPoint bottomRight, int containerId = 0)
         {
             // initiate destruction method for each object
             int result = 0;
             clsObject obj = new clsObject(_db);
-            result += obj.destroyArea(x1, y1, x2, y2, containerId);
+            result += obj.destroyArea((int)topLeft.x, (int)topLeft.y, (int)bottomRight.x, (int)bottomRight.y, containerId);
             return result;
+        }
+
+        public int destroyArea(int x1, int y1, int x2, int y2, int containerId = 0)
+        {
+            return this.destroyArea(new clsPoint(x1, y1), new clsPoint(x2, y2));
         }
 
         public int destroyAll()
@@ -81,22 +87,30 @@ namespace GameWorld
             return obj.getArea(x1, y1, x2, y2, containerId, modified);
         }
 
-        public string createArea(int x1, int y1, int size)
+
+        public string createWorld(int blocks)
         {
-            // make sure it a calculable size
-            int sqrt = (int)Math.Sqrt(size);
-            size = (sqrt * sqrt) + 1;
-            int hsize = size / 2;
-
-            // load templates
-            clsTemplate template = new clsTemplate(_db);
-            List<clsTemplate> templates = template.getAllTemplates();
-
-            // clear the build area
-            this.destroyArea(x1 - hsize, y1 - hsize, x1 + hsize, y1 + hsize, 0);
+            string result = "";
+            int blockSize = 17;
 
             // create the height array
-            heights = new int[size, size];
+            heights = new int[blockSize, blockSize];
+
+            for (int y = 0; y < blocks; y++) 
+            {
+                for (int x = 0; x < blocks; x++) 
+                {
+                    result += createBlock(new clsPoint(x, y));
+                }
+            }
+            return result;
+        }
+
+        public string createBlock(clsPoint block)
+        {
+            int size = heights.GetLength(0);
+
+            // clear the height array
             for (int y = 0; y < size; y++)
             {
                 for (int x = 0; x < size; x++)
@@ -105,19 +119,40 @@ namespace GameWorld
                 }
             }
 
+            int blockSize = size;
+            clsPoint arrayMax = new clsPoint(blockSize - 1, blockSize - 1);
+            clsPoint worldTopLeft = new clsPoint(block.x * blockSize, block.y * blockSize);
+            clsPoint worldBotRight = new clsPoint(worldTopLeft.x + blockSize - 1, worldTopLeft.y + blockSize - 1);
+
             // seed the corners
-            int maxHeight = 5;
-            Random r = new Random(); // seed the random
-            heights[0, 0] = r.Next(0, maxHeight);
-            heights[size - 1, 0] = r.Next(0, maxHeight);
-            heights[0, size - 1] = r.Next(0, maxHeight);
-            heights[size - 1, size - 1] = r.Next(0, maxHeight);
-            
+            heights[0, 0] = getSeed(worldTopLeft);
+            heights[blockSize - 1, 0] = getSeed(new clsPoint(worldBotRight.x, worldTopLeft.y));
+            heights[0, blockSize - 1] = getSeed(new clsPoint(worldTopLeft.x, worldBotRight.y));
+            heights[blockSize - 1, blockSize - 1] = getSeed(worldBotRight);
 
-            // mid point displacement loop
-            divide(heights.GetLength(0));
+            // mid point displacement loop // http://minecraft.gamepedia.com/
+            calculateMidPoints(size);
 
-            // http://minecraft.gamepedia.com/
+            return SaveMap(worldTopLeft);
+        }
+
+        public int getSeed(clsPoint worldLocation)
+        {
+            int maxRandomHeight = 6;
+            return r.Next(0, maxRandomHeight);
+        }
+
+        public string SaveMap(clsPoint worldLocation)
+        {
+            int size = heights.GetLength(0);
+
+            // clear block
+            clsPoint worldLocationBotRight = new clsPoint(worldLocation.x + heights.Length - 1, worldLocation.y + heights.Length - 1);
+            this.destroyArea(worldLocation, worldLocationBotRight);
+
+            // load templates
+            clsTemplate template = new clsTemplate(_db);
+            List<clsTemplate> templates = template.getAllTemplates();
 
             int waterLevel = 0;
 
@@ -128,34 +163,18 @@ namespace GameWorld
             {
                 for (int x = 0; x < size; x++)
                 {
-                    for (int z = 0; z <= 5; z++)
+                    obj = this.createObject((int)worldLocation.x + x, (int)worldLocation.y + y, heights[x, y] * 32, templates.Find(i => i.name.Contains("MC Grass")));
+
+                    if (heights[x, y] < waterLevel)
                     {
-                        if (z <= heights[x,y])
+                        for (int z = heights[x, y] + 1; z <= waterLevel; z++)
                         {
-                            // land
-                            if (z == heights[x, y])
-                            {
-                                obj = this.createObject(x1+x, y1+y, z * 32, templates.Find(i => i.name.Contains("MC Grass")));
-                            }
-                            else
-                            {
-                                obj = this.createObject(x1+x, y1+y, z * 32, templates.Find(i => i.name.Contains("MC Dirt")));
-                            }
-                            results.Add(obj);
-                        }
-                        else
-                        {
-                            if (z <= waterLevel)
-                            {
-                                obj = this.createObject(x1+x, y1+y, z * 32, templates.Find(i => i.name.Contains("MC Water")));
-                                //obj.save();
-                                results.Add(obj);
-                            }
+                            obj = this.createObject((int)worldLocation.x + x, (int)worldLocation.y + y, z * 32, templates.Find(i => i.name.Contains("MC Water")));
                         }
                     }
+
                 }
             }
-
 
             // height map to JSON
             string JSON;
@@ -163,25 +182,26 @@ namespace GameWorld
             JSON = "\"objectsCreated\":" + results.Count + "";
             JSON += "}";
             return JSON;
+
         }
 
-        public void divide(int size) 
+        public void calculateMidPoints(int subBlockSize) 
         {
             // http://www.playfuljs.com/realistic-terrain-in-130-lines/
             float roughness = 0.2F;
-            
-            
-            int half = size / 2;
-            float scale = roughness * (float)size;
+
+
+            int half = subBlockSize / 2;
+            float scale = roughness * (float)subBlockSize;
             if (half < 1) return;
-            int max = heights.GetLength(0);
+            int max = subBlockSize;
 
             // seed the random
             Random r = new Random();
 
-            for (int y = half; y < max; y += size) 
+            for (int y = half; y < max; y += subBlockSize) 
             {
-                for (int x = half; x < max; x += size) 
+                for (int x = half; x < max; x += subBlockSize) 
                 {
                     square(x, y, half, r.Next(0, 3) * (int)(scale * 2 - scale));
                 }
@@ -189,13 +209,13 @@ namespace GameWorld
 
             for (int y = 0; y <= max; y += half) 
             {
-                for (int x = (y + half) % size; x <= max; x += size) 
+                for (int x = (y + half) % subBlockSize; x <= max; x += subBlockSize) 
                 {
                     diamond(x, y, half, r.Next(0, 3) * (int)(scale * 2 - scale));
                 }
             }
 
-            divide(size / 2);
+            calculateMidPoints(subBlockSize / 2);
         }
 
         public void diamond(int x, int y, int size, int offset) 

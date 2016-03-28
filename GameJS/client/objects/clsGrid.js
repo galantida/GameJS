@@ -71,7 +71,7 @@ clsGrid.prototype.createGrid = function (posx, posy) {
     }
 
     // create html grid elements
-    for (var y = 0; y < this.buffer.size ; y++) {
+    for (var y = 0; y < this.buffer.size; y++) {
         for (var x = 0; x < this.buffer.size; x++) {
 
             // create cube div element
@@ -171,8 +171,8 @@ clsGrid.prototype.updateObjects = function (objects) {
         // get objects screen grid location
         var screenLocation = client.worldView.worldToScreen(new clsPoint(obj.x, obj.y));
         var tile = null;
-        if ((screenLocation.x >= 0) && (screenLocation.x < objects.length)) {
-            if ((screenLocation.y >= 0) && (screenLocation.y < objects.length)) {
+        if ((screenLocation.x >= 0) && (screenLocation.x < this.buffer.size)) {
+            if ((screenLocation.y >= 0) && (screenLocation.y < this.buffer.size)) {
                 tile = this.grid[screenLocation.x][screenLocation.y].element; // locate the tile for this object
             }
         }

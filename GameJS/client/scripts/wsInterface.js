@@ -104,7 +104,7 @@ var wsi = { // wsi namespace
 
                 // log the response from the server
                 var JSONString = JSON.stringify(JSONResponse);
-                if (JSONString.length > 100) JSONString = JSONString.substring(0, 100) + "...";
+                if (JSONString.length > 200) JSONString = JSONString.substring(0, 200) + "...";
                 console.log("JSON Response: " + callName + " - " + JSONString + "\n\n"); // display the response in the console
 			
                 // generic error handling

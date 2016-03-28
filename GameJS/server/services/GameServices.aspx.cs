@@ -136,21 +136,19 @@ namespace GameJS
                         sendResponse("getArea", "{x1:" + x1 + ",y1:" + y1 + ",x2:" + x2 + ",y2:" + y2 + "}", JSON);
                         break;
                     }
-                case "createarea":
+                case "createworld":
                     {
                         // read requested coordinate
-                        int x1 = getNumericParameter("x1", true);
-                        int y1 = getNumericParameter("y1", true);
                         int size = getNumericParameter("size", true);
 
                         // connect to world db
                         clsWorld world = new clsWorld(dbConString);
                         world.open();
-                        string JSON = world.map.createArea(x1,y1,size);
+                        string JSON = world.map.createWorld(size);
                         world.close();
 
                         // formulate response
-                        sendResponse("createArea", "{x1:" + x1 + ",y1:" + y1 + ",size:" + size + "}", JSON);
+                        sendResponse("createWorld", "{size:" + size + "}", JSON);
                         break;
                     }
                 case "gettemplates":

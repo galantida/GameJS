@@ -17,12 +17,6 @@ function clsContainerView(width, height) {
     this.buffer.className = "clsContainer buffer";
     this.displayPanel.element.appendChild(this.buffer);
 
-    this.setup();
-}
-
-// refresh all tiles
-clsContainerView.prototype.setup = function () {
-    console.log("update pack view.");
     this.requestTemplates();
 }
 

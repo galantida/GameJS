@@ -12,7 +12,7 @@ namespace GameWorld
         public float y { get; set; }
         public float z { get; set; }
 
-        public clsPoint(float x, float y, float z)
+        public clsPoint(float x, float y, float z = 0)
         {
             setPoint(x, y, z);
         }
